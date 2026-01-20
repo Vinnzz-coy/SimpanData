@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Admin\DashboardController;
+
 
 Route::get('/', function () {
     return view('auth.auth');
@@ -53,9 +55,7 @@ Route::get('/reset-password', function () {
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])
     ->name('reset.password');
 
-Route::get('/admin/dashboard', function () {
-    return view('admin.dashboard');
-})
+Route::get('/admin/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'role:admin'])
     ->name('admin.dashboard');
 
