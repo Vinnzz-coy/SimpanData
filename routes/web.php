@@ -3,13 +3,23 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\IndexController;
+use App\Http\Controllers\Admin\PesertaController;
 
-Route::get('/', fn() => view('auth.auth'));
+Route::get('/', [IndexController::class, 'index'])->name('index');
 Route::get('/auth', fn() => view('auth.auth'))->name('auth');
 
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('/register', [AuthController::class, 'register'])->name('register');
+
+Route::get('/privacy-policy', function () {
+    return view('legal.privacy-policy');
+})->name('privacy.policy');
+
+Route::get('/terms-of-service', function () {
+    return view('legal.terms-of-service');
+})->name('terms.of.service');
 
 Route::post('/send-otp', [AuthController::class, 'sendOtp'])->name('send.otp');
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('verify.otp');
@@ -55,3 +65,34 @@ Route::get('/admin/dashboard', [DashboardController::class, 'index'])
 Route::get('/peserta/dashboard', fn() => view('peserta.dashboard'))
     ->middleware(['auth', 'role:peserta'])
     ->name('peserta.dashboard');
+
+// Admin routes
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    // Peserta CRUD routes
+    Route::resource('admin/peserta', PesertaController::class)->names([
+        'index' => 'admin.peserta.index',
+        'create' => 'admin.peserta.create',
+        'store' => 'admin.peserta.store',
+        'show' => 'admin.peserta.show',
+        'edit' => 'admin.peserta.edit',
+        'update' => 'admin.peserta.update',
+        'destroy' => 'admin.peserta.destroy',
+    ]);
+
+    // Placeholder routes - akan diimplementasikan nanti
+    Route::get('/admin/absensi', function () {
+        return view('admin.absensi.index');
+    })->name('admin.absensi.index');
+
+    Route::get('/admin/user', function () {
+        return view('admin.user.index');
+    })->name('admin.user.index');
+
+    Route::get('/admin/monitoring', function () {
+        return view('admin.monitoring.index');
+    })->name('admin.monitoring.index');
+
+    Route::get('/admin/laporan', function () {
+        return view('admin.laporan.index');
+    })->name('admin.laporan.index');
+});

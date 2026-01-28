@@ -26,7 +26,7 @@ class DashboardController extends Controller
             if (request()->ajax()) {
                 return response()->json([
                     'rows' => view('admin.partials.peserta-rows', compact('peserta'))->render(),
-                    'pagination' => $peserta->links()->render(),
+                    'pagination' => $peserta->links()->toHtml(),
                 ]);
             }
 
@@ -88,7 +88,7 @@ class DashboardController extends Controller
             ];
 
             $days = ['Ming', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
-            
+
             for ($i = 6; $i >= 0; $i--) {
                 $date = Carbon::now()->subDays($i);
                 $dateStr = $date->format('Y-m-d');

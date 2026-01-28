@@ -3,755 +3,734 @@
 @section('title', 'SimpanData Login - Register')
 
 @section('content')
-<div class="w-full max-w-md animate-fade-in-up">
-    <div id="loginForm" class="p-8 bg-white border-2 border-gray-300 shadow-lg rounded-xl glass shadow-gray-500">
-        <div class="mb-6 text-center">
-            <div class="inline-flex items-center justify-center mb-4 rounded-full w-14 h-14 bg-primary-light">
-                <i class="text-xl fas fa-lock text-primary"></i>
-            </div>
-            <h1 class="mb-2 text-2xl font-bold text-gray-900">Selamat Datang</h1>
-            <p class="text-gray-600">Masuk ke akun Anda untuk melanjutkan</p>
-        </div>
 
-        @if (session('success'))
-            <div class="p-4 mb-6 text-green-700 border border-green-200 rounded-lg bg-green-50 animate-fade-in">
-                <div class="flex items-center">
-                    <i class="mr-2 fas fa-check-circle"></i>
-                    <span>{{ session('success') }}</span>
-                </div>
-            </div>
-        @endif
+    <div class="w-full max-w-md animate-fade-in-up">
+        <div id="loginForm" class="p-8 bg-white border-2 border-gray-300 shadow-lg rounded-xl glass shadow-gray-500">
 
-        @if ($errors->any())
-            <div class="p-4 mb-6 text-red-700 border border-red-200 rounded-lg bg-red-50 animate-fade-in">
-                <div class="flex items-center mb-2">
-                    <i class="mr-2 fas fa-exclamation-circle"></i>
-                    <span class="font-medium">Perhatian</span>
-                </div>
-                <ul class="space-y-1 text-sm list-disc list-inside">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form method="POST" action="{{ route('login') }}" class="space-y-5">
-            @csrf
-
-            <div class="space-y-2">
-                <label for="login" class="block text-sm font-medium text-gray-700">
-                    Email atau Username
-                </label>
-                <input type="text"
-                        id="login"
-                        name="login"
-                        value="{{ old('login') }}"
-                        placeholder="Email atau Username"
-                        class="w-full px-4 py-3 transition duration-200 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light hover:border-gray-400"
-                        required
-                        autocomplete="username">
-            </div>
-
-            <div class="space-y-2">
-                <label for="loginPassword" class="block text-sm font-medium text-gray-700">
-                    Password
-                </label>
-                <div class="relative">
-                    <input type="password"
-                            id="loginPassword"
-                            name="password"
-                            placeholder="••••••••"
-                            class="w-full px-4 py-3 pr-10 transition duration-200 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light hover:border-gray-400"
-                            required
-                            autocomplete="current-password">
-                    <button type="button"
-                            onclick="togglePassword('loginPassword', this)"
-                            class="absolute text-gray-400 transition-colors transform -translate-y-1/2 right-3 top-1/2 hover:text-gray-600">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <label class="flex items-center space-x-2 cursor-pointer">
-                    <div class="relative">
-                        <input type="checkbox"
-                                name="remember"
-                                class="sr-only peer">
-                        <div class="w-4 h-4 transition-colors border border-gray-400 rounded peer-checked:bg-primary peer-checked:border-primary"></div>
-                        <i class="absolute text-xs text-white transition-opacity transform -translate-x-1/2 -translate-y-1/2 opacity-0 fas fa-check top-1/2 left-1/2 peer-checked:opacity-100"></i>
-                    </div>
-                    <span class="text-sm text-gray-600">Ingatkan saya</span>
-                </label>
-
-                <a href="{{ route('forgot.password.form') }}"
-                    class="text-sm font-medium transition-colors text-primary hover:text-primary/80">
-                    Lupa password?
+            <div class="mb-4">
+                <a href="{{ route('index') }}"
+                    class="flex items-center text-sm font-medium transition-colors text-primary hover:text-primary/80">
+                    <i class="mr-2 fas fa-arrow-left"></i>
+                    Kembali ke Halaman Utama
                 </a>
             </div>
 
-            <button type="submit"
-                    class="w-full py-3 font-medium text-white transition-shadow duration-200 rounded-lg shadow-md shadow-gray-600 bg-primary hover:bg-primary/90 active:bg-primary/80 btn-transition focus:outline-none focus:ring-2 focus:ring-primary-light hover:shadow-lg">
-                Masuk ke Sistem
-            </button>
-
-            <div class="pt-4 text-center">
-                <p class="text-sm text-gray-600">
-                    Belum punya akun?
-                    <button type="button"
-                            onclick="showRegister()"
-                            class="ml-1 font-medium transition-colors text-primary hover:text-primary/80">
-                        Daftar Sekarang
-                    </button>
-                </p>
-            </div>
-        </form>
-    </div>
-
-    <div id="registerForm" class="hidden p-8 bg-white border-2 border-gray-300 shadow-lg rounded-xl glass shadow-gray-500">
-        <div class="mb-6 text-center">
-            <div class="inline-flex items-center justify-center mb-4 rounded-full w-14 h-14 bg-primary-light">
-                <i class="text-xl fas fa-user-plus text-primary"></i>
-            </div>
-            <h1 class="mb-2 text-2xl font-bold text-gray-900">Buat Akun Baru</h1>
-            <p class="text-gray-600">Bergabung dengan kami dalam beberapa langkah mudah</p>
-        </div>
-
-        <form method="POST" action="{{ route('register') }}" class="space-y-5">
-            @csrf
-
-            <div id="step1" class="space-y-5">
-                <div class="space-y-2">
-                    <label for="username" class="block text-sm font-medium text-gray-700">
-                        Username
-                    </label>
-                    <input type="text"
-                            id="username"
-                            name="username"
-                            value="{{ old('username') }}"
-                            placeholder="Buat Username"
-                            class="w-full px-4 py-3 transition duration-200 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light hover:border-gray-400"
-                            required>
+            <div class="mb-6 text-center">
+                <div class="inline-flex items-center justify-center mb-4 rounded-full w-14 h-14 bg-primary-light">
+                    <i class="text-xl fas fa-lock text-primary"></i>
                 </div>
-
-                <div class="space-y-2">
-                    <label for="emailInput" class="block text-sm font-medium text-gray-700">
-                        Email
-                    </label>
-                    <input type="email"
-                            id="emailInput"
-                            name="email"
-                            value="{{ old('email') }}"
-                            placeholder="simpandata@gmail.com"
-                            class="w-full px-4 py-3 transition duration-200 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light hover:border-gray-400"
-                            required>
-                </div>
-
-                <button type="button"
-                        onclick="sendOtp()"
-                        id="sendOtpBtn"
-                        class="w-full py-3 font-medium text-white transition-shadow duration-200 rounded-lg shadow-sm bg-primary hover:bg-primary/90 active:bg-primary/80 btn-transition focus:outline-none focus:ring-2 focus:ring-primary-light hover:shadow">
-                    Kirim Kode Verifikasi
-                </button>
+                <h1 class="mb-2 text-2xl font-bold text-gray-900">Selamat Datang</h1>
+                <p class="text-gray-600">Masuk ke akun Anda untuk melanjutkan</p>
             </div>
 
-            <div id="step2" class="hidden space-y-5">
-                <div class="mb-4 text-center">
-                    <h3 class="mb-1 text-lg font-semibold text-gray-900">Verifikasi Email</h3>
-                    <p class="text-sm text-gray-600">
-                        Kode verifikasi telah dikirim ke
-                        <span id="emailDisplay" class="font-medium text-primary"></span>
-                    </p>
-                </div>
-
-                <div>
-                    <div class="flex justify-center gap-2 mb-4">
-                        <input class="otp-input otp-ready" maxlength="1">
-                        <input class="otp-input otp-ready" maxlength="1">
-                        <input class="otp-input otp-ready" maxlength="1">
-                        <input class="otp-input otp-ready" maxlength="1">
-                        <input class="otp-input otp-ready" maxlength="1">
-                        <input class="otp-input otp-ready" maxlength="1">
-                    </div>
-
-                    <input type="hidden" name="otp" id="otpHidden">
-
-                    <div id="otpStatus" class="text-center text-sm mb-3 min-h-[20px]"></div>
-
-                    <div class="flex gap-2">
-                        <button type="button"
-                                onclick="verifyOtpManual()"
-                                id="verifyOtpBtn"
-                                class="flex-1 py-3 font-medium text-white transition-shadow duration-200 rounded-lg shadow-sm bg-secondary hover:bg-secondary/90 active:bg-secondary/80 btn-transition focus:outline-none focus:ring-2 focus:ring-secondary-light hover:shadow">
-                            Verifikasi
-                        </button>
-
-                        <button type="button"
-                                onclick="resendOtp()"
-                                id="resendOtpBtn"
-                                class="px-4 py-3 text-sm font-medium border rounded-lg border-secondary text-secondary hover:bg-secondary/5 btn-transition">
-                            <i class="mr-1 fas fa-redo"></i>Ulangi
-                        </button>
+            @if (session('success'))
+                <div class="p-4 mb-6 text-green-700 border border-green-200 rounded-lg bg-green-50 animate-fade-in">
+                    <div class="flex items-center">
+                        <i class="mr-2 fas fa-check-circle"></i>
+                        <span>{{ session('success') }}</span>
                     </div>
                 </div>
+            @endif
 
-                <button type="button"
-                        onclick="showStep(1)"
-                        class="flex items-center text-sm font-medium transition-colors text-primary hover:text-primary/80">
-                    <i class="mr-2 fas fa-arrow-left"></i>
-                    Kembali ke Data Diri
-                </button>
-            </div>
+            @if ($errors->any())
+                <div class="p-4 mb-6 text-red-700 border border-red-200 rounded-lg bg-red-50 animate-fade-in">
+                    <div class="flex items-center mb-2">
+                        <i class="mr-2 fas fa-exclamation-circle"></i>
+                        <span class="font-medium">Perhatian</span>
+                    </div>
+                    <ul class="space-y-1 text-sm list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-            <div id="step3" class="hidden space-y-5">
+            <form method="POST" action="{{ route('login') }}" class="space-y-5">
+                @csrf
+
                 <div class="space-y-2">
-                    <label for="registerPassword" class="block text-sm font-medium text-gray-700">
-                        Password Baru
+                    <label for="login" class="block text-sm font-medium text-gray-700">
+                        Email atau Username
+                    </label>
+                    <input type="text" id="login" name="login" value="{{ old('login') }}"
+                        placeholder="Email atau Username"
+                        class="w-full px-4 py-3 transition duration-200 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light hover:border-gray-400"
+                        required autocomplete="username">
+                </div>
+
+                <div class="space-y-2">
+                    <label for="loginPassword" class="block text-sm font-medium text-gray-700">
+                        Password
                     </label>
                     <div class="relative">
-                        <input type="password"
-                                id="registerPassword"
-                                name="password"
-                                placeholder="••••••••"
-                                class="w-full px-4 py-3 pr-10 transition duration-200 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light hover:border-gray-400"
-                                required
-                                autocomplete="new-password"
-                                oninput="checkRegisterPassword()">
-                        <button type="button"
-                                onclick="togglePassword('registerPassword', this)"
-                                class="absolute text-gray-400 transition-colors transform -translate-y-1/2 right-3 top-1/2 hover:text-gray-600">
+                        <input type="password" id="loginPassword" name="password" placeholder="••••••••"
+                            class="w-full px-4 py-3 pr-10 transition duration-200 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light hover:border-gray-400"
+                            required autocomplete="current-password">
+                        <button type="button" onclick="togglePassword('loginPassword', this)"
+                            class="absolute text-gray-400 transition-colors transform -translate-y-1/2 right-3 top-1/2 hover:text-gray-600">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
-
-                    <div id="passwordStrength" class="mt-3">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="text-xs text-gray-600">Kekuatan password:</span>
-                            <span id="strengthText" class="text-xs font-medium">-</span>
-                        </div>
-                        <div class="h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                            <div id="strengthBar" class="w-0 h-full transition-all duration-300"></div>
-                        </div>
-                    </div>
                 </div>
 
-                <div class="space-y-2">
-                    <label for="registerPasswordConfirm" class="block text-sm font-medium text-gray-700">
-                        Konfirmasi Password
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" name="remember" class="sr-only peer">
+                            <div
+                                class="w-4 h-4 transition-colors border border-gray-400 rounded peer-checked:bg-primary peer-checked:border-primary">
+                            </div>
+                            <i
+                                class="absolute text-xs text-white transition-opacity transform -translate-x-1/2 -translate-y-1/2 opacity-0 fas fa-check top-1/2 left-1/2 peer-checked:opacity-100"></i>
+                        </div>
+                        <span class="text-sm text-gray-600">Ingatkan saya</span>
                     </label>
-                    <div class="relative">
-                        <input type="password"
-                                id="registerPasswordConfirm"
-                                name="password_confirmation"
-                                placeholder="••••••••"
-                                class="w-full px-4 py-3 pr-10 transition duration-200 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light hover:border-gray-400"
-                                required
-                                autocomplete="new-password"
-                                oninput="checkPasswordMatch()">
-                        <button type="button"
-                                onclick="togglePassword('registerPasswordConfirm', this)"
-                                class="absolute text-gray-400 transition-colors transform -translate-y-1/2 right-3 top-1/2 hover:text-gray-600">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </div>
-                    <div id="passwordMatch" class="mt-1 text-sm min-h-[20px]"></div>
+
+                    <a href="{{ route('forgot.password.form') }}"
+                        class="text-sm font-medium transition-colors text-primary hover:text-primary/80">
+                        Lupa password?
+                    </a>
                 </div>
 
                 <button type="submit"
-                        id="registerBtn"
-                        disabled
-                        class="w-full py-3 font-medium text-white transition-shadow duration-200 rounded-lg shadow-sm bg-primary hover:bg-primary/90 active:bg-primary/80 btn-transition focus:outline-none focus:ring-2 focus:ring-primary-light hover:shadow disabled:opacity-50 disabled:cursor-not-allowed">
-                    Buat Akun Sekarang
+                    class="w-full py-3 font-medium text-white transition-shadow duration-200 rounded-lg shadow-md shadow-gray-600 bg-primary hover:bg-primary/90 active:bg-primary/80 btn-transition focus:outline-none focus:ring-2 focus:ring-primary-light hover:shadow-lg">
+                    Masuk ke Sistem
                 </button>
 
-                <button type="button"
-                        onclick="showStep(2)"
-                        class="flex items-center text-sm font-medium transition-colors text-primary hover:text-primary/80">
-                    <i class="mr-2 fas fa-arrow-left"></i>
-                    Kembali ke Verifikasi
-                </button>
-            </div>
-
-            <div class="pt-4 text-center border-t border-gray-100">
-                <p class="text-sm text-gray-600">
-                    Sudah punya akun?
-                    <button type="button"
-                            onclick="showLogin()"
+                <div class="pt-4 text-center">
+                    <p class="text-sm text-gray-600">
+                        Belum punya akun?
+                        <button type="button" onclick="showRegister()"
                             class="ml-1 font-medium transition-colors text-primary hover:text-primary/80">
-                        Login di sini
-                    </button>
-                </p>
+                            Daftar Sekarang
+                        </button>
+                    </p>
+                </div>
+            </form>
+        </div>
+
+        <div id="registerForm"
+            class="hidden p-8 bg-white border-2 border-gray-300 shadow-lg rounded-xl glass shadow-gray-500">
+            <div class="mb-6 text-center">
+                <div class="inline-flex items-center justify-center mb-4 rounded-full w-14 h-14 bg-primary-light">
+                    <i class="text-xl fas fa-user-plus text-primary"></i>
+                </div>
+                <h1 class="mb-2 text-2xl font-bold text-gray-900">Buat Akun Baru</h1>
+                <p class="text-gray-600">Bergabung dengan kami dalam beberapa langkah mudah</p>
             </div>
-        </form>
+
+            <form method="POST" action="{{ route('register') }}" class="space-y-5">
+                @csrf
+
+                <div id="step1" class="space-y-5">
+                    <div class="space-y-2">
+                        <label for="username" class="block text-sm font-medium text-gray-700">
+                            Username
+                        </label>
+                        <input type="text" id="username" name="username" value="{{ old('username') }}"
+                            placeholder="Buat Username"
+                            class="w-full px-4 py-3 transition duration-200 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light hover:border-gray-400"
+                            required>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="emailInput" class="block text-sm font-medium text-gray-700">
+                            Email
+                        </label>
+                        <input type="email" id="emailInput" name="email" value="{{ old('email') }}"
+                            placeholder="simpandata@gmail.com"
+                            class="w-full px-4 py-3 transition duration-200 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light hover:border-gray-400"
+                            required>
+                    </div>
+
+                    <button type="button" onclick="sendOtp()" id="sendOtpBtn"
+                        class="w-full py-3 font-medium text-white transition-shadow duration-200 rounded-lg shadow-sm bg-primary hover:bg-primary/90 active:bg-primary/80 btn-transition focus:outline-none focus:ring-2 focus:ring-primary-light hover:shadow">
+                        Kirim Kode Verifikasi
+                    </button>
+                </div>
+
+                <div id="step2" class="hidden space-y-5">
+                    <div class="mb-4 text-center">
+                        <h3 class="mb-1 text-lg font-semibold text-gray-900">Verifikasi Email</h3>
+                        <p class="text-sm text-gray-600">
+                            Kode verifikasi telah dikirim ke
+                            <span id="emailDisplay" class="font-medium text-primary"></span>
+                        </p>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-center gap-2 mb-4">
+                            <input class="otp-input otp-ready" maxlength="1">
+                            <input class="otp-input otp-ready" maxlength="1">
+                            <input class="otp-input otp-ready" maxlength="1">
+                            <input class="otp-input otp-ready" maxlength="1">
+                            <input class="otp-input otp-ready" maxlength="1">
+                            <input class="otp-input otp-ready" maxlength="1">
+                        </div>
+
+                        <input type="hidden" name="otp" id="otpHidden">
+
+                        <div id="otpStatus" class="text-center text-sm mb-3 min-h-[20px]"></div>
+
+                        <div class="flex gap-2">
+                            <button type="button" onclick="verifyOtpManual()" id="verifyOtpBtn"
+                                class="flex-1 py-3 font-medium text-white transition-shadow duration-200 rounded-lg shadow-sm bg-secondary hover:bg-secondary/90 active:bg-secondary/80 btn-transition focus:outline-none focus:ring-2 focus:ring-secondary-light hover:shadow">
+                                Verifikasi
+                            </button>
+
+                            <button type="button" onclick="resendOtp()" id="resendOtpBtn"
+                                class="px-4 py-3 text-sm font-medium border rounded-lg border-secondary text-secondary hover:bg-secondary/5 btn-transition">
+                                <i class="mr-1 fas fa-redo"></i>Ulangi
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="showStep(1)"
+                        class="flex items-center text-sm font-medium transition-colors text-primary hover:text-primary/80">
+                        <i class="mr-2 fas fa-arrow-left"></i>
+                        Kembali ke Data Diri
+                    </button>
+                </div>
+
+                <div id="step3" class="hidden space-y-5">
+                    <div class="space-y-2">
+                        <label for="registerPassword" class="block text-sm font-medium text-gray-700">
+                            Password Baru
+                        </label>
+                        <div class="relative">
+                            <input type="password" id="registerPassword" name="password" placeholder="••••••••"
+                                class="w-full px-4 py-3 pr-10 transition duration-200 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light hover:border-gray-400"
+                                required autocomplete="new-password" oninput="checkRegisterPassword()">
+                            <button type="button" onclick="togglePassword('registerPassword', this)"
+                                class="absolute text-gray-400 transition-colors transform -translate-y-1/2 right-3 top-1/2 hover:text-gray-600">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+
+                        <div id="passwordStrength" class="mt-3">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs text-gray-600">Kekuatan password:</span>
+                                <span id="strengthText" class="text-xs font-medium">-</span>
+                            </div>
+                            <div class="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                <div id="strengthBar" class="w-0 h-full transition-all duration-300"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="registerPasswordConfirm" class="block text-sm font-medium text-gray-700">
+                            Konfirmasi Password
+                        </label>
+                        <div class="relative">
+                            <input type="password" id="registerPasswordConfirm" name="password_confirmation"
+                                placeholder="••••••••"
+                                class="w-full px-4 py-3 pr-10 transition duration-200 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light hover:border-gray-400"
+                                required autocomplete="new-password" oninput="checkPasswordMatch()">
+                            <button type="button" onclick="togglePassword('registerPasswordConfirm', this)"
+                                class="absolute text-gray-400 transition-colors transform -translate-y-1/2 right-3 top-1/2 hover:text-gray-600">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div id="passwordMatch" class="mt-1 text-sm min-h-[20px]"></div>
+                    </div>
+
+                    <button type="submit" id="registerBtn" disabled
+                        class="w-full py-3 font-medium text-white transition-shadow duration-200 rounded-lg shadow-sm bg-primary hover:bg-primary/90 active:bg-primary/80 btn-transition focus:outline-none focus:ring-2 focus:ring-primary-light hover:shadow disabled:opacity-50 disabled:cursor-not-allowed">
+                        Buat Akun Sekarang
+                    </button>
+
+                    <button type="button" onclick="showStep(2)"
+                        class="flex items-center text-sm font-medium transition-colors text-primary hover:text-primary/80">
+                        <i class="mr-2 fas fa-arrow-left"></i>
+                        Kembali ke Verifikasi
+                    </button>
+                </div>
+
+                <div class="pt-4 text-center border-t border-gray-100">
+                    <p class="text-sm text-gray-600">
+                        Sudah punya akun?
+                        <button type="button" onclick="showLogin()"
+                            class="ml-1 font-medium transition-colors text-primary hover:text-primary/80">
+                            Login di sini
+                        </button>
+                    </p>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 @endsection
 
 @section('scripts')
     <script>
-    let currentStep = 1;
-    let emailVerified = false;
-    let resendTimer = null;
+        let currentStep = 1;
+        let emailVerified = false;
+        let resendTimer = null;
 
-    function showLogin() {
-        document.getElementById('loginForm').classList.remove('hidden');
-        document.getElementById('registerForm').classList.add('hidden');
+        function showLogin() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
 
-        document.getElementById('loginForm').classList.add('animate-fade-in');
-        setTimeout(() => {
-            document.getElementById('loginForm').classList.remove('animate-fade-in');
-        }, 400);
-    }
-
-    function showRegister() {
-        document.getElementById('registerForm').classList.remove('hidden');
-        document.getElementById('loginForm').classList.add('hidden');
-
-        document.getElementById('registerForm').classList.add('animate-fade-in');
-        setTimeout(() => {
-            document.getElementById('registerForm').classList.remove('animate-fade-in');
-        }, 400);
-
-        showStep(1);
-    }
-
-    function showStep(step) {
-        currentStep = step;
-
-        document.getElementById('step1').classList.add('hidden');
-        document.getElementById('step2').classList.add('hidden');
-        document.getElementById('step3').classList.add('hidden');
-
-        document.getElementById(`step${step}`).classList.remove('hidden');
-        document.getElementById(`step${step}`).classList.add('animate-slide-in');
-
-        setTimeout(() => {
-            document.getElementById(`step${step}`).classList.remove('animate-slide-in');
-        }, 400);
-
-        if (step === 2) {
-            setupOtpInputs();
-            const email = document.getElementById('emailInput').value;
-            document.getElementById('emailDisplay').textContent = email;
-
-            startResendTimer();
-        }
-    }
-
-    function setupOtpInputs() {
-        const otpInputs = document.querySelectorAll('.otp-input');
-
-        otpInputs.forEach((input, index) => {
-            input.className = 'otp-input w-10 h-10 text-center text-lg font-bold border-2 border-gray-300 rounded-lg focus:border-secondary focus:ring-2 focus:ring-secondary-light transition-all duration-200';
-            input.inputMode = 'numeric';
-            input.type = 'text';
-
-            input.addEventListener('input', (e) => {
-                input.value = input.value.replace(/[^0-9]/g, '');
-
-                if (input.value && otpInputs[index + 1]) {
-                    otpInputs[index + 1].focus();
-                }
-
-                if (typeof window.collectOtp === 'function') {
-                    window.collectOtp();
-                }
-            });
-
-            input.addEventListener('keydown', (e) => {
-                if (e.key === 'Backspace' && !input.value && otpInputs[index - 1]) {
-                    e.preventDefault();
-                    otpInputs[index - 1].focus();
-                    otpInputs[index - 1].value = '';
-
-                    if (typeof window.collectOtp === 'function') {
-                        window.collectOtp();
-                    }
-                }
-            });
-
-            input.addEventListener('paste', (e) => {
-                e.preventDefault();
-                const pasteData = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
-
-                if (pasteData.length === 6) {
-                    pasteData.split('').forEach((char, idx) => {
-                        if (otpInputs[idx]) {
-                            otpInputs[idx].value = char;
-                        }
-                    });
-
-                    if (typeof window.collectOtp === 'function') {
-                        window.collectOtp();
-                    }
-
-                    otpInputs[5].focus();
-                }
-            });
-        });
-
-        if (otpInputs[0]) {
-            setTimeout(() => otpInputs[0].focus(), 100);
-        }
-    }
-
-    window.collectOtp = function() {
-        const otpInputs = document.querySelectorAll('.otp-input');
-        let otp = '';
-
-        otpInputs.forEach(input => {
-            otp += input.value;
-        });
-
-        document.getElementById('otpHidden').value = otp;
-
-        const verifyBtn = document.getElementById('verifyOtpBtn');
-        verifyBtn.disabled = otp.length !== 6;
-
-        return otp;
-    }
-    async function sendOtp() {
-        const email = document.getElementById('emailInput').value;
-        const sendOtpBtn = document.getElementById('sendOtpBtn');
-
-        if (!email) {
-            showToast('Email wajib diisi', 'error');
-            return;
+            document.getElementById('loginForm').classList.add('animate-fade-in');
+            setTimeout(() => {
+                document.getElementById('loginForm').classList.remove('animate-fade-in');
+            }, 400);
         }
 
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (!emailRegex.test(email)) {
-            showToast('Format email tidak valid', 'error');
-            return;
+        function showRegister() {
+            document.getElementById('registerForm').classList.remove('hidden');
+            document.getElementById('loginForm').classList.add('hidden');
+
+            document.getElementById('registerForm').classList.add('animate-fade-in');
+            setTimeout(() => {
+                document.getElementById('registerForm').classList.remove('animate-fade-in');
+            }, 400);
+
+            showStep(1);
         }
 
-        const originalText = sendOtpBtn.innerHTML;
+        function showStep(step) {
+            currentStep = step;
 
-        sendOtpBtn.disabled = true;
-        sendOtpBtn.innerHTML = '<div class="mx-auto spinner"></div>';
-        sendOtpBtn.classList.remove('bg-primary', 'hover:bg-primary/90');
-        sendOtpBtn.classList.add('bg-gray-400');
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
 
-        try {
-            const response = await fetch("{{ route('send.otp') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify({ email: email })
-            });
+            document.getElementById(`step${step}`).classList.remove('hidden');
+            document.getElementById(`step${step}`).classList.add('animate-slide-in');
 
-            const data = await response.json();
+            setTimeout(() => {
+                document.getElementById(`step${step}`).classList.remove('animate-slide-in');
+            }, 400);
 
-            if (response.ok && data.status) {
-                showToast('Kode verifikasi telah dikirim ke email Anda', 'success');
-
-                // Move to step 2
-                showStep(2);
-            } else {
-                throw new Error(data.message || 'Gagal mengirim kode verifikasi');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showToast(error.message || 'Gagal mengirim kode verifikasi', 'error');
-        } finally {
-            sendOtpBtn.disabled = false;
-            sendOtpBtn.innerHTML = originalText;
-            sendOtpBtn.classList.add('bg-primary', 'hover:bg-primary/90');
-            sendOtpBtn.classList.remove('bg-gray-400');
-        }
-    }
-
-    async function verifyOtpManual() {
-        const otp = collectOtp();
-        const email = document.getElementById('emailInput').value;
-        const verifyBtn = document.getElementById('verifyOtpBtn');
-        const otpStatus = document.getElementById('otpStatus');
-
-        if (!otp || otp.length !== 6) {
-            showToast('Kode verifikasi harus 6 digit', 'error');
-            return;
-        }
-
-        if (!email) {
-            showToast('Email wajib diisi', 'error');
-            return;
-        }
-
-        const originalText = verifyBtn.innerHTML;
-
-        verifyBtn.disabled = true;
-        verifyBtn.innerHTML = '<div class="mx-auto spinner"></div>';
-        verifyBtn.classList.remove('bg-secondary', 'hover:bg-secondary/90');
-        verifyBtn.classList.add('bg-gray-400');
-
-        try {
-            const response = await fetch("{{ route('verify.otp') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify({
-                    email: email,
-                    otp: otp
-                })
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.status) {
-                showToast('Email berhasil diverifikasi!', 'success');
-
-                emailVerified = true;
-
-                otpStatus.innerHTML = '<span class="font-medium text-green-600"><i class="mr-1 fas fa-check"></i>Email terverifikasi</span>';
-
-                document.querySelectorAll('.otp-input').forEach(input => {
-                    input.disabled = true;
-                    input.classList.add('opacity-50', 'bg-gray-100');
-                });
-
-                verifyBtn.disabled = true;
-                verifyBtn.innerHTML = '<i class="mr-1 fas fa-check"></i>Terverifikasi';
-                verifyBtn.classList.remove('bg-gray-400');
-                verifyBtn.classList.add('bg-green-500', 'hover:bg-green-500', 'cursor-default');
-
-                if (resendTimer) clearInterval(resendTimer);
-
-                setTimeout(() => {
-                    showStep(3);
-                }, 1000);
-            } else {
-                throw new Error(data.message || 'Kode verifikasi tidak valid');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showToast(error.message || 'Kode verifikasi tidak valid', 'error');
-
-            otpStatus.innerHTML = '<span class="text-red-600"><i class="mr-1 fas fa-times"></i>Kode tidak valid</span>';
-        } finally {
-            if (!emailVerified) {
-                verifyBtn.innerHTML = originalText;
-                verifyBtn.disabled = false;
-                verifyBtn.classList.add('bg-secondary', 'hover:bg-secondary/90');
-                verifyBtn.classList.remove('bg-gray-400');
-            }
-        }
-    }
-
-    async function resendOtp() {
-        const email = document.getElementById('emailInput').value;
-        const resendBtn = document.getElementById('resendOtpBtn');
-
-        if (!email) {
-            showToast('Email wajib diisi', 'error');
-            return;
-        }
-
-        const originalText = resendBtn.innerHTML;
-
-        resendBtn.disabled = true;
-        resendBtn.innerHTML = '<div class="mx-auto spinner"></div>';
-        resendBtn.classList.add('opacity-50');
-
-        showToast('Mengirim ulang kode verifikasi...', 'info');
-
-        try {
-            const response = await fetch("{{ route('send.otp') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify({ email: email })
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.status) {
-                showToast('Kode verifikasi baru telah dikirim', 'success');
-
-                document.querySelectorAll('.otp-input').forEach(input => {
-                    input.value = '';
-                    input.disabled = false;
-                    input.classList.remove('opacity-50', 'bg-gray-100');
-                });
-
-                document.getElementById('otpHidden').value = '';
-
-                const verifyBtn = document.getElementById('verifyOtpBtn');
-                verifyBtn.disabled = true;
-                verifyBtn.innerHTML = 'Verifikasi';
-                verifyBtn.classList.remove('bg-green-500', 'cursor-default');
-                verifyBtn.classList.add('bg-secondary', 'hover:bg-secondary/90');
-
-                document.getElementById('otpStatus').innerHTML = '';
-
+            if (step === 2) {
                 setupOtpInputs();
+                const email = document.getElementById('emailInput').value;
+                document.getElementById('emailDisplay').textContent = email;
 
                 startResendTimer();
-            } else {
-                throw new Error(data.message || 'Gagal mengirim kode verifikasi');
             }
-        } catch (error) {
-            console.error('Error:', error);
-            showToast(error.message || 'Gagal mengirim kode verifikasi ulang', 'error');
-        } finally {
-            resendBtn.disabled = false;
-            resendBtn.innerHTML = originalText;
-            resendBtn.classList.remove('opacity-50');
-        }
-    }
-
-    function startResendTimer() {
-        const resendBtn = document.getElementById('resendOtpBtn');
-        let countdown = 30;
-
-        resendBtn.disabled = true;
-        resendBtn.innerHTML = `<i class="mr-1 fas fa-clock"></i>${countdown}s`;
-        resendBtn.classList.add('opacity-50', 'cursor-not-allowed');
-
-        if (resendTimer) clearInterval(resendTimer);
-
-        resendTimer = setInterval(() => {
-            countdown--;
-            resendBtn.innerHTML = `<i class="mr-1 fas fa-clock"></i>${countdown}s`;
-
-            if (countdown <= 0) {
-                clearInterval(resendTimer);
-                resendBtn.disabled = false;
-                resendBtn.innerHTML = '<i class="mr-1 fas fa-redo"></i>Ulangi';
-                resendBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            }
-        }, 1000);
-    }
-
-    function checkRegisterPassword() {
-        const password = document.getElementById('registerPassword').value;
-        const strengthBar = document.getElementById('strengthBar');
-        const strengthText = document.getElementById('strengthText');
-
-        const strength = checkPasswordStrength(password);
-
-        const percentages = [0, 25, 50, 75, 100];
-        const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-400', 'bg-green-600'];
-        const texts = ['Sangat Lemah', 'Lemah', 'Cukup', 'Kuat', 'Sangat Kuat'];
-
-        strengthBar.style.width = `${percentages[strength]}%`;
-        strengthBar.className = `h-full ${colors[strength]} transition-all duration-300`;
-        strengthText.textContent = texts[strength];
-        strengthText.className = `text-xs font-medium ${strength >= 3 ? 'text-green-600' : strength >= 2 ? 'text-yellow-600' : 'text-red-600'}`;
-
-        checkPasswordMatch();
-    }
-
-    function checkPasswordMatch() {
-        const password = document.getElementById('registerPassword').value;
-        const confirm = document.getElementById('registerPasswordConfirm').value;
-        const matchDiv = document.getElementById('passwordMatch');
-        const registerBtn = document.getElementById('registerBtn');
-
-        if (!password || !confirm) {
-            matchDiv.innerHTML = '';
-            registerBtn.disabled = true;
-            return;
         }
 
-        if (password === confirm && password.length >= 6) {
-            matchDiv.innerHTML = '<span class="text-green-600"><i class="mr-1 fas fa-check"></i>Password cocok</span>';
+        function setupOtpInputs() {
+            const otpInputs = document.querySelectorAll('.otp-input');
 
-            registerBtn.disabled = !emailVerified;
-            if (!registerBtn.disabled) {
-                registerBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            otpInputs.forEach((input, index) => {
+                input.className =
+                    'otp-input w-10 h-10 text-center text-lg font-bold border-2 border-gray-300 rounded-lg focus:border-secondary focus:ring-2 focus:ring-secondary-light transition-all duration-200';
+                input.inputMode = 'numeric';
+                input.type = 'text';
+
+                input.addEventListener('input', (e) => {
+                    input.value = input.value.replace(/[^0-9]/g, '');
+
+                    if (input.value && otpInputs[index + 1]) {
+                        otpInputs[index + 1].focus();
+                    }
+
+                    if (typeof window.collectOtp === 'function') {
+                        window.collectOtp();
+                    }
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !input.value && otpInputs[index - 1]) {
+                        e.preventDefault();
+                        otpInputs[index - 1].focus();
+                        otpInputs[index - 1].value = '';
+
+                        if (typeof window.collectOtp === 'function') {
+                            window.collectOtp();
+                        }
+                    }
+                });
+
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const pasteData = e.clipboardData.getData('text').replace(/[^0-9]/g, '');
+
+                    if (pasteData.length === 6) {
+                        pasteData.split('').forEach((char, idx) => {
+                            if (otpInputs[idx]) {
+                                otpInputs[idx].value = char;
+                            }
+                        });
+
+                        if (typeof window.collectOtp === 'function') {
+                            window.collectOtp();
+                        }
+
+                        otpInputs[5].focus();
+                    }
+                });
+            });
+
+            if (otpInputs[0]) {
+                setTimeout(() => otpInputs[0].focus(), 100);
             }
-        } else {
-            matchDiv.innerHTML = '<span class="text-red-600"><i class="mr-1 fas fa-times"></i>Password tidak cocok</span>';
-
-            registerBtn.disabled = true;
-            registerBtn.classList.add('opacity-50', 'cursor-not-allowed');
         }
-    }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        setupOtpInputs();
+        window.collectOtp = function() {
+            const otpInputs = document.querySelectorAll('.otp-input');
+            let otp = '';
 
-        const hasRegisterErrors = {{ $errors->has('username') || $errors->has('email') || $errors->has('password') ? 'true' : 'false' }};
+            otpInputs.forEach(input => {
+                otp += input.value;
+            });
 
-        if (hasRegisterErrors) {
-            showRegister();
+            document.getElementById('otpHidden').value = otp;
+
+            const verifyBtn = document.getElementById('verifyOtpBtn');
+            verifyBtn.disabled = otp.length !== 6;
+
+            return otp;
+        }
+        async function sendOtp() {
             const email = document.getElementById('emailInput').value;
-            if (email) {
-                showStep(2);
+            const sendOtpBtn = document.getElementById('sendOtpBtn');
+
+            if (!email) {
+                showToast('Email wajib diisi', 'error');
+                return;
+            }
+
+            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            if (!emailRegex.test(email)) {
+                showToast('Format email tidak valid', 'error');
+                return;
+            }
+
+            const originalText = sendOtpBtn.innerHTML;
+
+            sendOtpBtn.disabled = true;
+            sendOtpBtn.innerHTML = '<div class="mx-auto spinner"></div>';
+            sendOtpBtn.classList.remove('bg-primary', 'hover:bg-primary/90');
+            sendOtpBtn.classList.add('bg-gray-400');
+
+            try {
+                const response = await fetch("{{ route('send.otp') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.status) {
+                    showToast('Kode verifikasi telah dikirim ke email Anda', 'success');
+
+                    showStep(2);
+                } else {
+                    throw new Error(data.message || 'Gagal mengirim kode verifikasi');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast(error.message || 'Gagal mengirim kode verifikasi', 'error');
+            } finally {
+                sendOtpBtn.disabled = false;
+                sendOtpBtn.innerHTML = originalText;
+                sendOtpBtn.classList.add('bg-primary', 'hover:bg-primary/90');
+                sendOtpBtn.classList.remove('bg-gray-400');
             }
         }
 
-        const firstInput = document.querySelector('input:not([type="hidden"])');
-        if (firstInput && !firstInput.value) {
-            setTimeout(() => firstInput.focus(), 300);
+        async function verifyOtpManual() {
+            const otp = collectOtp();
+            const email = document.getElementById('emailInput').value;
+            const verifyBtn = document.getElementById('verifyOtpBtn');
+            const otpStatus = document.getElementById('otpStatus');
+
+            if (!otp || otp.length !== 6) {
+                showToast('Kode verifikasi harus 6 digit', 'error');
+                return;
+            }
+
+            if (!email) {
+                showToast('Email wajib diisi', 'error');
+                return;
+            }
+
+            const originalText = verifyBtn.innerHTML;
+
+            verifyBtn.disabled = true;
+            verifyBtn.innerHTML = '<div class="mx-auto spinner"></div>';
+            verifyBtn.classList.remove('bg-secondary', 'hover:bg-secondary/90');
+            verifyBtn.classList.add('bg-gray-400');
+
+            try {
+                const response = await fetch("{{ route('verify.otp') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        otp: otp
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.status) {
+                    showToast('Email berhasil diverifikasi!', 'success');
+
+                    emailVerified = true;
+
+                    otpStatus.innerHTML =
+                        '<span class="font-medium text-green-600"><i class="mr-1 fas fa-check"></i>Email terverifikasi</span>';
+
+                    document.querySelectorAll('.otp-input').forEach(input => {
+                        input.disabled = true;
+                        input.classList.add('opacity-50', 'bg-gray-100');
+                    });
+
+                    verifyBtn.disabled = true;
+                    verifyBtn.innerHTML = '<i class="mr-1 fas fa-check"></i>Terverifikasi';
+                    verifyBtn.classList.remove('bg-gray-400');
+                    verifyBtn.classList.add('bg-green-500', 'hover:bg-green-500', 'cursor-default');
+
+                    if (resendTimer) clearInterval(resendTimer);
+
+                    setTimeout(() => {
+                        showStep(3);
+                    }, 1000);
+                } else {
+                    throw new Error(data.message || 'Kode verifikasi tidak valid');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast(error.message || 'Kode verifikasi tidak valid', 'error');
+
+                otpStatus.innerHTML =
+                    '<span class="text-red-600"><i class="mr-1 fas fa-times"></i>Kode tidak valid</span>';
+            } finally {
+                if (!emailVerified) {
+                    verifyBtn.innerHTML = originalText;
+                    verifyBtn.disabled = false;
+                    verifyBtn.classList.add('bg-secondary', 'hover:bg-secondary/90');
+                    verifyBtn.classList.remove('bg-gray-400');
+                }
+            }
         }
-    });
 
-    // Tambahkan di dalam tag script di auth.blade.php
-    function togglePassword(inputId, button) {
-        const input = document.getElementById(inputId);
-        const icon = button.querySelector('i');
+        async function resendOtp() {
+            const email = document.getElementById('emailInput').value;
+            const resendBtn = document.getElementById('resendOtpBtn');
 
-        if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            input.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
+            if (!email) {
+                showToast('Email wajib diisi', 'error');
+                return;
+            }
+
+            const originalText = resendBtn.innerHTML;
+
+            resendBtn.disabled = true;
+            resendBtn.innerHTML = '<div class="mx-auto spinner"></div>';
+            resendBtn.classList.add('opacity-50');
+
+            showToast('Mengirim ulang kode verifikasi...', 'info');
+
+            try {
+                const response = await fetch("{{ route('send.otp') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.status) {
+                    showToast('Kode verifikasi baru telah dikirim', 'success');
+
+                    document.querySelectorAll('.otp-input').forEach(input => {
+                        input.value = '';
+                        input.disabled = false;
+                        input.classList.remove('opacity-50', 'bg-gray-100');
+                    });
+
+                    document.getElementById('otpHidden').value = '';
+
+                    const verifyBtn = document.getElementById('verifyOtpBtn');
+                    verifyBtn.disabled = true;
+                    verifyBtn.innerHTML = 'Verifikasi';
+                    verifyBtn.classList.remove('bg-green-500', 'cursor-default');
+                    verifyBtn.classList.add('bg-secondary', 'hover:bg-secondary/90');
+
+                    document.getElementById('otpStatus').innerHTML = '';
+
+                    setupOtpInputs();
+
+                    startResendTimer();
+                } else {
+                    throw new Error(data.message || 'Gagal mengirim kode verifikasi');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast(error.message || 'Gagal mengirim kode verifikasi ulang', 'error');
+            } finally {
+                resendBtn.disabled = false;
+                resendBtn.innerHTML = originalText;
+                resendBtn.classList.remove('opacity-50');
+            }
         }
-    }
 
-    function checkPasswordStrength(password) {
-        let score = 0;
-        if (!password) return 0;
+        function startResendTimer() {
+            const resendBtn = document.getElementById('resendOtpBtn');
+            let countdown = 30;
 
-        // panjang
-        if (password.length >= 8) score++;
-        if (password.length >= 12) score++;
+            resendBtn.disabled = true;
+            resendBtn.innerHTML = `<i class="mr-1 fas fa-clock"></i>${countdown}s`;
+            resendBtn.classList.add('opacity-50', 'cursor-not-allowed');
 
-        // kompleksitas
-        if (/[a-z]/.test(password)) score++;
-        if (/[A-Z]/.test(password)) score++;
-        if (/[0-9]/.test(password)) score++;
-        if (/[^A-Za-z0-9]/.test(password)) score++;
+            if (resendTimer) clearInterval(resendTimer);
 
-        return Math.min(score, 4); // maksimal 4 untuk mapping dengan UI
-    }
+            resendTimer = setInterval(() => {
+                countdown--;
+                resendBtn.innerHTML = `<i class="mr-1 fas fa-clock"></i>${countdown}s`;
 
-    function showToast(message, type = 'info') {
-        // Hapus toast sebelumnya jika ada
-        const existingToast = document.querySelector('.custom-toast');
-        if (existingToast) existingToast.remove();
+                if (countdown <= 0) {
+                    clearInterval(resendTimer);
+                    resendBtn.disabled = false;
+                    resendBtn.innerHTML = '<i class="mr-1 fas fa-redo"></i>Ulangi';
+                    resendBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            }, 1000);
+        }
 
-        // Buat elemen toast baru
-        const toast = document.createElement('div');
-        toast.className = `custom-toast fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-white animate-fade-in ${type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'}`;
-        toast.innerHTML = `
+        function checkRegisterPassword() {
+            const password = document.getElementById('registerPassword').value;
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+
+            const strength = checkPasswordStrength(password);
+
+            const percentages = [0, 25, 50, 75, 100];
+            const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-400', 'bg-green-600'];
+            const texts = ['Sangat Lemah', 'Lemah', 'Cukup', 'Kuat', 'Sangat Kuat'];
+
+            strengthBar.style.width = `${percentages[strength]}%`;
+            strengthBar.className = `h-full ${colors[strength]} transition-all duration-300`;
+            strengthText.textContent = texts[strength];
+            strengthText.className =
+                `text-xs font-medium ${strength >= 3 ? 'text-green-600' : strength >= 2 ? 'text-yellow-600' : 'text-red-600'}`;
+
+            checkPasswordMatch();
+        }
+
+        function checkPasswordMatch() {
+            const password = document.getElementById('registerPassword').value;
+            const confirm = document.getElementById('registerPasswordConfirm').value;
+            const matchDiv = document.getElementById('passwordMatch');
+            const registerBtn = document.getElementById('registerBtn');
+
+            if (!password || !confirm) {
+                matchDiv.innerHTML = '';
+                registerBtn.disabled = true;
+                return;
+            }
+
+            if (password === confirm && password.length >= 6) {
+                matchDiv.innerHTML = '<span class="text-green-600"><i class="mr-1 fas fa-check"></i>Password cocok</span>';
+
+                registerBtn.disabled = !emailVerified;
+                if (!registerBtn.disabled) {
+                    registerBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            } else {
+                matchDiv.innerHTML =
+                    '<span class="text-red-600"><i class="mr-1 fas fa-times"></i>Password tidak cocok</span>';
+
+                registerBtn.disabled = true;
+                registerBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setupOtpInputs();
+
+            const hasRegisterErrors =
+                {{ $errors->has('username') || $errors->has('email') || $errors->has('password') ? 'true' : 'false' }};
+
+            if (hasRegisterErrors) {
+                showRegister();
+                const email = document.getElementById('emailInput').value;
+                if (email) {
+                    showStep(2);
+                }
+            }
+
+            const firstInput = document.querySelector('input:not([type="hidden"])');
+            if (firstInput && !firstInput.value) {
+                setTimeout(() => firstInput.focus(), 300);
+            }
+        });
+
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector('i');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function checkPasswordStrength(password) {
+            let score = 0;
+            if (!password) return 0;
+
+            if (password.length >= 8) score++;
+            if (password.length >= 12) score++;
+
+            if (/[a-z]/.test(password)) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+
+            return Math.min(score, 4);
+        }
+
+        function showToast(message, type = 'info') {
+            const existingToast = document.querySelector('.custom-toast');
+            if (existingToast) existingToast.remove();
+
+            // Buat elemen toast baru
+            const toast = document.createElement('div');
+            toast.className =
+                `custom-toast fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-white animate-fade-in ${type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'}`;
+            toast.innerHTML = `
             <div class="flex items-center">
                 <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'} mr-2"></i>
                 <span>${message}</span>
             </div>
         `;
 
-        document.body.appendChild(toast);
+            document.body.appendChild(toast);
 
-        // Hapus toast setelah 3 detik
-        setTimeout(() => {
-            toast.classList.add('animate-fade-out');
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
-    }
+            setTimeout(() => {
+                toast.classList.add('animate-fade-out');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
     </script>
 @endsection

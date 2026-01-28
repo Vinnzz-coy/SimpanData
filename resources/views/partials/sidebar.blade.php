@@ -8,42 +8,42 @@
 
     <ul class="nav-list">
         <li>
-            <a href="#" class="active">
+            <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
                 <i class='bx bx-grid-alt'></i>
                 <span class="links_name">Dashboard</span>
             </a>
             <span class="tooltip">Dashboard</span>
         </li>
         <li>
-            <a href="#">
+            <a href="{{ route('admin.peserta.index') }}" class="{{ request()->routeIs('admin.peserta.*') ? 'active' : '' }}">
                 <i class='bx bx-user'></i>
-                <span class="links_name">Data Siswa</span>
+                <span class="links_name">Data Peserta</span>
             </a>
-            <span class="tooltip">Data Siswa</span>
+            <span class="tooltip">Data Peserta</span>
         </li>
         <li>
-            <a href="#">
+            <a href="{{ route('admin.absensi.index') }}" class="{{ request()->routeIs('admin.absensi.*') ? 'active' : '' }}">
                 <i class='bx bx-building'></i>
-                <span class="links_name">DUDI</span>
+                <span class="links_name">Data Absensi</span>
             </a>
-            <span class="tooltip">DUDI</span>
+            <span class="tooltip">Data Absensi</span>
         </li>
         <li>
-            <a href="#">
+            <a href="{{ route('admin.user.index') }}" class="{{ request()->routeIs('admin.user.*') ? 'active' : '' }}">
                 <i class='bx bx-user-check'></i>
-                <span class="links_name">Pembimbing</span>
+                <span class="links_name">Data User</span>
             </a>
-            <span class="tooltip">Pembimbing</span>
+            <span class="tooltip">Data User</span>
         </li>
         <li>
-            <a href="#">
+            <a href="{{ route('admin.monitoring.index') }}" class="{{ request()->routeIs('admin.monitoring.*') ? 'active' : '' }}">
                 <i class='bx bx-show-alt'></i>
                 <span class="links_name">Monitoring</span>
             </a>
             <span class="tooltip">Monitoring</span>
         </li>
         <li>
-            <a href="#">
+            <a href="{{ route('admin.laporan.index') }}" class="{{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
                 <i class='bx bx-file'></i>
                 <span class="links_name">Laporan</span>
             </a>
@@ -55,8 +55,8 @@
         <div class="profile-content">
             <div class="profile-details">
                 <div class="profile-info">
-                    <div class="name">Admin PKL</div>
-                    <div class="job">Administrator</div>
+                    <div class="name">{{ Auth::user()->username }}</div>
+                    <div class="job">{{ Auth::user()->email }}</div>
                 </div>
             </div>
             <button class="logout-btn" id="log_out">
@@ -602,16 +602,16 @@
         if (logoLink) {
             logoLink.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log('Logo clicked - redirect to dashboard');
+                window.location.href = '{{ route('admin.dashboard') }}';
             });
         }
 
         navLinks.forEach(link => {
             link.addEventListener('click', function(e) {
-                e.preventDefault();
-
+                // Jangan prevent default agar link bisa navigasi
+                // Hanya update active state dan tutup sidebar di mobile
+                
                 navLinks.forEach(l => l.classList.remove('active'));
-
                 this.classList.add('active');
 
                 if (window.innerWidth <= 1200) {
@@ -619,6 +619,8 @@
                     document.getElementById('sidebar-overlay').classList.remove('active');
                     document.body.style.overflow = '';
                 }
+                
+                // Biarkan browser melakukan navigasi normal
             });
         });
 
@@ -640,7 +642,7 @@
         if (logoutBtn) {
             logoutBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                
+
                 if (confirm('Apakah Anda yakin ingin logout?')) {
                     const originalHTML = this.innerHTML;
                     this.innerHTML = '<i class="bx bx-loader-alt bx-spin"></i>';
@@ -651,9 +653,9 @@
                     // Buat form untuk logout
                     const form = document.createElement('form');
                     form.method = 'POST';
-                    form.action = '{{ route("logout") }}';
+                    form.action = '{{ route('logout') }}';
                     form.style.display = 'none';
-                    
+
                     // Tambahkan CSRF token
                     const csrfToken = document.createElement('input');
                     csrfToken.type = 'hidden';

@@ -14,10 +14,12 @@ return new class extends Migration
             $table->foreignId('user_id')
                 ->constrained('user')
                 ->cascadeOnDelete();
+            $table->string('foto')->nullable();
             $table->string('nama');
-            $table->string('asal_sekolah');
+            $table->string('asal_sekolah_universitas');
             $table->string('jurusan');
             $table->text('alamat')->nullable();
+            $table->string('no_telepon')->nullable();
             $table->enum('jenis_kegiatan', ['PKL', 'Magang']);
             $table->date('tanggal_mulai');
             $table->date('tanggal_selesai');
