@@ -15,8 +15,14 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->enum('jenis_absen', ['Masuk', 'Pulang']);
             $table->dateTime('waktu_absen');
-            $table->string('wa_pengirim')->nullable();
+            $table->enum('mode_kerja', ['WFO', 'WFA'])
+                ->default('WFO');
+            $table->enum('keterangan_kehadiran', ['Tepat Waktu', 'Terlambat'])
+                ->default('Tepat Waktu');
+            $table->text('alasan_terlambat')->nullable();
+            $table->string('bukti_terlambat')->nullable();
             $table->enum('status', ['Hadir', 'Izin', 'Sakit']);
+            $table->string('wa_pengirim')->nullable();
             $table->timestamps();
             $table->unique(['peserta_id', 'jenis_absen', 'waktu_absen']);
         });

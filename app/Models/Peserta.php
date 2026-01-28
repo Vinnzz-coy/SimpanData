@@ -2,22 +2,28 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Peserta extends Model
 {
+    use HasFactory;
+
     protected $table = 'peserta';
     protected $fillable = [
         'user_id',
+        'foto',
         'nama',
-        'asal_sekolah',
+        'asal_sekolah_universitas',
         'jurusan',
         'alamat',
+        'no_telepon',
         'jenis_kegiatan',
         'tanggal_mulai',
         'tanggal_selesai',
         'status',
     ];
+
     protected $casts = [
         'tanggal_mulai' => 'date',
         'tanggal_selesai' => 'date',

@@ -3,31 +3,10 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<div class="mb-4 md:mb-6">
-    <div class="relative p-4 md:p-6 overflow-hidden text-white shadow-lg rounded-xl md:rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 transform transition-all duration-300">
-        <div class="absolute w-32 h-32 md:w-40 md:h-40 rounded-full -top-8 md:-top-10 -right-8 md:-right-10 bg-white/10 animate-pulse"></div>
-        <div class="absolute w-24 h-24 md:w-32 md:h-32 rounded-full -bottom-8 md:-bottom-10 -left-8 md:-left-10 bg-white/10 animate-pulse" style="animation-delay: 1s;"></div>
-
-        <div class="relative z-10 flex flex-col gap-3 md:gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div class="flex-1 min-w-0">
-                <h1 class="text-xl md:text-2xl lg:text-3xl font-bold">
-                    Dashboard
-                </h1>
-                <p class="mt-1 text-xs md:text-sm lg:text-base text-indigo-100">
-                    Ringkasan data peserta PKL dan Magang hari ini
-                </p>
-            </div>
-
-            <div class="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-xl bg-white/20 backdrop-blur transition-transform duration-300 hover:scale-110">
-                <i class='text-xl md:text-2xl bx bx-bar-chart-alt-2'></i>
-            </div>
-        </div>
-    </div>
-</div>
 
 <div class="mb-4 md:mb-6 card">
-    <div class="p-4 md:p-5 border-b border-gray-200">
-        <h2 class="text-base md:text-lg font-semibold text-gray-800">
+    <div class="p-4 border-b border-gray-200 md:p-5">
+        <h2 class="text-base font-semibold text-gray-800 md:text-lg">
             Statistik Peserta
         </h2>
     </div>
@@ -35,16 +14,16 @@
     <div class="p-4 md:p-6">
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
-            <div class="bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg shadow-sm overflow-hidden">
+            <div class="overflow-hidden rounded-lg shadow-sm bg-gradient-to-br from-indigo-500 to-purple-500">
                 <div class="p-5">
                     <div class="flex items-center justify-between">
                         <div class="flex-1">
-                            <p class="text-xs font-semibold text-white/80 uppercase tracking-wider mb-1">PKL</p>
+                            <p class="mb-1 text-xs font-semibold tracking-wider uppercase text-white/80">PKL</p>
                             <h3 class="text-3xl font-bold text-white">{{ $totalPkl }}</h3>
-                            <p class="text-xs text-white/70 mt-1">Peserta</p>
+                            <p class="mt-1 text-xs text-white/70">Peserta</p>
                         </div>
                         <div class="flex-shrink-0 ml-4">
-                            <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                            <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-white/20">
                                 <i class='text-2xl text-white bx bx-book'></i>
                             </div>
                         </div>
@@ -52,16 +31,16 @@
                 </div>
             </div>
 
-            <div class="bg-gradient-to-br from-blue-500 to-indigo-500 rounded-lg shadow-sm overflow-hidden">
+            <div class="overflow-hidden rounded-lg shadow-sm bg-gradient-to-br from-blue-500 to-indigo-500">
                 <div class="p-5">
                     <div class="flex items-center justify-between">
                         <div class="flex-1">
-                            <p class="text-xs font-semibold text-white/80 uppercase tracking-wider mb-1">Magang</p>
+                            <p class="mb-1 text-xs font-semibold tracking-wider uppercase text-white/80">Magang</p>
                             <h3 class="text-3xl font-bold text-white">{{ $totalMagang }}</h3>
-                            <p class="text-xs text-white/70 mt-1">Peserta</p>
+                            <p class="mt-1 text-xs text-white/70">Peserta</p>
                         </div>
                         <div class="flex-shrink-0 ml-4">
-                            <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                            <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-white/20">
                                 <i class='text-2xl text-white bx bx-briefcase-alt'></i>
                             </div>
                         </div>
@@ -69,16 +48,16 @@
                 </div>
             </div>
 
-            <div class="bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg shadow-sm overflow-hidden">
+            <div class="overflow-hidden rounded-lg shadow-sm bg-gradient-to-br from-emerald-500 to-teal-500">
                 <div class="p-5">
                     <div class="flex items-center justify-between">
                         <div class="flex-1">
-                            <p class="text-xs font-semibold text-white/80 uppercase tracking-wider mb-1">Aktif</p>
+                            <p class="mb-1 text-xs font-semibold tracking-wider uppercase text-white/80">Aktif</p>
                             <h3 class="text-3xl font-bold text-white">{{ $aktif }}</h3>
-                            <p class="text-xs text-white/70 mt-1">Peserta</p>
+                            <p class="mt-1 text-xs text-white/70">Peserta</p>
                         </div>
                         <div class="flex-shrink-0 ml-4">
-                            <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                            <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-white/20">
                                 <i class='text-2xl text-white bx bx-time-five'></i>
                             </div>
                         </div>
@@ -86,16 +65,16 @@
                 </div>
             </div>
 
-            <div class="bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg shadow-sm overflow-hidden">
+            <div class="overflow-hidden rounded-lg shadow-sm bg-gradient-to-br from-amber-500 to-orange-500">
                 <div class="p-5">
                     <div class="flex items-center justify-between">
                         <div class="flex-1">
-                            <p class="text-xs font-semibold text-white/80 uppercase tracking-wider mb-1">Selesai</p>
+                            <p class="mb-1 text-xs font-semibold tracking-wider uppercase text-white/80">Selesai</p>
                             <h3 class="text-3xl font-bold text-white">{{ $selesai }}</h3>
-                            <p class="text-xs text-white/70 mt-1">Peserta</p>
+                            <p class="mt-1 text-xs text-white/70">Peserta</p>
                         </div>
                         <div class="flex-shrink-0 ml-4">
-                            <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+                            <div class="flex items-center justify-center w-12 h-12 rounded-lg bg-white/20">
                                 <i class='text-2xl text-white bx bx-check-double'></i>
                             </div>
                         </div>
@@ -109,11 +88,11 @@
 
 
 
-<div class="grid grid-cols-1 gap-4 md:gap-6 mb-4 md:mb-6 lg:grid-cols-3">
+<div class="grid grid-cols-1 gap-4 mb-4 md:gap-6 md:mb-6 lg:grid-cols-3">
     <div class="lg:col-span-2">
         <div class="h-full card">
-            <div class="flex flex-col justify-between gap-3 md:gap-4 p-4 md:p-5 border-b border-gray-200 sm:flex-row sm:items-center">
-                <h2 class="text-base md:text-lg font-semibold text-gray-800">Absensi</h2>
+            <div class="flex flex-col justify-between gap-3 p-4 border-b border-gray-200 md:gap-4 md:p-5 sm:flex-row sm:items-center">
+                <h2 class="text-base font-semibold text-gray-800 md:text-lg">Absensi</h2>
 
                 <div class="flex gap-3">
                     <select
@@ -137,8 +116,8 @@
 
     <div class="lg:col-span-1">
         <div class="h-full card">
-            <div class="p-4 md:p-5 border-b border-gray-200">
-                <h2 class="text-base md:text-lg font-semibold text-gray-800">Peserta</h2>
+            <div class="p-4 border-b border-gray-200 md:p-5">
+                <h2 class="text-base font-semibold text-gray-800 md:text-lg">Peserta</h2>
             </div>
             <div class="p-4 md:p-5">
                 <div class="mb-6 chart-container">
@@ -154,9 +133,9 @@
 
 <div class="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-3">
     <div class="lg:col-span-2">
-        <div class="h-full card flex flex-col">
-            <div class="flex flex-col gap-3 md:gap-4 p-4 md:p-5 border-b border-gray-200 sm:flex-row sm:items-center sm:justify-between flex-shrink-0">
-                <h2 class="text-base md:text-lg font-semibold text-gray-800">
+        <div class="flex flex-col h-full card">
+            <div class="flex flex-col flex-shrink-0 gap-3 p-4 border-b border-gray-200 md:gap-4 md:p-5 sm:flex-row sm:items-center sm:justify-between">
+                <h2 class="text-base font-semibold text-gray-800 md:text-lg">
                     Daftar Peserta PKL & Magang
                 </h2>
 
@@ -168,13 +147,13 @@
                         type="text"
                         id="searchPeserta"
                         placeholder="Cari nama peserta..."
-                        class="w-full py-2 pl-10 pr-4 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                        class="w-full py-2 pl-10 pr-4 text-sm transition-all duration-200 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     >
                 </div>
             </div>
 
             <div class="flex flex-col flex-1 min-h-0">
-                <div class="flex-1 p-4 md:p-5 overflow-x-auto overflow-y-auto min-h-0 table-scroll">
+                <div class="flex-1 min-h-0 p-4 overflow-x-auto overflow-y-auto md:p-5 table-scroll">
                     <table class="min-w-full text-sm text-left">
                         <thead>
                             <tr class="text-gray-600 border-b">
@@ -190,7 +169,7 @@
                     </table>
                 </div>
 
-                <div class="flex-shrink-0 px-4 md:px-5 pb-4 pt-2 border-t border-gray-200" id="pesertaPagination">
+                <div class="flex-shrink-0 px-4 pt-2 pb-4 border-t border-gray-200 md:px-5" id="pesertaPagination">
                     {{ $peserta->links() }}
                 </div>
             </div>
@@ -198,10 +177,10 @@
     </div>
 
 <div class="lg:col-span-1">
-    <div class="h-full card flex flex-col">
-        <div class="flex items-center gap-2 p-4 md:p-5 border-b border-gray-200 flex-shrink-0">
-            <i class='text-indigo-500 text-xl md:text-2xl bx bx-message'></i>
-            <h2 class="text-base md:text-lg font-semibold text-gray-800">
+    <div class="flex flex-col h-full card">
+        <div class="flex items-center flex-shrink-0 gap-2 p-4 border-b border-gray-200 md:p-5">
+            <i class='text-xl text-indigo-500 md:text-2xl bx bx-message'></i>
+            <h2 class="text-base font-semibold text-gray-800 md:text-lg">
                 Feedback Peserta
             </h2>
         </div>
