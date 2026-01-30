@@ -1,0 +1,35 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('absensi', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('peserta_id')
+                ->constrained('peserta')
+                ->cascadeOnDelete();
+            $table->enum('jenis_absen', ['Masuk', 'Pulang']);
+            $table->dateTime('waktu_absen');
+            $table->enum('mode_kerja', ['WFO', 'WFA'])
+                ->default('WFO');
+            $table->enum('keterangan_kehadiran', ['Tepat Waktu', 'Terlambat'])
+                ->default('Tepat Waktu');
+            $table->text('alasan_terlambat')->nullable();
+            $table->string('bukti_terlambat')->nullable();
+            $table->enum('status', ['Hadir', 'Izin', 'Sakit']);
+            $table->string('wa_pengirim')->nullable();
+            $table->timestamps();
+            $table->unique(['peserta_id', 'jenis_absen', 'waktu_absen']);
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('absensi');
+    }
+};
