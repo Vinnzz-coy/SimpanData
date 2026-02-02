@@ -317,6 +317,7 @@
             }
         }
     </script>
+    @stack('styles')
 </head>
 <body class="relative min-h-screen font-sans bg-gray-50">
     <div id="toastContainer" class="fixed z-50 max-w-full space-y-3 top-5 right-5 w-80"></div>
@@ -493,6 +494,7 @@
         });
     </script>
 
+    @stack('modals')
     @yield('scripts')
 </body>
 </html>

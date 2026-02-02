@@ -100,12 +100,10 @@
                     </p>
                 </div>
 
-                <div class="mb-6 flex justify-center">
+                <div class="flex justify-center mb-6">
                     <a href="{{ route('index') }}"
-                        class="inline-flex items-center px-4 py-2 text-sm font-medium transition-all duration-300 rounded-full text-primary bg-primary/10 hover:bg-primary/20 hover:pr-5 group">
-                        <i
-                            class="mr-2 transition-transform duration-300 fas fa-long-arrow-alt-left group-hover:-translate-x-1"></i>
-                        Kembali ke Halaman Utama
+                            class="ml-1 font-medium transition-colors text-primary hover:text-primary/80">
+                        Batal
                     </a>
                 </div>
 

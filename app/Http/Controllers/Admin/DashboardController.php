@@ -37,9 +37,9 @@ class DashboardController extends Controller
                 ->limit(20)
                 ->get();
 
-            $absensiDataHarian = $this->getAbsensiDataHarian();
-            $absensiDataBulanan = $this->getAbsensiDataBulanan();
-            $absensiDataTahunan = $this->getAbsensiDataTahunan();
+            $absensiDataHari = $this->getAbsensiDataHariIni();
+            $absensiDataMinggu = $this->getAbsensiDataMingguIni();
+            $absensiDataBulan = $this->getAbsensiDataBulanIni();
 
             return view('admin.dashboard', compact(
                 'totalPkl',
@@ -48,9 +48,9 @@ class DashboardController extends Controller
                 'selesai',
                 'peserta',
                 'feedbacks',
-                'absensiDataHarian',
-                'absensiDataBulanan',
-                'absensiDataTahunan'
+                'absensiDataHari',
+                'absensiDataMinggu',
+                'absensiDataBulan'
             ));
         } catch (\Exception $e) {
             return view('admin.dashboard', [
@@ -60,14 +60,48 @@ class DashboardController extends Controller
                 'selesai' => 0,
                 'peserta' => collect(),
                 'feedbacks' => collect(),
-                'absensiDataHarian' => $this->getDefaultAbsensiData(),
-                'absensiDataBulanan' => $this->getDefaultAbsensiData('bulan'),
-                'absensiDataTahunan' => $this->getDefaultAbsensiData('tahun'),
+                'absensiDataHari' => $this->getDefaultAbsensiData('hari'),
+                'absensiDataMinggu' => $this->getDefaultAbsensiData('minggu'),
+                'absensiDataBulan' => $this->getDefaultAbsensiData('bulan'),
             ]);
         }
     }
 
-    private function getAbsensiDataHarian()
+    private function getAbsensiDataHariIni()
+    {
+        try {
+            $today = Carbon::today();
+            
+            $absensi = Absensi::selectRaw('HOUR(waktu_absen) as jam, status, COUNT(*) as jumlah')
+                ->whereDate('waktu_absen', $today)
+                ->whereIn('status', ['Hadir', 'Izin', 'Sakit'])
+                ->groupBy('jam', 'status')
+                ->get()
+                ->groupBy('jam');
+
+            $absensiData = [
+                'labels' => [],
+                'Hadir' => [],
+                'Izin' => [],
+                'Sakit' => []
+            ];
+
+            // Show hours from 07:00 to 17:00 (work hours)
+            for ($i = 7; $i <= 17; $i++) {
+                $absensiData['labels'][] = sprintf("%02d:00", $i);
+                $hourData = $absensi->get($i, collect());
+                $absensiData['Hadir'][] = $hourData->where('status', 'Hadir')->sum('jumlah') ?? 0;
+                $absensiData['Izin'][] = $hourData->where('status', 'Izin')->sum('jumlah') ?? 0;
+                $absensiData['Sakit'][] = $hourData->where('status', 'Sakit')->sum('jumlah') ?? 0;
+            }
+
+            return $absensiData;
+        } catch (\Exception $e) {
+            return $this->getDefaultAbsensiData('hari');
+        }
+    }
+
+    private function getAbsensiDataMingguIni()
     {
         try {
             $startDate = Carbon::now()->subDays(6)->startOfDay();
@@ -87,12 +121,12 @@ class DashboardController extends Controller
                 'Sakit' => []
             ];
 
-            $days = ['Ming', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+            $days = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
 
             for ($i = 6; $i >= 0; $i--) {
                 $date = Carbon::now()->subDays($i);
                 $dateStr = $date->format('Y-m-d');
-                $absensiData['labels'][] = $days[$date->dayOfWeek] ?? 'Hari';
+                $absensiData['labels'][] = $days[$date->dayOfWeek];
 
                 $dayData = $absensi->get($dateStr, collect());
                 $absensiData['Hadir'][] = $dayData->where('status', 'Hadir')->sum('jumlah') ?? 0;
@@ -102,11 +136,11 @@ class DashboardController extends Controller
 
             return $absensiData;
         } catch (\Exception $e) {
-            return $this->getDefaultAbsensiData();
+            return $this->getDefaultAbsensiData('minggu');
         }
     }
 
-    private function getAbsensiDataBulanan()
+    private function getAbsensiDataBulanIni()
     {
         try {
             $startDate = Carbon::now()->subWeeks(3)->startOfWeek();
@@ -142,48 +176,7 @@ class DashboardController extends Controller
         }
     }
 
-    private function getAbsensiDataTahunan()
-    {
-        try {
-            $startDate = Carbon::now()->subMonths(5)->startOfMonth();
-            $endDate = Carbon::now()->endOfMonth();
-
-            $absensi = Absensi::selectRaw('YEAR(waktu_absen) as tahun, MONTH(waktu_absen) as bulan, status, COUNT(*) as jumlah')
-                ->whereBetween('waktu_absen', [$startDate, $endDate])
-                ->whereIn('status', ['Hadir', 'Izin', 'Sakit'])
-                ->groupBy('tahun', 'bulan', 'status')
-                ->get()
-                ->groupBy(function($item) {
-                    return $item->tahun . '-' . $item->bulan;
-                });
-
-            $absensiData = [
-                'labels' => [],
-                'Hadir' => [],
-                'Izin' => [],
-                'Sakit' => []
-            ];
-
-            $months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-
-            for ($i = 5; $i >= 0; $i--) {
-                $date = Carbon::now()->subMonths($i);
-                $key = $date->format('Y-n');
-                $absensiData['labels'][] = $months[$date->month - 1];
-
-                $monthData = $absensi->get($key, collect());
-                $absensiData['Hadir'][] = $monthData->where('status', 'Hadir')->sum('jumlah') ?? 0;
-                $absensiData['Izin'][] = $monthData->where('status', 'Izin')->sum('jumlah') ?? 0;
-                $absensiData['Sakit'][] = $monthData->where('status', 'Sakit')->sum('jumlah') ?? 0;
-            }
-
-            return $absensiData;
-        } catch (\Exception $e) {
-            return $this->getDefaultAbsensiData('tahun');
-        }
-    }
-
-    private function getDefaultAbsensiData($type = 'harian')
+    private function getDefaultAbsensiData($type = 'hari')
     {
         if ($type === 'bulan') {
             return [
@@ -192,19 +185,23 @@ class DashboardController extends Controller
                 'Izin' => [0, 0, 0, 0],
                 'Sakit' => [0, 0, 0, 0]
             ];
-        } elseif ($type === 'tahun') {
-            return [
-                'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
-                'Hadir' => [0, 0, 0, 0, 0, 0],
-                'Izin' => [0, 0, 0, 0, 0, 0],
-                'Sakit' => [0, 0, 0, 0, 0, 0]
-            ];
-        } else {
+        } elseif ($type === 'minggu') {
             return [
                 'labels' => ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
                 'Hadir' => [0, 0, 0, 0, 0, 0, 0],
                 'Izin' => [0, 0, 0, 0, 0, 0, 0],
                 'Sakit' => [0, 0, 0, 0, 0, 0, 0]
+            ];
+        } else {
+            $labels = [];
+            for ($i = 7; $i <= 17; $i++) {
+                $labels[] = sprintf("%02d:00", $i);
+            }
+            return [
+                'labels' => $labels,
+                'Hadir' => array_fill(0, count($labels), 0),
+                'Izin' => array_fill(0, count($labels), 0),
+                'Sakit' => array_fill(0, count($labels), 0)
             ];
         }
     }

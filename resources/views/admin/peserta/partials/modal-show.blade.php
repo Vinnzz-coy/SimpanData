@@ -1,5 +1,4 @@
 <div class="space-y-6">
-    <!-- Profile Card -->
     <div class="p-4 border border-gray-200 rounded-lg md:p-6 bg-gray-50">
         <div class="flex items-start gap-6">
             @if($peserta->foto)
@@ -25,7 +24,6 @@
         </div>
     </div>
 
-    <!-- Data Peserta -->
     <div class="p-4 border border-gray-200 rounded-lg md:p-6 bg-gray-50">
         <h3 class="mb-4 text-lg font-semibold text-gray-800">Informasi Peserta</h3>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -54,7 +52,6 @@
         </div>
     </div>
 
-    <!-- Data Kegiatan -->
     <div class="p-4 border border-gray-200 rounded-lg md:p-6 bg-gray-50">
         <h3 class="mb-4 text-lg font-semibold text-gray-800">Data Kegiatan</h3>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -73,7 +70,6 @@
         </div>
     </div>
 
-    <!-- Statistik -->
     <div class="p-4 border border-gray-200 rounded-lg md:p-6 bg-gray-50">
         <h3 class="mb-4 text-lg font-semibold text-gray-800">Statistik</h3>
         <div class="grid grid-cols-3 gap-4">

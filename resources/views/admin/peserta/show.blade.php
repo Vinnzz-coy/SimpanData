@@ -6,19 +6,19 @@
 <div class="p-4 md:p-6">
     <div class="mb-4 md:mb-6">
         <div class="flex items-center gap-4 mb-4">
-            <a href="{{ route('admin.peserta.index') }}" 
-               class="p-2 text-gray-600 transition-colors duration-200 rounded-lg hover:bg-gray-100">
-                <i class='bx bx-arrow-back text-xl'></i>
+            <a href="{{ route('admin.peserta.index') }}"
+                class="p-2 text-gray-600 transition-colors duration-200 rounded-lg hover:bg-gray-100">
+                <i class='text-xl bx bx-arrow-back'></i>
             </a>
-            <div class="flex-1 flex items-center justify-between">
+            <div class="flex items-center justify-between flex-1">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-800">Detail Peserta</h1>
-                    <p class="text-gray-600 mt-1">{{ $peserta->nama }}</p>
+                    <p class="mt-1 text-gray-600">{{ $peserta->nama }}</p>
                 </div>
                 <div class="flex gap-2">
-                    <a href="{{ route('admin.peserta.edit', $peserta->id) }}" 
-                       class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors duration-200">
-                        <i class='bx bx-edit mr-2'></i>Edit
+                    <a href="{{ route('admin.peserta.edit', $peserta->id) }}"
+                        class="px-4 py-2 text-sm font-medium text-white transition-colors duration-200 bg-indigo-600 rounded-lg hover:bg-indigo-700">
+                        <i class='mr-2 bx bx-edit'></i>Edit
                     </a>
                 </div>
             </div>
@@ -26,16 +26,14 @@
     </div>
 
     <div class="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-3">
-        <!-- Main Info -->
-        <div class="lg:col-span-2 space-y-4 md:space-y-6">
-            <!-- Profile Card -->
+        <div class="space-y-4 lg:col-span-2 md:space-y-6">
             <div class="card">
                 <div class="p-4 md:p-6">
                 <div class="flex items-start gap-6">
                     @if($peserta->foto)
-                    <img src="{{ asset('storage/'.$peserta->foto) }}" 
-                         alt="{{ $peserta->nama }}" 
-                         class="w-24 h-24 object-cover rounded-lg border-2 border-gray-200">
+                    <img src="{{ asset('storage/'.$peserta->foto) }}"
+                        alt="{{ $peserta->nama }}"
+                        class="object-cover w-24 h-24 border-2 border-gray-200 rounded-lg">
                     @else
                     <div class="flex items-center justify-center w-24 h-24 text-3xl font-bold text-white rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500">
                         {{ strtoupper(substr($peserta->nama, 0, 1)) }}
@@ -55,8 +53,7 @@
                 </div>
             </div>
 
-            <!-- Data Peserta -->
-            <div class="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                 <h3 class="mb-4 text-lg font-semibold text-gray-800">Informasi Peserta</h3>
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div>
@@ -85,7 +82,6 @@
                 </div>
             </div>
 
-            <!-- Data Kegiatan -->
             <div class="card">
                 <div class="p-4 md:p-6">
                 <h3 class="mb-4 text-lg font-semibold text-gray-800">Data Kegiatan</h3>
@@ -106,10 +102,8 @@
             </div>
         </div>
 
-        <!-- Sidebar Stats -->
         <div class="space-y-6">
-            <!-- Quick Stats -->
-            <div class="p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm">
                 <h3 class="mb-4 text-lg font-semibold text-gray-800">Statistik</h3>
                 <div class="space-y-4">
                     <div>
@@ -128,7 +122,6 @@
                 </div>
             </div>
 
-            <!-- Account Info -->
             <div class="card">
                 <div class="p-4 md:p-6">
                 <h3 class="mb-4 text-lg font-semibold text-gray-800">Akun</h3>
