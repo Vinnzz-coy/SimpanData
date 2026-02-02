@@ -5,6 +5,8 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\Admin\PesertaController;
+use App\Http\Controllers\Admin\AbsensiController;
+
 
 Route::get('/', [IndexController::class, 'index'])->name('index');
 Route::get('/auth', fn() => view('auth.auth'))->name('auth');
@@ -77,9 +79,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         'destroy' => 'admin.peserta.destroy',
     ]);
 
-    Route::get('/admin/absensi', function () {
-        return view('admin.absensi.index');
-    })->name('admin.absensi.index');
+    Route::get('/admin/absensi', [AbsensiController::class, 'index'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('admin.absensi.index');
 
     Route::get('/admin/user', function () {
         return view('admin.user.index');
