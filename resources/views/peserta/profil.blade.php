@@ -1,0 +1,642 @@
+@extends('layouts.app')
+
+@section('title', 'Data Diri')
+
+@push('styles')
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-gps-loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .map-preview-container {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            margin-top: 0;
+        }
+
+        .map-preview-container.active {
+            max-height: 500px;
+            opacity: 1;
+            margin-top: 1.5rem;
+        }
+    </style>
+@endpush
+
+@section('content')
+    @php
+        $jenisKegiatan = $peserta->jenis_kegiatan ?? 'Kegiatan';
+        $isNewUser = !$peserta;
+    @endphp
+
+    <div class="space-y-6">
+        @if (session('success'))
+            <div
+                class="flex items-center justify-between p-4 border-l-4 border-green-500 rounded-lg shadow-sm bg-green-50 animate-fade-in">
+                <div class="flex items-center space-x-3">
+                    <i class='text-xl text-green-500 bx bxs-check-circle'></i>
+                    <p class="text-sm font-semibold text-green-800">{{ session('success') }}</p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-green-500 hover:text-green-700">
+                    <i class='text-xl bx bx-x'></i>
+                </button>
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div
+                class="flex items-center justify-between p-4 border-l-4 border-red-500 rounded-lg shadow-sm bg-red-50 animate-fade-in">
+                <div class="flex items-center space-x-3">
+                    <i class='text-xl text-red-500 bx bxs-error-circle'></i>
+                    <p class="text-sm font-semibold text-red-800">Terdapat kesalahan input. Silakan periksa kembali formulir
+                        Anda.</p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700">
+                    <i class='text-xl bx bx-x'></i>
+                </button>
+            </div>
+        @endif
+
+        <div id="profileView" class="{{ $isNewUser ? 'hidden' : '' }} space-y-6">
+            <div class="relative p-6 overflow-hidden bg-white card md:p-8 shadow-soft group">
+                <div class="relative z-10 flex flex-col items-center justify-between gap-6 md:flex-row">
+                    <div class="flex flex-col items-center gap-6 md:flex-row">
+                        <div class="relative">
+                            @if ($peserta && $peserta->foto)
+                                <img src="{{ asset('storage/' . $peserta->foto) }}"
+                                    class="object-cover w-32 h-32 border-4 border-white shadow-lg rounded-2xl">
+                            @else
+                                <div
+                                    class="flex items-center justify-center w-32 h-32 text-5xl font-bold border-2 shadow-inner bg-primary-light text-primary rounded-2xl border-primary/10">
+                                    {{ strtoupper(substr($user->username, 0, 1)) }}
+                                </div>
+                            @endif
+                            <div
+                                class="absolute flex items-center justify-center w-10 h-10 bg-green-500 border-4 border-white rounded-full shadow-md -bottom-2 -right-2">
+                                <i class='text-2xl text-white bx bx-check'></i>
+                            </div>
+                        </div>
+
+                        <div class="text-center md:text-left">
+                            <h1 class="text-4xl font-extrabold tracking-tight text-slate-900">
+                                {{ $peserta->nama ?? $user->username }}</h1>
+                            <p
+                                class="inline-block px-3 py-1 mt-2 text-xs font-bold tracking-widest uppercase border rounded-full text-primary bg-primary/5 border-primary/10">
+                                {{ $jenisKegiatan }} - {{ $peserta->jurusan ?? 'Jurusan Belum Diisi' }}</p>
+                            <div class="flex flex-wrap justify-center gap-4 mt-5 md:justify-start">
+                                <span
+                                    class="px-3.5 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold border border-slate-200 uppercase tracking-wider shadow-sm">
+                                    <i class='bx bx-buildings mr-1.5 text-base'></i>
+                                    {{ $peserta->asal_sekolah_universitas ?? 'Institusi Belum Diisi' }}
+                                </span>
+                                <span
+                                    class="px-3.5 py-1.5 bg-blue-100/50 text-blue-700 rounded-lg text-xs font-bold border border-blue-200 uppercase tracking-wider shadow-sm">
+                                    <i class='bx bx-check-shield mr-1.5 text-base'></i> Akun {{ ucfirst($user->role) }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="btnEditProfile"
+                        class="flex items-center gap-2 px-6 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm active:scale-[0.98]">
+                        <i class='text-base bx bx-edit-alt'></i> Edit Profil
+                    </button>
+                </div>
+                <i
+                    class='absolute transition-colors opacity-50 bx bx-user -right-8 -bottom-8 text-9xl text-slate-50 group-hover:text-slate-100'></i>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <div class="grid grid-rows-2 gap-6 lg:col-span-2">
+                    <div class="h-full p-6 bg-white card md:p-8 shadow-soft">
+                        <div class="flex items-center gap-3 pb-5 mb-8 border-b border-slate-100">
+                            <div
+                                class="flex items-center justify-center w-12 h-12 text-2xl shadow-inner bg-primary/10 text-primary rounded-2xl">
+                                <i class='bx bx-briefcase-alt-2'></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-extrabold tracking-tight text-slate-900">Data Akademik &
+                                    {{ $jenisKegiatan }}</h4>
+                                <p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Informasi
+                                    institusi dan masa kegiatan</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-10 md:grid-cols-2">
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold tracking-widest uppercase text-slate-500">Asal Sekolah /
+                                    Universitas</label>
+                                <p class="text-base font-bold text-slate-800">
+                                    {{ $peserta->asal_sekolah_universitas ?? '-' }}</p>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold tracking-widest uppercase text-slate-500">Program Studi /
+                                    Jurusan</label>
+                                <p class="text-base font-bold text-slate-800">{{ $peserta->jurusan ?? '-' }}</p>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold tracking-widest uppercase text-slate-500">Jenis
+                                    Kegiatan</label>
+                                <p class="text-base font-bold text-slate-800">{{ $peserta->jenis_kegiatan ?? '-' }}</p>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold tracking-widest uppercase text-slate-500">Masa
+                                    Kegiatan</label>
+                                <p class="text-base font-bold text-slate-800">
+                                    {{ $peserta && $peserta->tanggal_mulai ? \Carbon\Carbon::parse($peserta->tanggal_mulai)->format('d M Y') : '-' }}
+                                    s/d
+                                    {{ $peserta && $peserta->tanggal_selesai ? \Carbon\Carbon::parse($peserta->tanggal_selesai)->format('d M Y') : '-' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="h-full p-6 bg-white card md:p-8 shadow-soft">
+                        <div class="flex items-center gap-3 pb-5 mb-8 border-b border-slate-100">
+                            <div
+                                class="flex items-center justify-center w-12 h-12 text-2xl text-orange-600 bg-orange-100 shadow-inner rounded-2xl">
+                                <i class='bx bx-map-pin'></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-extrabold tracking-tight text-slate-900">Informasi Kontak & Domisili
+                                </h4>
+                                <p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Alamat lengkap dan
+                                    nomor yang bisa dihubungi</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-10 md:grid-cols-2">
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold tracking-widest uppercase text-slate-500">Nomor Telepon /
+                                    WA</label>
+                                <p class="text-base font-bold text-slate-800">{{ $peserta->no_telepon ?? '-' }}</p>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold tracking-widest uppercase text-slate-500">Alamat
+                                    Email</label>
+                                <p class="text-base font-bold truncate text-slate-800">{{ $user->email }}</p>
+                            </div>
+                            <div class="space-y-2 md:col-span-2">
+                                <label class="text-xs font-bold tracking-widest uppercase text-slate-500">Alamat
+                                    Lengkap</label>
+                                <p class="text-base font-bold leading-relaxed text-slate-800">{{ $peserta->alamat ?? '-' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-rows-2 gap-6">
+                    <div class="h-full p-6 bg-white border card md:p-8 shadow-soft border-slate-100">
+                        <div class="flex items-center gap-3 pb-5 mb-8 border-b border-slate-100">
+                            <div
+                                class="flex items-center justify-center w-12 h-12 text-2xl text-blue-600 shadow-inner bg-blue-50 rounded-2xl">
+                                <i class='bx bx-key'></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-extrabold tracking-tight text-slate-900">Keamanan Akun</h4>
+                                <p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Detail login
+                                    sistem</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="p-4 border shadow-inner bg-slate-50 border-slate-100 rounded-xl">
+                                <p class="mb-1 text-xs font-bold tracking-widest uppercase text-slate-500">Username</p>
+                                <p class="text-base font-bold text-slate-800">{{ $user->username }}</p>
+                            </div>
+                            <div class="p-4 border shadow-inner bg-slate-50 border-slate-100 rounded-xl">
+                                <p class="mb-1 text-xs font-bold tracking-widest uppercase text-slate-500">Email</p>
+                                <p class="text-base font-bold truncate text-slate-800">{{ $user->email }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="h-full p-6 bg-white border card md:p-8 shadow-soft border-slate-100">
+                        <div class="flex items-center gap-3 pb-4 mb-6 border-b border-slate-100">
+                            <div
+                                class="flex items-center justify-center w-10 h-10 text-xl text-indigo-600 bg-indigo-50 rounded-xl">
+                                <i class='bx bx-info-circle'></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-extrabold tracking-tight text-slate-900">Panduan Sistem</h4>
+                                <p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Langkah awal untuk
+                                    Anda</p>
+                            </div>
+                        </div>
+
+                        <ul class="space-y-4">
+                            <li class="flex gap-4">
+                                <div
+                                    class="flex items-center justify-center flex-shrink-0 w-6 h-6 mt-1 text-xs font-extrabold text-indigo-700 bg-indigo-100 rounded-full shadow-sm">
+                                    1</div>
+                                <div>
+                                    <p class="text-xs font-extrabold text-slate-800">Lengkapi Profil</p>
+                                    <p class="text-[11px] text-slate-500 font-medium leading-relaxed">Pastikan data diri
+                                        valid untuk verifikasi.</p>
+                                </div>
+                            </li>
+                            <li class="flex gap-4">
+                                <div
+                                    class="flex items-center justify-center flex-shrink-0 w-6 h-6 mt-1 text-xs font-extrabold text-indigo-700 bg-indigo-100 rounded-full shadow-sm">
+                                    2</div>
+                                <div>
+                                    <p class="text-xs font-extrabold text-slate-800">Presensi Harian</p>
+                                    <p class="text-[11px] text-slate-500 font-medium leading-relaxed">Lakukan absen Masuk &
+                                        Pulang setiap hari.</p>
+                                </div>
+                            </li>
+                            <li class="flex gap-4">
+                                <div
+                                    class="flex items-center justify-center flex-shrink-0 w-6 h-6 mt-1 text-xs font-extrabold text-indigo-700 bg-indigo-100 rounded-full shadow-sm">
+                                    3</div>
+                                <div>
+                                    <p class="text-xs font-extrabold text-slate-800">Kirim Laporan</p>
+                                    <p class="text-[11px] text-slate-500 font-medium leading-relaxed">Update progres
+                                        kegiatan Anda secara rutin.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="editView" class="{{ $isNewUser ? '' : 'hidden' }} animate-fade-in">
+            <form action="{{ route('peserta.profil.update') }}" method="POST" enctype="multipart/form-data"
+                class="space-y-6">
+                @csrf
+                <div class="p-6 bg-white card md:p-8 shadow-soft">
+                    <div class="flex items-center justify-between pb-4 mb-8 border-b border-slate-50">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="flex items-center justify-center w-12 h-12 text-2xl shadow-inner bg-primary/10 text-primary rounded-2xl">
+                                <i class='bx bx-user-circle'></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-extrabold tracking-tight text-slate-900">
+                                    {{ $isNewUser ? 'Lengkapi Data Diri' : 'Update Profil Peserta' }}</h4>
+                                <p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Harap isi data
+                                    dengan benar untuk keperluan administrasi</p>
+                            </div>
+                        </div>
+                        @if (!$isNewUser)
+                            <button type="button" id="btnCancelEdit"
+                                class="text-xs font-bold uppercase transition-colors text-slate-400 hover:text-slate-600">Batal</button>
+                        @endif
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                        <div class="flex flex-col items-center space-y-4 md:col-span-2 md:items-start">
+                            <label class="w-full text-xs font-bold tracking-widest uppercase text-slate-500">Foto
+                                Profil</label>
+                            <div class="flex items-center gap-6">
+                                <div id="imagePreview"
+                                    class="flex items-center justify-center w-24 h-24 overflow-hidden border-2 border-dashed rounded-2xl bg-slate-100 border-slate-200">
+                                    @if ($peserta && $peserta->foto)
+                                        <img src="{{ asset('storage/' . $peserta->foto) }}"
+                                            class="object-cover w-full h-full">
+                                    @else
+                                        <i class='text-3xl bx bx-camera text-slate-300'></i>
+                                    @endif
+                                </div>
+                                <div class="space-y-2">
+                                    <label for="fotoInput"
+                                        class="inline-block px-4 py-2 text-xs font-bold tracking-wider uppercase transition-all border rounded-lg cursor-pointer bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100">Pilih
+                                        Foto</label>
+                                    <input type="file" name="foto" id="fotoInput" class="hidden"
+                                        accept="image/*">
+                                    <p class="text-[10px] text-slate-400">Format: JPG, PNG, JPEG. Max 2MB.</p>
+                                    @error('foto')
+                                        <p class="mt-1 text-xs font-bold text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold tracking-widest uppercase text-slate-500">Nama Lengkap</label>
+                            <input type="text" name="nama" value="{{ old('nama', $peserta->nama ?? '') }}"
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all @error('nama') @enderror"
+                                placeholder="Masukkan nama lengkap...">
+                            @error('nama')
+                                <p class="mt-1 text-xs font-bold text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold tracking-widest uppercase text-slate-500">Asal Sekolah /
+                                Universitas</label>
+                            <input type="text" name="asal_sekolah_universitas"
+                                value="{{ old('asal_sekolah_universitas', $peserta->asal_sekolah_universitas ?? '') }}"
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all @error('asal_sekolah_universitas') @enderror"
+                                placeholder="SMK Negeri / Universitas...">
+                            @error('asal_sekolah_universitas')
+                                <p class="mt-1 text-xs font-bold text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold tracking-widest uppercase text-slate-500">Jurusan</label>
+                            <input type="text" name="jurusan" value="{{ old('jurusan', $peserta->jurusan ?? '') }}"
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all @error('jurusan') @enderror"
+                                placeholder="Teknik Informatika / Multimedia...">
+                            @error('jurusan')
+                                <p class="mt-1 text-xs font-bold text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold tracking-widest uppercase text-slate-500">Jenis
+                                Kegiatan</label>
+                            <select name="jenis_kegiatan"
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all @error('jenis_kegiatan') @enderror">
+                                <option value="PKL"
+                                    {{ old('jenis_kegiatan', $peserta->jenis_kegiatan ?? '') == 'PKL' ? 'selected' : '' }}>
+                                    PKL</option>
+                                <option value="Magang"
+                                    {{ old('jenis_kegiatan', $peserta->jenis_kegiatan ?? '') == 'Magang' ? 'selected' : '' }}>
+                                    Magang</option>
+                            </select>
+                            @error('jenis_kegiatan')
+                                <p class="mt-1 text-xs font-bold text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold tracking-widest uppercase text-slate-500">Tanggal Mulai</label>
+                            <input type="date" name="tanggal_mulai"
+                                value="{{ old('tanggal_mulai', $peserta && $peserta->tanggal_mulai ? \Carbon\Carbon::parse($peserta->tanggal_mulai)->format('Y-m-d') : '') }}"
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all @error('tanggal_mulai') @enderror">
+                            @error('tanggal_mulai')
+                                <p class="mt-1 text-xs font-bold text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold tracking-widest uppercase text-slate-500">Tanggal
+                                Selesai</label>
+                            <input type="date" name="tanggal_selesai"
+                                value="{{ old('tanggal_selesai', $peserta && $peserta->tanggal_selesai ? \Carbon\Carbon::parse($peserta->tanggal_selesai)->format('Y-m-d') : '') }}"
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all @error('tanggal_selesai') @enderror">
+                            @error('tanggal_selesai')
+                                <p class="mt-1 text-xs font-bold text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold tracking-widest uppercase text-slate-500">Nomor HP /
+                                WhatsApp</label>
+                            <input type="text" name="no_telepon"
+                                value="{{ old('no_telepon', $peserta->no_telepon ?? '') }}"
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all @error('no_telepon') @enderror"
+                                placeholder="0812...">
+                            @error('no_telepon')
+                                <p class="mt-1 text-xs font-bold text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-xs font-bold tracking-widest uppercase text-slate-500">Alamat Email
+                                (Akun)</label>
+                            <input type="email" value="{{ $user->email }}" disabled
+                                class="w-full px-4 py-3 text-base font-bold border outline-none cursor-not-allowed bg-slate-100 border-slate-200 rounded-xl text-slate-500"
+                                placeholder="email@user.com">
+                        </div>
+
+                        <div class="space-y-1 md:col-span-2">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-xs font-bold tracking-widest uppercase text-slate-500">Alamat
+                                    Lengkap</label>
+                                <button type="button" id="btnGetGPS"
+                                    class="flex items-center gap-1.5 px-4 py-1.5 bg-indigo-50 text-indigo-700 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-indigo-100 transition-all border border-indigo-200 shadow-sm active:scale-95">
+                                    <i class='text-base bx bx-map-pin'></i> Ambil dari GPS
+                                </button>
+                            </div>
+                            <textarea name="alamat" id="alamatInput" rows="3"
+                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-bold text-slate-800 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all @error('alamat') @enderror"
+                                placeholder="Alamat tinggal saat ini...">{{ old('alamat', $peserta->alamat ?? '') }}</textarea>
+                            @error('alamat')
+                                <p class="mt-2 text-xs font-bold text-red-600">{{ $message }}</p>
+                            @enderror
+
+                            <div id="mapContainer" class="map-preview-container">
+                                <div
+                                    class="mt-6 overflow-hidden bg-white border shadow-sm border-slate-200 rounded-2xl ring-4 ring-slate-50">
+                                    <div
+                                        class="flex items-center justify-between px-4 py-3 border-b bg-slate-50 border-slate-100">
+                                        <div class="flex items-center gap-2.5">
+                                            <div
+                                                class="flex items-center justify-center w-8 h-8 rounded-lg shadow-inner bg-primary/10 text-primary">
+                                                <i class='text-lg bx bx-map-pin'></i>
+                                            </div>
+                                            <div>
+                                                <p
+                                                    class="text-[11px] font-extrabold text-slate-900 uppercase tracking-widest leading-none">
+                                                    Status Lokasi</p>
+                                                <p id="locationLabel"
+                                                    class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter mt-1">
+                                                    Belum Terdeteksi</p>
+                                            </div>
+                                        </div>
+                                        <span
+                                            class="text-[10px] text-blue-600 font-extrabold uppercase bg-blue-50 px-2 py-1 rounded-md border border-blue-100 italic tracking-wider">Live
+                                            Preview</span>
+                                    </div>
+
+                                    <div class="p-1">
+                                        <div id="map" class="border border-slate-100"></div>
+                                    </div>
+
+                                    <div class="p-4 bg-white">
+                                        <div
+                                            class="flex items-start gap-3 p-3 border border-indigo-100 bg-indigo-50/50 rounded-xl">
+                                            <i class='bx bx-info-circle text-indigo-500 text-lg mt-0.5'></i>
+                                            <p class="text-xs font-medium leading-relaxed text-indigo-900">
+                                                Pin berhasil diletakkan. Alamat lengkap telah diperbarui secara otomatis di
+                                                kolom teks di atas. Anda dapat **menggeser penanda** untuk koreksi manual.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 md:col-span-2">
+                            <button type="submit"
+                                class="w-full py-4 px-6 bg-primary text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-primary-dark transition-all shadow-lg active:scale-[0.98]">
+                                {{ $isNewUser ? 'Simpan Data Diri' : 'Simpan Perubahan' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+@endsection
+
+@section('scripts')
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const profileView = document.getElementById('profileView');
+            const editView = document.getElementById('editView');
+            const btnEditProfile = document.getElementById('btnEditProfile');
+            const btnCancelEdit = document.getElementById('btnCancelEdit');
+            const fotoInput = document.getElementById('fotoInput');
+            const imagePreview = document.getElementById('imagePreview');
+
+            const btnGetGPS = document.getElementById('btnGetGPS');
+            const alamatInput = document.getElementById('alamatInput');
+            const mapContainer = document.getElementById('mapContainer');
+            const locationLabel = document.getElementById('locationLabel');
+            const mapDiv = document.getElementById('map');
+            let map, marker, currentLat, currentLng;
+
+            function showInlineMap() {
+                mapContainer.classList.add('active');
+                if (map) {
+                    setTimeout(() => {
+                        map.invalidateSize();
+                    }, 100);
+                }
+            }
+
+            function initMap(lat, lng) {
+                currentLat = lat;
+                currentLng = lng;
+
+                showInlineMap();
+
+                if (!map) {
+                    map = L.map('map').setView([lat, lng], 17);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap'
+                    }).addTo(map);
+                    marker = L.marker([lat, lng], {
+                        draggable: true
+                    }).addTo(map);
+
+                    marker.on('dragend', function(e) {
+                        const newPos = marker.getLatLng();
+                        currentLat = newPos.lat;
+                        currentLng = newPos.lng;
+                        locationLabel.innerHTML =
+                            `<i class='mr-1 bx bx-sync bx-spin'></i> Memperbarui Alamat...`;
+                        reverseGeocode(currentLat, currentLng);
+                    });
+                } else {
+                    map.setView([lat, lng], 17);
+                    marker.setLatLng([lat, lng]);
+                }
+                locationLabel.innerHTML =
+                    `<i class='mr-1 text-green-500 bx bx-check-double'></i> Lokasi Anda Sekarang: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+            }
+
+            async function reverseGeocode(lat, lng) {
+                try {
+                    const response = await fetch(
+                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
+                    );
+                    const data = await response.json();
+                    if (data.display_name) {
+                        alamatInput.value = data.display_name;
+                        locationLabel.innerHTML =
+                            `<i class='mr-1 text-green-500 bx bxs-check-circle'></i> Alamat Tersinkronisasi`;
+                    }
+                } catch (error) {
+                    console.error('Error reverse geocoding:', error);
+                    locationLabel.innerHTML =
+                        `<i class='mr-1 text-red-500 bx bx-error-circle'></i> Gagal Mendapatkan Alamat`;
+                }
+            }
+
+            if (btnGetGPS) {
+                btnGetGPS.addEventListener('click', function() {
+                    if (!navigator.geolocation) {
+                        alert('Geolocation tidak didukung oleh browser Anda.');
+                        return;
+                    }
+
+                    btnGetGPS.disabled = true;
+                    btnGetGPS.classList.add('btn-gps-loading');
+                    btnGetGPS.innerHTML = "<i class='bx bx-loader-alt'></i> Mencari...";
+
+                    navigator.geolocation.getCurrentPosition(
+                        async (position) => {
+                                const {
+                                    latitude,
+                                    longitude
+                                } = position.coords;
+                                initMap(latitude, longitude);
+                                await reverseGeocode(latitude, longitude);
+
+                                btnGetGPS.disabled = false;
+                                btnGetGPS.classList.remove('btn-gps-loading');
+                                btnGetGPS.innerHTML = "<i class='bx bx-check'></i> Berhasil";
+                                setTimeout(() => {
+                                    btnGetGPS.innerHTML =
+                                        "<i class='text-base bx bx-map-pin'></i> Ambil dari GPS";
+                                }, 3000);
+                            },
+                            (error) => {
+                                btnGetGPS.disabled = false;
+                                btnGetGPS.classList.remove('btn-gps-loading');
+                                btnGetGPS.innerHTML =
+                                    "<i class='text-base bx bx-map-pin'></i> Ambil dari GPS";
+                                alert('Gagal mengambil lokasi: ' + error.message);
+                            }, {
+                                enableHighAccuracy: true
+                            }
+                    );
+                });
+            }
+
+            if (btnEditProfile) {
+                btnEditProfile.addEventListener('click', () => {
+                    profileView.classList.add('hidden');
+                    editView.classList.remove('hidden');
+                });
+            }
+
+            if (btnCancelEdit) {
+                btnCancelEdit.addEventListener('click', () => {
+                    editView.classList.add('hidden');
+                    profileView.classList.remove('hidden');
+                });
+            }
+
+            fotoInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.innerHTML =
+                            `<img src="${e.target.result}" class="object-cover w-full h-full">`;
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
+@endsection

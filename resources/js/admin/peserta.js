@@ -3,6 +3,19 @@ let currentDeleteId = null;
 let currentPage = 1;
 let isModalClosing = false;
 
+function updateStats(stats) {
+    if (!stats) return;
+    const totalEl = document.getElementById('statTotalPeserta');
+    const pklEl = document.getElementById('statTotalPkl');
+    const magangEl = document.getElementById('statTotalMagang');
+    const aktifEl = document.getElementById('statTotalAktif');
+
+    if (totalEl) totalEl.textContent = stats.total ?? totalEl.textContent;
+    if (pklEl) pklEl.textContent = stats.pkl ?? pklEl.textContent;
+    if (magangEl) magangEl.textContent = stats.magang ?? magangEl.textContent;
+    if (aktifEl) aktifEl.textContent = stats.aktif ?? aktifEl.textContent;
+}
+
 function toggleBlur(active) {
     if (active) {
         document.body.style.overflow = 'hidden';
@@ -56,9 +69,18 @@ if (filterStatus) {
     });
 }
 
+const filterAsalSekolah = document.getElementById('filterAsalSekolah');
+if (filterAsalSekolah) {
+    filterAsalSekolah.addEventListener('change', () => {
+        currentPage = 1;
+        loadData();
+    });
+}
+
 window.resetFilters = function() {
     document.getElementById('searchInput').value = '';
     document.getElementById('filterJenisKegiatan').selectedIndex = 0;
+    document.getElementById('filterAsalSekolah').selectedIndex = 0;
     document.getElementById('filterStatus').selectedIndex = 0;
     currentPage = 1;
 
@@ -81,11 +103,13 @@ window.loadData = function(page = currentPage) {
     currentPage = page;
     const search = document.getElementById('searchInput').value;
     const jenisKegiatan = document.getElementById('filterJenisKegiatan').value;
+    const asalSekolah = document.getElementById('filterAsalSekolah').value;
     const status = document.getElementById('filterStatus').value;
 
     const params = new URLSearchParams({
         search: search,
         jenis_kegiatan: jenisKegiatan,
+        asal_sekolah_universitas: asalSekolah,
         status: status,
         page: page
     });

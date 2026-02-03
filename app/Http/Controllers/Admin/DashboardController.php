@@ -19,9 +19,23 @@ class DashboardController extends Controller
             $aktif = Peserta::where('status', 'Aktif')->count();
             $selesai = Peserta::where('status', 'Selesai')->count();
 
-            $peserta = Peserta::select('id', 'nama', 'jenis_kegiatan', 'status')
-                ->orderBy('nama')
-                ->paginate(10);
+            $asal = request('asal_sekolah_universitas');
+
+            $pesertaQuery = Peserta::select('id', 'nama', 'jenis_kegiatan', 'status', 'asal_sekolah_universitas')
+                ->orderBy('nama');
+
+            if (!empty($asal)) {
+                $pesertaQuery->where('asal_sekolah_universitas', $asal);
+            }
+
+            $peserta = $pesertaQuery->paginate(10)->withQueryString();
+
+            $sekolahs = Peserta::select('asal_sekolah_universitas')
+                ->whereNotNull('asal_sekolah_universitas')
+                ->where('asal_sekolah_universitas', '!=', '')
+                ->distinct()
+                ->orderBy('asal_sekolah_universitas')
+                ->get();
 
             if (request()->ajax()) {
                 return response()->json([
@@ -47,6 +61,8 @@ class DashboardController extends Controller
                 'aktif',
                 'selesai',
                 'peserta',
+                'sekolahs',
+                'asal',
                 'feedbacks',
                 'absensiDataHari',
                 'absensiDataMinggu',
@@ -59,6 +75,8 @@ class DashboardController extends Controller
                 'aktif' => 0,
                 'selesai' => 0,
                 'peserta' => collect(),
+                'sekolahs' => collect(),
+                'asal' => null,
                 'feedbacks' => collect(),
                 'absensiDataHari' => $this->getDefaultAbsensiData('hari'),
                 'absensiDataMinggu' => $this->getDefaultAbsensiData('minggu'),

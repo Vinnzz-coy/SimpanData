@@ -34,8 +34,8 @@
                                 <p class="mb-1 text-xs font-semibold tracking-wider uppercase text-white/80">
                                     Total Peserta
                                 </p>
-                                <h3 class="text-3xl font-bold text-white">
-                                    {{ $peserta->total() }}
+                                <h3 class="text-3xl font-bold text-white" id="statTotalPeserta">
+                                    {{ $totalPeserta ?? $peserta->total() }}
                                 </h3>
                                 <p class="mt-1 text-xs text-white/70">Peserta</p>
                             </div>
@@ -56,7 +56,7 @@
                                 <p class="mb-1 text-xs font-semibold tracking-wider uppercase text-white/80">
                                     PKL
                                 </p>
-                                <h3 class="text-3xl font-bold text-white">
+                                <h3 class="text-3xl font-bold text-white" id="statTotalPkl">
                                     {{ $totalPkl ?? 0 }}
                                 </h3>
                                 <p class="mt-1 text-xs text-white/70">Peserta</p>
@@ -78,7 +78,7 @@
                                 <p class="mb-1 text-xs font-semibold tracking-wider uppercase text-white/80">
                                     Magang
                                 </p>
-                                <h3 class="text-3xl font-bold text-white">
+                                <h3 class="text-3xl font-bold text-white" id="statTotalMagang">
                                     {{ $totalMagang ?? 0 }}
                                 </h3>
                                 <p class="mt-1 text-xs text-white/70">Peserta</p>
@@ -100,7 +100,7 @@
                                 <p class="mb-1 text-xs font-semibold tracking-wider uppercase text-white/80">
                                     Aktif
                                 </p>
-                                <h3 class="text-3xl font-bold text-white">
+                                <h3 class="text-3xl font-bold text-white" id="statTotalAktif">
                                     {{ $aktif ?? 0 }}
                                 </h3>
                                 <p class="mt-1 text-xs text-white/70">Peserta</p>
@@ -139,6 +139,20 @@
                             <option value="">Semua Jenis</option>
                             <option value="PKL" {{ request('jenis_kegiatan') == 'PKL' ? 'selected' : '' }}>PKL</option>
                             <option value="Magang" {{ request('jenis_kegiatan') == 'Magang' ? 'selected' : '' }}>Magang</option>
+                        </select>
+                        <i class='absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2 bx bx-chevron-down'></i>
+                    </div>
+
+                    <div class="relative">
+                        <select id="filterAsalSekolah"
+                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white pr-10">
+                            <option value="">Semua Sekolah/Universitas</option>
+                            @foreach ($sekolahs as $item)
+                                <option value="{{ $item->asal_sekolah_universitas }}"
+                                    {{ request('asal_sekolah_universitas') == $item->asal_sekolah_universitas ? 'selected' : '' }}>
+                                    {{ $item->asal_sekolah_universitas }}
+                                </option>
+                            @endforeach
                         </select>
                         <i class='absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2 bx bx-chevron-down'></i>
                     </div>

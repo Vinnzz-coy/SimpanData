@@ -13,14 +13,10 @@ return new class extends Migration
             $table->foreignId('peserta_id')
                 ->constrained('peserta')
                 ->cascadeOnDelete();
-            $table->enum('jenis_absen', ['Masuk', 'Pulang']);
-            $table->dateTime('waktu_absen');
+            $table->enum('jenis_absen', ['Masuk', 'Pulang'])->nullable();
+            $table->dateTime('waktu_absen')->nullable();
             $table->enum('mode_kerja', ['WFO', 'WFA'])
-                ->default('WFO');
-            $table->enum('keterangan_kehadiran', ['Tepat Waktu', 'Terlambat'])
-                ->default('Tepat Waktu');
-            $table->text('alasan_terlambat')->nullable();
-            $table->string('bukti_terlambat')->nullable();
+                ->nullable();
             $table->enum('status', ['Hadir', 'Izin', 'Sakit']);
             $table->string('wa_pengirim')->nullable();
             $table->timestamps();

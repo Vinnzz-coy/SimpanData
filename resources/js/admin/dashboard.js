@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // Helper to create gradient
     const createGradient = (ctx, color1, color2) => {
         const gradient = ctx.createLinearGradient(0, 0, 0, 400);
         gradient.addColorStop(0, color1);
@@ -286,8 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const salesPieChartElement = document.getElementById('salesPieChart');
     if (salesPieChartElement) {
         const salesPieCtx = salesPieChartElement.getContext('2d');
-        
-        // Custom plugin for Leader Lines
+
         const leaderLinesPlugin = {
             id: 'leaderLines',
             afterDraw: (chart) => {
@@ -297,33 +295,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     chart.getDatasetMeta(i).data.forEach((datapoint, index) => {
                         const { x, y } = datapoint.tooltipPosition();
 
-                        // Only draw if value is > 0
                         if (dataset.data[index] === 0) return;
 
                         const label = data.labels[index];
                         const value = dataset.data[index];
                         const color = dataset.backgroundColor[index];
 
-                        // Calculate line start and end points
                         const halfwidth = width / 2;
                         const halfheight = height / 2;
                         const xCenter = datapoint.x;
                         const yCenter = datapoint.y;
-                        
-                        // Vector from center
+
                         const dx = x - xCenter;
                         const dy = y - yCenter;
                         const angle = Math.atan2(dy, dx);
-                        
+
                         const lineLength = 30;
                         const endX = x + Math.cos(angle) * lineLength;
                         const endY = y + Math.sin(angle) * lineLength;
-                        
-                        // Label offset
+
                         const textX = endX + (x > xCenter ? 5 : -5);
                         const textAlign = x > xCenter ? 'left' : 'right';
 
-                        // Draw Line
                         ctx.beginPath();
                         ctx.moveTo(x, y);
                         ctx.lineTo(endX, endY);
@@ -331,15 +324,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         ctx.lineWidth = 2;
                         ctx.stroke();
 
-                        // Draw Label Background
                         const text = `${label}: ${value}`;
                         ctx.font = 'bold 12px Inter';
                         const textWidth = ctx.measureText(text).width;
-                        
+
                         ctx.fillStyle = textAlign === 'left' ? 'rgba(255, 255, 255, 0.8)' : 'rgba(255, 255, 255, 0.8)';
-                        // Optional padding/bg
-                        
-                        // Draw Text
+
                         ctx.textAlign = textAlign;
                         ctx.textBaseline = 'middle';
                         ctx.fillStyle = '#1f2937';

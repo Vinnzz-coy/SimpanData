@@ -16,7 +16,6 @@ class PesertaController extends Controller
     {
         $query = Peserta::with('user')->latest();
 
-        // Search
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -30,37 +29,64 @@ class PesertaController extends Controller
             });
         }
 
-        // Filter jenis kegiatan
         if ($request->filled('jenis_kegiatan')) {
             $query->where('jenis_kegiatan', $request->jenis_kegiatan);
         }
 
-        // Filter status
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
+        if ($request->filled('asal_sekolah_universitas')) {
+            $query->where('asal_sekolah_universitas', $request->asal_sekolah_universitas);
+        }
+
         $peserta = $query->paginate(9);
 
-        // Jika request AJAX, kembalikan JSON dengan grid partial
+        $statsQuery = clone $query;
+        $totalFiltered = (clone $statsQuery)->count();
+        $totalPklFiltered = (clone $statsQuery)->where('jenis_kegiatan', 'PKL')->count();
+        $totalMagangFiltered = (clone $statsQuery)->where('jenis_kegiatan', 'Magang')->count();
+        $totalAktifFiltered = (clone $statsQuery)->where('status', 'Aktif')->count();
+
         if ($request->ajax()) {
             return response()->json([
-                'grid' => view('admin.peserta.partials.peserta-grid', compact('peserta'))->render()
+                'grid' => view('admin.peserta.partials.peserta-grid', compact('peserta'))->render(),
+                'stats' => [
+                    'total' => $totalFiltered,
+                    'pkl' => $totalPklFiltered,
+                    'magang' => $totalMagangFiltered,
+                    'aktif' => $totalAktifFiltered,
+                ],
             ]);
         }
 
-        // Hitung statistik untuk tampilan awal
-        $totalPkl = Peserta::where('jenis_kegiatan', 'PKL')->count();
-        $totalMagang = Peserta::where('jenis_kegiatan', 'Magang')->count();
-        $aktif = Peserta::where('status', 'Aktif')->count();
-        $selesai = Peserta::where('status', 'Selesai')->count();
+        $totalPeserta = $totalFiltered;
+        $totalPkl = $totalPklFiltered;
+        $totalMagang = $totalMagangFiltered;
+        $aktif = $totalAktifFiltered;
+        $selesai = (clone $statsQuery)->where('status', 'Selesai')->count();
 
-        return view('admin.peserta.index', compact('peserta', 'totalPkl', 'totalMagang', 'aktif', 'selesai'));
+        $sekolahs = Peserta::select('asal_sekolah_universitas')
+            ->whereNotNull('asal_sekolah_universitas')
+            ->where('asal_sekolah_universitas', '!=', '')
+            ->distinct()
+            ->orderBy('asal_sekolah_universitas')
+            ->get();
+
+        return view('admin.peserta.index', compact(
+            'peserta',
+            'totalPeserta',
+            'totalPkl',
+            'totalMagang',
+            'aktif',
+            'selesai',
+            'sekolahs'
+        ));
     }
 
     public function create()
     {
-        // Hanya untuk AJAX modal
         if (request()->ajax()) {
             $html = view('admin.peserta.partials.modal-create')->render();
             return response()->json(['html' => $html]);
@@ -98,13 +124,11 @@ class PesertaController extends Controller
                 'role' => 'peserta'
             ]);
 
-            // Handle foto upload
             $fotoPath = null;
             if ($request->hasFile('foto')) {
                 $fotoPath = $request->file('foto')->store('peserta/foto', 'public');
             }
 
-            // Create peserta
             Peserta::create([
                 'user_id' => $user->id,
                 'nama' => $validated['nama'],
