@@ -37,7 +37,7 @@ class FeedbackSeeder extends Seeder
                     'jurusan' => 'Teknik Informatika',
                     'alamat' => 'Jl. Contoh No. ' . $i,
                     'no_telepon' => '08123456789' . $i,
-                    'jenis_kegiatan' => 'pkl',
+                    'jenis_kegiatan' => 'Magang',
                     'tanggal_mulai' => now()->subMonths(3),
                     'tanggal_selesai' => now()->addMonths(3),
                     'status' => 'Aktif',

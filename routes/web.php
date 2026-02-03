@@ -7,7 +7,6 @@ use App\Http\Controllers\IndexController;
 use App\Http\Controllers\Admin\PesertaController;
 use App\Http\Controllers\Admin\AbsensiController;
 
-
 Route::get('/', [IndexController::class, 'index'])->name('index');
 Route::get('/auth', fn() => view('auth.auth'))->name('auth');
 
@@ -64,9 +63,28 @@ Route::get('/admin/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'role:admin'])
     ->name('admin.dashboard');
 
-Route::get('/peserta/dashboard', fn() => view('peserta.dashboard'))
-    ->middleware(['auth', 'role:peserta'])
-    ->name('peserta.dashboard');
+Route::middleware(['auth', 'role:peserta'])->group(function () {
+    Route::get('/peserta/dashboard', [App\Http\Controllers\Peserta\DashboardController::class, 'index'])
+        ->name('peserta.dashboard');
+
+    Route::get('/peserta/profil', [App\Http\Controllers\Peserta\ProfilController::class, 'index'])
+        ->name('peserta.profil');
+
+    Route::post('/peserta/profil', [App\Http\Controllers\Peserta\ProfilController::class, 'update'])
+        ->name('peserta.profil.update');
+
+    Route::get('/peserta/absensi', [App\Http\Controllers\Peserta\AbsensiController::class, 'index'])
+        ->name('peserta.absensi');
+
+    Route::get('/peserta/laporan', [App\Http\Controllers\Peserta\LaporanController::class, 'index'])
+        ->name('peserta.laporan');
+
+    Route::get('/peserta/penilaian', [App\Http\Controllers\Peserta\PenilaianController::class, 'index'])
+        ->name('peserta.penilaian');
+
+    Route::get('/peserta/feedback', [App\Http\Controllers\Peserta\FeedbackController::class, 'index'])
+        ->name('peserta.feedback');
+});
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('admin/peserta', PesertaController::class)->names([
@@ -80,8 +98,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     ]);
 
     Route::get('/admin/absensi', [AbsensiController::class, 'index'])
-    ->middleware(['auth', 'role:admin'])
-    ->name('admin.absensi.index');
+        ->middleware(['auth', 'role:admin'])
+        ->name('admin.absensi.index');
 
     Route::get('/admin/user', function () {
         return view('admin.user.index');

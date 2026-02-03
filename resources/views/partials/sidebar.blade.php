@@ -7,48 +7,93 @@
     </div>
 
     <ul class="nav-list">
-        <li>
-            <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                <i class='bx bx-grid-alt'></i>
-                <span class="links_name">Dashboard</span>
-            </a>
-            <span class="tooltip">Dashboard</span>
-        </li>
-        <li>
-            <a href="{{ route('admin.peserta.index') }}" class="{{ request()->routeIs('admin.peserta.*') ? 'active' : '' }}">
-                <i class='bx bx-user'></i>
-                <span class="links_name">Data Peserta</span>
-            </a>
-            <span class="tooltip">Data Peserta</span>
-        </li>
-        <li>
-            <a href="{{ route('admin.absensi.index') }}" class="{{ request()->routeIs('admin.absensi.*') ? 'active' : '' }}">
-                <i class='bx bx-building'></i>
-                <span class="links_name">Data Absensi</span>
-            </a>
-            <span class="tooltip">Data Absensi</span>
-        </li>
-        <li>
-            <a href="{{ route('admin.user.index') }}" class="{{ request()->routeIs('admin.user.*') ? 'active' : '' }}">
-                <i class='bx bx-user-check'></i>
-                <span class="links_name">Data User</span>
-            </a>
-            <span class="tooltip">Data User</span>
-        </li>
-        <li>
-            <a href="{{ route('admin.penilaian.index') }}" class="{{ request()->routeIs('admin.penilaian.*') ? 'active' : '' }}">
-                <i class='bx bx-show-alt'></i>
-                <span class="links_name">Penilaian</span>
-            </a>
-            <span class="tooltip">Penilaian</span>
-        </li>
-        <li>
-            <a href="{{ route('admin.laporan.index') }}" class="{{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
-                <i class='bx bx-file'></i>
-                <span class="links_name">Laporan</span>
-            </a>
-            <span class="tooltip">Laporan</span>
-        </li>
+        @if(Auth::user()->isAdmin())
+            <li>
+                <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <i class='bx bx-grid-alt'></i>
+                    <span class="links_name">Dashboard</span>
+                </a>
+                <span class="tooltip">Dashboard</span>
+            </li>
+            <li>
+                <a href="{{ route('admin.peserta.index') }}" class="{{ request()->routeIs('admin.peserta.*') ? 'active' : '' }}">
+                    <i class='bx bx-user'></i>
+                    <span class="links_name">Data Peserta</span>
+                </a>
+                <span class="tooltip">Data Peserta</span>
+            </li>
+            <li>
+                <a href="{{ route('admin.absensi.index') }}" class="{{ request()->routeIs('admin.absensi.*') ? 'active' : '' }}">
+                    <i class='bx bx-building'></i>
+                    <span class="links_name">Data Absensi</span>
+                </a>
+                <span class="tooltip">Data Absensi</span>
+            </li>
+            <li>
+                <a href="{{ route('admin.user.index') }}" class="{{ request()->routeIs('admin.user.*') ? 'active' : '' }}">
+                    <i class='bx bx-user-check'></i>
+                    <span class="links_name">Data User</span>
+                </a>
+                <span class="tooltip">Data User</span>
+            </li>
+            <li>
+                <a href="{{ route('admin.penilaian.index') }}" class="{{ request()->routeIs('admin.penilaian.*') ? 'active' : '' }}">
+                    <i class='bx bx-show-alt'></i>
+                    <span class="links_name">Penilaian</span>
+                </a>
+                <span class="tooltip">Penilaian</span>
+            </li>
+            <li>
+                <a href="{{ route('admin.laporan.index') }}" class="{{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
+                    <i class='bx bx-file'></i>
+                    <span class="links_name">Laporan</span>
+                </a>
+                <span class="tooltip">Laporan</span>
+            </li>
+        @elseif(Auth::user()->isPeserta())
+            <li>
+                <a href="{{ route('peserta.dashboard') }}" class="{{ request()->routeIs('peserta.dashboard') ? 'active' : '' }}">
+                    <i class='bx bx-grid-alt'></i>
+                    <span class="links_name">Dashboard</span>
+                </a>
+                <span class="tooltip">Dashboard</span>
+            </li>
+            <li>
+                <a href="{{ route('peserta.profil') }}" class="{{ request()->routeIs('peserta.profil') ? 'active' : '' }}">
+                    <i class='bx bx-user'></i>
+                    <span class="links_name">Data Diri</span>
+                </a>
+                <span class="tooltip">Data Diri</span>
+            </li>
+            <li>
+                <a href="{{ route('peserta.absensi') }}" class="{{ request()->routeIs('peserta.absensi') ? 'active' : '' }}">
+                    <i class='bx bx-building'></i>
+                    <span class="links_name">Data Absensi</span>
+                </a>
+                <span class="tooltip">Data Absensi</span>
+            </li>
+            <li>
+                <a href="{{ route('peserta.laporan') }}" class="{{ request()->routeIs('peserta.laporan') ? 'active' : '' }}">
+                    <i class='bx bx-file'></i>
+                    <span class="links_name">Laporan</span>
+                </a>
+                <span class="tooltip">Laporan</span>
+            </li>
+            <li>
+                <a href="{{ route('peserta.penilaian') }}" class="{{ request()->routeIs('peserta.penilaian') ? 'active' : '' }}">
+                    <i class='bx bx-show-alt'></i>
+                    <span class="links_name">Penilaian</span>
+                </a>
+                <span class="tooltip">Penilaian</span>
+            </li>
+            <li>
+                <a href="{{ route('peserta.feedback') }}" class="{{ request()->routeIs('peserta.feedback') ? 'active' : '' }}">
+                    <i class='bx bx-message-square-detail'></i>
+                    <span class="links_name">Feedback</span>
+                </a>
+                <span class="tooltip">Feedback</span>
+            </li>
+        @endif
     </ul>
 
     <div class="profile-section">
@@ -728,7 +773,11 @@
         if (logoLink) {
             logoLink.addEventListener('click', (e) => {
                 e.preventDefault();
-                window.location.href = '{{ route('admin.dashboard') }}';
+                @if(Auth::user()->isAdmin())
+                    window.location.href = '{{ route('admin.dashboard') }}';
+                @elseif(Auth::user()->isPeserta())
+                    window.location.href = '{{ route('peserta.dashboard') }}';
+                @endif
             });
         }
 

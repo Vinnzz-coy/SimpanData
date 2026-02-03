@@ -7,11 +7,10 @@ let resendTimer = null;
 // Get CSRF Token from meta tag
 const getCsrfToken = () => document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-// Helper to show login form
 window.showLogin = function() {
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
-    
+
     loginForm.classList.remove('hidden');
     registerForm.classList.add('hidden');
 
@@ -21,11 +20,10 @@ window.showLogin = function() {
     }, 400);
 }
 
-// Helper to show register form
 window.showRegister = function() {
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
-    
+
     registerForm.classList.remove('hidden');
     loginForm.classList.add('hidden');
 
@@ -37,7 +35,6 @@ window.showRegister = function() {
     showStep(1);
 }
 
-// Step navigation
 window.showStep = function(step) {
     currentStep = step;
 
@@ -61,13 +58,12 @@ window.showStep = function(step) {
     }
 }
 
-// OTP Inputs Setup
 function setupOtpInputs() {
     const otpInputs = document.querySelectorAll('.otp-input');
 
     otpInputs.forEach((input, index) => {
         input.className =
-            'otp-input w-10 h-10 text-center text-lg font-bold border-2 border-gray-300 rounded-lg focus:border-secondary focus:ring-2 focus:ring-secondary-light transition-all duration-200';
+            'w-10 h-10 text-lg font-bold text-center transition-all duration-200 border-2 border-gray-300 rounded-lg otp-input focus:border-secondary focus:ring-2 focus:ring-secondary-light';
         input.inputMode = 'numeric';
         input.type = 'text';
 
@@ -111,7 +107,6 @@ function setupOtpInputs() {
     }
 }
 
-// Collect OTP
 window.collectOtp = function() {
     const otpInputs = document.querySelectorAll('.otp-input');
     let otp = '';
@@ -129,7 +124,6 @@ window.collectOtp = function() {
     return otp;
 }
 
-// Send OTP
 window.sendOtp = async function() {
     const email = document.getElementById('emailInput').value;
     const sendOtpBtn = document.getElementById('sendOtpBtn');
@@ -182,7 +176,6 @@ window.sendOtp = async function() {
     }
 }
 
-// Verify OTP Manual
 window.verifyOtpManual = async function() {
     const otp = collectOtp();
     const email = document.getElementById('emailInput').value;
@@ -264,7 +257,6 @@ window.verifyOtpManual = async function() {
     }
 }
 
-// Resend OTP
 window.resendOtp = async function() {
     const email = document.getElementById('emailInput').value;
     const resendBtn = document.getElementById('resendOtpBtn');
@@ -329,7 +321,6 @@ window.resendOtp = async function() {
     }
 }
 
-// Resend Timer
 function startResendTimer() {
     const resendBtn = document.getElementById('resendOtpBtn');
     let countdown = 30;
@@ -353,7 +344,6 @@ function startResendTimer() {
     }, 1000);
 }
 
-// Password Strength
 window.checkRegisterPassword = function() {
     const password = document.getElementById('registerPassword').value;
     const strengthBar = document.getElementById('strengthBar');
@@ -374,7 +364,6 @@ window.checkRegisterPassword = function() {
     checkPasswordMatch();
 }
 
-// Password Match
 window.checkPasswordMatch = function() {
     const password = document.getElementById('registerPassword').value;
     const confirm = document.getElementById('registerPasswordConfirm').value;
@@ -403,7 +392,6 @@ window.checkPasswordMatch = function() {
     }
 }
 
-// Toggle Password
 window.togglePassword = function(inputId, button) {
     const input = document.getElementById(inputId);
     const icon = button.querySelector('i');
@@ -434,7 +422,6 @@ function checkPasswordStrength(password) {
     return Math.min(score, 4);
 }
 
-// Toast Notification
 window.showToast = function(message, type = 'info') {
     const existingToast = document.querySelector('.custom-toast');
     if (existingToast) existingToast.remove();
@@ -457,7 +444,6 @@ window.showToast = function(message, type = 'info') {
     }, 3000);
 }
 
-// Initialize
 document.addEventListener('DOMContentLoaded', function() {
     setupOtpInputs();
 
