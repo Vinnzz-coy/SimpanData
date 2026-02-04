@@ -294,7 +294,7 @@
 
             @if ($absensis->hasPages())
                 <div class="px-4 py-4 border-t border-gray-100 md:px-5">
-                    {{ $absensis->links() }}
+                    {{ $absensis->onEachSide(1)->links() }}
                 </div>
             @endif
         </div>
