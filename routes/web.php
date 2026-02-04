@@ -101,9 +101,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         ->middleware(['auth', 'role:admin'])
         ->name('admin.absensi.index');
 
-    Route::get('/admin/user', function () {
-        return view('admin.user.index');
-    })->name('admin.user.index');
+    Route::resource('admin/user', App\Http\Controllers\Admin\UserController::class)->only(['index', 'show'])->names([
+        'index' => 'admin.user.index',
+        'show' => 'admin.user.show',
+    ]);
 
     Route::get('/admin/penilaian', function () {
         return view('admin.penilaian.index');

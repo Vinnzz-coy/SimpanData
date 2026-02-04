@@ -14,11 +14,11 @@ class PesertaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Peserta::with('user')->latest();
+        $baseQuery = Peserta::with('user')->latest();
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
+            $baseQuery->where(function ($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%")
                     ->orWhere('asal_sekolah_universitas', 'like', "%{$search}%")
                     ->orWhere('jurusan', 'like', "%{$search}%")
@@ -30,20 +30,20 @@ class PesertaController extends Controller
         }
 
         if ($request->filled('jenis_kegiatan')) {
-            $query->where('jenis_kegiatan', $request->jenis_kegiatan);
+            $baseQuery->where('jenis_kegiatan', $request->jenis_kegiatan);
         }
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $baseQuery->where('status', $request->status);
         }
 
         if ($request->filled('asal_sekolah_universitas')) {
-            $query->where('asal_sekolah_universitas', $request->asal_sekolah_universitas);
+            $baseQuery->where('asal_sekolah_universitas', $request->asal_sekolah_universitas);
         }
 
-        $peserta = $query->paginate(9);
+        $peserta = (clone $baseQuery)->paginate(9);
 
-        $statsQuery = clone $query;
+        $statsQuery = clone $baseQuery;
         $totalFiltered = (clone $statsQuery)->count();
         $totalPklFiltered = (clone $statsQuery)->where('jenis_kegiatan', 'PKL')->count();
         $totalMagangFiltered = (clone $statsQuery)->where('jenis_kegiatan', 'Magang')->count();
@@ -207,7 +207,6 @@ class PesertaController extends Controller
         DB::beginTransaction();
 
         try {
-            // Update user
             $userData = [
                 'username' => $validated['username'],
                 'email' => $validated['email']
@@ -219,17 +218,14 @@ class PesertaController extends Controller
 
             $peserta->user->update($userData);
 
-            // Handle foto upload
             $fotoPath = $peserta->foto;
             if ($request->hasFile('foto')) {
-                // Delete old foto if exists
                 if ($fotoPath) {
                     Storage::disk('public')->delete($fotoPath);
                 }
                 $fotoPath = $request->file('foto')->store('peserta/foto', 'public');
             }
 
-            // Update peserta
             $peserta->update([
                 'nama' => $validated['nama'],
                 'asal_sekolah_universitas' => $validated['asal_sekolah_universitas'],
@@ -267,12 +263,10 @@ class PesertaController extends Controller
         DB::beginTransaction();
 
         try {
-            // Delete foto if exists
             if ($peserta->foto) {
                 Storage::disk('public')->delete($peserta->foto);
             }
 
-            // Delete user
             $peserta->user->delete();
 
             DB::commit();

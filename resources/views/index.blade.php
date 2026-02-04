@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SimpanData - Sistem Pengelolaan PKL & Magang</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
+    <link rel="icon" type="image/x-icon" href="{{ asset('storage/logo/logo_simpandata.webp') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -129,14 +129,14 @@
         <div class="hero-bg" id="heroBg"></div>
         <div class="hero-overlay"></div>
 
-        <div class="relative z-10 w-full px-6 mx-auto max-w-4xl">
+        <div class="relative z-10 w-full max-w-4xl px-6 mx-auto">
             <div class="flex flex-col items-center text-center hero-content">
                 <h1 class="mb-6 text-5xl font-extrabold leading-tight reveal-scale md:text-6xl lg:text-7xl text-text-primary">
                     Kelola PKL & Magang
                     <span class="block mt-2 gradient-text">Jadi Lebih Mudah</span>
                 </h1>
 
-                <p class="mb-8 text-lg leading-relaxed reveal-scale md:text-xl max-w-3xl text-text-secondary">
+                <p class="max-w-3xl mb-8 text-lg leading-relaxed reveal-scale md:text-xl text-text-secondary">
                     SimpanData menghilangkan cara kerja manual yang membuat data peserta tercecer.
                     Semua informasi penting dikumpulkan dalam satu sistem yang konsisten, terstruktur,
                     dan dapat diandalkan.
@@ -144,12 +144,12 @@
 
                 <div class="flex flex-col gap-4 mb-12 reveal-scale sm:flex-row">
                     <a href="{{ route('auth') }}"
-                        class="px-8 py-4 rounded-lg font-semibold no-underline transition-all duration-300 text-white bg-gradient-to-br from-primary to-primary-dark shadow-lg shadow-blue-500/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/50 text-base flex items-center justify-center group">
+                        class="flex items-center justify-center px-8 py-4 text-base font-semibold text-white no-underline transition-all duration-300 rounded-lg shadow-lg bg-gradient-to-br from-primary to-primary-dark shadow-blue-500/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/50 group">
                         Mulai Sekarang
                         <i class='ml-2 transition-transform bx bx-right-arrow-alt group-hover:translate-x-1'></i>
                     </a>
                     <a href="#features"
-                        class="px-8 py-4 text-base font-semibold no-underline transition-all duration-300 bg-white/80 backdrop-blur-sm border-2 rounded-lg border-primary/30 text-primary hover:bg-primary hover:text-white hover:border-primary hover:shadow-lg hover:shadow-primary/30">Pelajari
+                        class="px-8 py-4 text-base font-semibold no-underline transition-all duration-300 border-2 rounded-lg bg-white/80 backdrop-blur-sm border-primary/30 text-primary hover:bg-primary hover:text-white hover:border-primary hover:shadow-lg hover:shadow-primary/30">Pelajari
                         Lebih Lanjut</a>
                 </div>
             </div>
@@ -161,14 +161,14 @@
             <p class="text-sm font-bold tracking-wider text-gray-500 uppercase">DiDukung oleh</p>
         </div>
         <div class="relative flex overflow-hidden group">
-            <div class="flex gap-16 py-4 pr-16 animate-scroll-left whitespace-nowrap shrink-0 min-w-full">
+            <div class="flex min-w-full gap-16 py-4 pr-16 animate-scroll-left whitespace-nowrap shrink-0">
                 @for ($i = 0; $i < 10; $i++)
                     <div class="flex items-center justify-center w-64 h-32 transition-all duration-300 transform cursor-pointer hover:scale-110 hover:drop-shadow-lg opacity-60 hover:opacity-100 filter grayscale hover:grayscale-0">
                         <img src="{{ asset('storage/logo/Logo_GI.png') }}" alt="Logo Partner" class="object-contain w-full h-full">
                     </div>
                 @endfor
             </div>
-            <div class="flex gap-16 py-4 pr-16 animate-scroll-left whitespace-nowrap shrink-0 min-w-full" aria-hidden="true">
+            <div class="flex min-w-full gap-16 py-4 pr-16 animate-scroll-left whitespace-nowrap shrink-0" aria-hidden="true">
                 @for ($i = 0; $i < 10; $i++)
                     <div class="flex items-center justify-center w-64 h-32 transition-all duration-300 transform cursor-pointer hover:scale-110 hover:drop-shadow-lg opacity-60 hover:opacity-100 filter grayscale hover:grayscale-0">
                         <img src="{{ asset('storage/logo/Logo_GI.png') }}" alt="Logo Partner" class="object-contain w-full h-full">
@@ -364,8 +364,8 @@
             </div>
         @else
             <div class="flex items-center justify-center w-full min-h-[300px]">
-                <div class="empty-testimonial text-center">
-                    <div class="empty-testimonial-icon mx-auto">
+                <div class="text-center empty-testimonial">
+                    <div class="mx-auto empty-testimonial-icon">
                         <i class='bx bx-message-square-dots'></i>
                     </div>
                     <p class="empty-testimonial-text">Belum Ada Testimoni</p>
