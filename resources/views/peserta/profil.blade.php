@@ -239,7 +239,7 @@
                             </div>
                             <div>
                                 <h4 class="text-xl font-extrabold tracking-tight text-slate-900">Panduan Sistem</h4>
-                                <p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Langkah awal untuk
+                                <p class="text-sm text-slate-500 font-bold uppercase tracking-widest">Langkah awal untuk
                                     Anda</p>
                             </div>
                         </div>
@@ -247,31 +247,31 @@
                         <ul class="space-y-4">
                             <li class="flex gap-4">
                                 <div
-                                    class="flex items-center justify-center flex-shrink-0 w-6 h-6 mt-1 text-xs font-extrabold text-indigo-700 bg-indigo-100 rounded-full shadow-sm">
+                                    class="flex items-center justify-center flex-shrink-0 w-8 h-8 mt-0.5 text-sm font-extrabold text-indigo-700 bg-indigo-100 rounded-full shadow-sm">
                                     1</div>
                                 <div>
-                                    <p class="text-xs font-extrabold text-slate-800">Lengkapi Profil</p>
-                                    <p class="text-[11px] text-slate-500 font-medium leading-relaxed">Pastikan data diri
+                                    <p class="text-sm font-extrabold text-slate-900">Lengkapi Profil</p>
+                                    <p class="text-sm text-slate-600 font-medium leading-relaxed">Pastikan data diri
                                         valid untuk verifikasi.</p>
                                 </div>
                             </li>
                             <li class="flex gap-4">
                                 <div
-                                    class="flex items-center justify-center flex-shrink-0 w-6 h-6 mt-1 text-xs font-extrabold text-indigo-700 bg-indigo-100 rounded-full shadow-sm">
+                                    class="flex items-center justify-center flex-shrink-0 w-8 h-8 mt-0.5 text-sm font-extrabold text-indigo-700 bg-indigo-100 rounded-full shadow-sm">
                                     2</div>
                                 <div>
-                                    <p class="text-xs font-extrabold text-slate-800">Presensi Harian</p>
-                                    <p class="text-[11px] text-slate-500 font-medium leading-relaxed">Lakukan absen Masuk &
+                                    <p class="text-sm font-extrabold text-slate-900">Presensi Harian</p>
+                                    <p class="text-sm text-slate-600 font-medium leading-relaxed">Lakukan absen Masuk &
                                         Pulang setiap hari.</p>
                                 </div>
                             </li>
                             <li class="flex gap-4">
                                 <div
-                                    class="flex items-center justify-center flex-shrink-0 w-6 h-6 mt-1 text-xs font-extrabold text-indigo-700 bg-indigo-100 rounded-full shadow-sm">
+                                    class="flex items-center justify-center flex-shrink-0 w-8 h-8 mt-0.5 text-sm font-extrabold text-indigo-700 bg-indigo-100 rounded-full shadow-sm">
                                     3</div>
                                 <div>
-                                    <p class="text-xs font-extrabold text-slate-800">Kirim Laporan</p>
-                                    <p class="text-[11px] text-slate-500 font-medium leading-relaxed">Update progres
+                                    <p class="text-sm font-extrabold text-slate-900">Kirim Laporan</p>
+                                    <p class="text-sm text-slate-600 font-medium leading-relaxed">Update progres
                                         kegiatan Anda secara rutin.</p>
                                 </div>
                             </li>
