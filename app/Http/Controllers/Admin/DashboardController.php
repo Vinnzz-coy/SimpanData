@@ -89,7 +89,7 @@ class DashboardController extends Controller
     {
         try {
             $today = Carbon::today();
-            
+
             $absensi = Absensi::selectRaw('HOUR(waktu_absen) as jam, status, COUNT(*) as jumlah')
                 ->whereDate('waktu_absen', $today)
                 ->whereIn('status', ['Hadir', 'Izin', 'Sakit'])

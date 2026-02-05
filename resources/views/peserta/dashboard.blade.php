@@ -4,6 +4,7 @@
 
 @section('content')
     @php
+        /** @var \App\Models\User $user */
         $jenisKegiatan = $peserta->jenis_kegiatan ?? 'Kegiatan';
     @endphp
 
@@ -62,8 +63,8 @@
                         Anda.</p>
                 </div>
             </div>
-            <div class="flex items-center gap-3 px-4 py-3 border border-blue-100 bg-blue-50/50 rounded-xl">
-                <div class="text-right">
+            <div class="flex items-center justify-between gap-3 px-4 py-3 border w-full md:w-auto border-blue-100 bg-blue-50/50 rounded-xl">
+                <div>
                     <p class="text-xs font-bold leading-none tracking-widest text-blue-500 uppercase">Status Program</p>
                     <p class="mt-1 text-base font-bold text-blue-900 uppercase">{{ $progress >= 100 ? 'Selesai' : 'Aktif' }}
                     </p>
@@ -83,7 +84,7 @@
                     <span class="text-xs font-bold tracking-widest uppercase text-slate-500">Presensi</span>
                 </div>
                 <h3 class="text-3xl font-bold text-slate-800">{{ $totalHadir }} <span
-                        class="text-sm font-medium text-slate-400">Hari</span></h3>
+                        class="text-sm font-medium text-slate-400">presensi</span></h3>
                 <p class="mt-1 text-xs font-medium text-slate-500">Total kehadiran terverifikasi</p>
             </div>
 
@@ -102,12 +103,12 @@
             <div class="p-5 transition-all duration-300 card group">
                 <div class="flex items-start justify-between mb-4">
                     <div class="flex items-center justify-center w-10 h-10 text-xl text-green-500 rounded-lg bg-green-50">
-                        <i class='bx bx-line-chart'></i>
+                        <i class='bx bx-calendar-check'></i>
                     </div>
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Progres</span>
+                    <span class="text-xs font-bold tracking-widest uppercase text-slate-500">Hari</span>
                 </div>
-                <h3 class="text-3xl font-bold text-slate-800">{{ $progress }}<span
-                        class="text-sm font-medium text-slate-400">%</span></h3>
+                <h3 class="text-3xl font-bold text-slate-800">{{ $passedDays ?? 0 }} <span
+                        class="text-sm font-medium text-slate-400">/ {{ $totalDays ?? 0 }} Hari</span></h3>
                 <div class="w-full bg-gray-100 h-1.5 rounded-full mt-2">
                     <div class="h-full transition-all duration-700 bg-green-500 rounded-full"
                         style="width: {{ $progress }}%"></div>
@@ -156,16 +157,24 @@
                         <p class="text-xs font-medium text-slate-400 whitespace-nowrap">Statistik aktivitas harian dalam
                             satu periode</p>
                     </div>
-                    <div class="flex items-center p-1 border border-gray-200 bg-gray-50 rounded-xl" id="chartFilter">
-                        <button data-filter="hari"
-                            class="filter-btn px-4 py-1.5 text-xs font-bold uppercase rounded-lg transition-all {{ $filter == 'hari' ? 'bg-white text-primary shadow-sm border border-gray-100' : 'text-slate-500 hover:text-slate-700' }}">Hari</button>
-                        <button data-filter="minggu"
-                            class="filter-btn px-4 py-1.5 text-xs font-bold uppercase rounded-lg transition-all {{ $filter == 'minggu' ? 'bg-white text-primary shadow-sm border border-gray-100' : 'text-slate-500 hover:text-slate-700' }}">Minggu</button>
-                        <button data-filter="bulan"
-                            class="filter-btn px-4 py-1.5 text-xs font-bold uppercase rounded-lg transition-all {{ $filter == 'bulan' ? 'bg-white text-primary shadow-sm border border-gray-100' : 'text-slate-500 hover:text-slate-700' }}">Bulan</button>
+
+                    <div class="flex flex-col gap-2 md:flex-row md:items-center">
+                        <select id="weekSelector" class="hidden w-full px-3 py-2 text-xs font-bold bg-white border border-gray-200 rounded-xl text-slate-600 focus:outline-none focus:border-primary md:w-auto md:py-1.5">
+                            @foreach($availableWeeks as $wk)
+                                <option value="{{ $wk['value'] }}" {{ $weekFilter == $wk['value'] ? 'selected' : '' }}>{{ $wk['label'] }}</option>
+                            @endforeach
+                        </select>
+                        <div class="flex items-center gap-1 p-1 overflow-x-auto border border-gray-200 bg-gray-50 rounded-xl no-scrollbar md:overflow-visible" id="chartFilter">
+                            <button data-filter="hari"
+                                class="filter-btn shrink-0 px-4 py-1.5 text-xs font-bold uppercase rounded-lg transition-all {{ $filter == 'hari' ? 'bg-white text-primary shadow-sm border border-gray-100' : 'text-slate-500 hover:text-slate-700' }}">Hari</button>
+                            <button data-filter="minggu"
+                                class="filter-btn shrink-0 px-4 py-1.5 text-xs font-bold uppercase rounded-lg transition-all {{ $filter == 'minggu' ? 'bg-white text-primary shadow-sm border border-gray-100' : 'text-slate-500 hover:text-slate-700' }}">Minggu</button>
+                            <button data-filter="bulan"
+                                class="filter-btn shrink-0 px-4 py-1.5 text-xs font-bold uppercase rounded-lg transition-all {{ $filter == 'bulan' ? 'bg-white text-primary shadow-sm border border-gray-100' : 'text-slate-500 hover:text-slate-700' }}">Bulan</button>
+                        </div>
                     </div>
                 </div>
-                <div class="h-[320px] w-full relative">
+                <div class="h-64 md:h-[320px] w-full relative">
                     <div id="chartLoading"
                         class="absolute inset-0 bg-white/50 backdrop-blur-[1px] items-center justify-center z-10 hidden">
                         <div class="w-8 h-8 border-4 rounded-full border-primary/20 border-t-primary animate-spin"></div>
@@ -181,7 +190,7 @@
                 <div class="relative w-full aspect-square flex items-center justify-center max-w-[240px]">
                     <canvas id="gaugeChart"></canvas>
                     <div class="absolute flex flex-col items-center justify-center mt-8 text-center">
-                        <h2 class="text-6xl font-extrabold leading-none tracking-tighter text-slate-900">
+                        <h2 class="text-4xl font-extrabold leading-none tracking-tighter md:text-6xl text-slate-900">
                             {{ $performanceScore }}
                         </h2>
                         <p class="mt-2 text-xs font-bold tracking-widest uppercase text-slate-500">Skor Indeks</p>
@@ -259,8 +268,13 @@
                             tooltip: {
                                 backgroundColor: '#1E293B',
                                 padding: 12,
-                                cornerRadius: 8
+                                cornerRadius: 8,
+                                displayColors: false,
                             }
+                        },
+                        interaction: {
+                            mode: 'index',
+                            intersect: false,
                         },
                         scales: {
                             y: {
@@ -296,13 +310,47 @@
 
             initChart(@json($absensiData['labels']), @json($absensiData['data']));
 
-            // AJAX Filtering Logic
             const filterButtons = document.querySelectorAll('.filter-btn');
+            const weekSelector = document.getElementById('weekSelector');
+
+            function toggleWeekSelector(filter) {
+                if (filter === 'minggu') {
+                    weekSelector.classList.remove('hidden');
+                } else {
+                    weekSelector.classList.add('hidden');
+                }
+            }
+
+            toggleWeekSelector("{{ $filter }}");
+
+            function fetchData(filter, week = null) {
+                loadingOverlay.classList.remove('hidden');
+
+                let url = `{{ route('peserta.dashboard') }}?filter=${filter}`;
+                if (filter === 'minggu' && week) {
+                    url += `&week=${week}`;
+                }
+
+                fetch(url, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        initChart(data.labels, data.data);
+                        loadingOverlay.classList.add('hidden');
+                    })
+                    .catch(error => {
+                        console.error('Error fetching chart data:', error);
+                        loadingOverlay.classList.add('hidden');
+                    });
+            }
+
             filterButtons.forEach(btn => {
                 btn.addEventListener('click', function() {
                     const filter = this.getAttribute('data-filter');
 
-                    // Update UI active state
                     filterButtons.forEach(b => {
                         b.classList.remove('bg-white', 'text-primary', 'shadow-sm',
                             'border', 'border-gray-100');
@@ -312,28 +360,22 @@
                         'border-gray-100');
                     this.classList.remove('text-slate-400', 'hover:text-slate-600');
 
-                    // Show loading
-                    loadingOverlay.classList.remove('hidden');
+                    toggleWeekSelector(filter);
 
-                    // Fetch data
-                    fetch(`{{ route('peserta.dashboard') }}?filter=${filter}`, {
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            initChart(data.labels, data.data);
-                            loadingOverlay.classList.add('hidden');
-                        })
-                        .catch(error => {
-                            console.error('Error fetching chart data:', error);
-                            loadingOverlay.classList.add('hidden');
-                        });
+                    let weekVal = null;
+                    if (filter === 'minggu') {
+                        weekVal = weekSelector.value;
+                    }
+                    fetchData(filter, weekVal);
                 });
             });
 
-            // Speedometer Chart
+            if (weekSelector) {
+                weekSelector.addEventListener('change', function() {
+                    fetchData('minggu', this.value);
+                });
+            }
+
             const ctxGauge = document.getElementById('gaugeChart').getContext('2d');
             new Chart(ctxGauge, {
                 type: 'doughnut',

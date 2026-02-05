@@ -120,42 +120,6 @@
             </div>
         </div>
 
-        <div class="p-4 transition-colors border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100">
-            <div class="flex items-center gap-3">
-                <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500">
-                    <i class='text-lg text-white bx bx-building-house'></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-xs font-medium text-gray-500">Sekolah/Universitas</p>
-                    <p class="font-semibold text-gray-800">{{ $user->peserta->asal_sekolah_universitas }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="p-4 transition-colors border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100">
-            <div class="flex items-center gap-3">
-                <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-500 to-orange-500">
-                    <i class='text-lg text-white bx bx-book'></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-xs font-medium text-gray-500">Jurusan</p>
-                    <p class="font-semibold text-gray-800">{{ $user->peserta->jurusan }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="p-4 transition-colors border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100">
-            <div class="flex items-center gap-3">
-                <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-teal-500 to-green-500">
-                    <i class='text-lg text-white bx bx-map'></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-xs font-medium text-gray-500">Alamat</p>
-                    <p class="font-semibold text-gray-800">{{ $user->peserta->alamat ?: 'Tidak ada' }}</p>
-                </div>
-            </div>
-        </div>
-
         <div class="grid grid-cols-2 gap-4">
             <div class="p-4 transition-colors border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100">
                 <div class="flex items-center gap-3">
@@ -178,23 +142,6 @@
                         <p class="text-xs font-medium text-gray-500">ID Peserta</p>
                         <p class="font-semibold text-gray-800">{{ str_pad($user->peserta->id, 4, '0', STR_PAD_LEFT) }}</p>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="p-4 border border-indigo-200 rounded-lg bg-indigo-50">
-            <div class="flex items-center gap-3">
-                <div class="flex items-center justify-center w-10 h-10 bg-indigo-100 rounded-lg">
-                    <i class='text-lg text-indigo-600 bx bx-calendar'></i>
-                </div>
-                <div class="flex-1">
-                    <p class="text-xs font-medium text-indigo-600">Periode Kegiatan</p>
-                    <p class="font-semibold text-gray-800">
-                        {{ $user->peserta->tanggal_mulai->format('d M Y') }} - {{ $user->peserta->tanggal_selesai->format('d M Y') }}
-                    </p>
-                    <p class="mt-1 text-xs text-gray-600">
-                        Durasi: {{ $user->peserta->tanggal_mulai->diffInDays($user->peserta->tanggal_selesai) }} hari
-                    </p>
                 </div>
             </div>
         </div>
