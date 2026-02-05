@@ -84,6 +84,9 @@ Route::middleware(['auth', 'role:peserta'])->group(function () {
 
     Route::get('/peserta/feedback', [App\Http\Controllers\Peserta\FeedbackController::class, 'index'])
         ->name('peserta.feedback');
+
+    Route::get('/peserta/settings', [App\Http\Controllers\Peserta\SettingsController::class, 'index'])->name('peserta.settings.index');
+    Route::post('/peserta/settings', [App\Http\Controllers\Peserta\SettingsController::class, 'update'])->name('peserta.settings.update');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -113,4 +116,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/laporan', function () {
         return view('admin.laporan.index');
     })->name('admin.laporan.index');
+
+    Route::get('/admin/profile', [App\Http\Controllers\Admin\ProfileController::class, 'index'])->name('admin.profile.index');
+    Route::post('/admin/profile', [App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('admin.profile.update');
+
+    Route::get('/admin/settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('admin.settings.index');
+    Route::post('/admin/settings', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('admin.settings.update');
 });
