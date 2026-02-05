@@ -11,7 +11,9 @@ export default defineConfig({
                 'resources/css/admin/dashboard.css',
                 'resources/js/admin/dashboard.js',
                 'resources/css/admin/peserta.css',
-                'resources/js/admin/peserta.js'
+                'resources/js/admin/peserta.js',
+                'resources/css/sidebar.css',
+                'resources/js/sidebar.js'
             ],
             refresh: true,
         }),
