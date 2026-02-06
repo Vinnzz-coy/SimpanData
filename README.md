@@ -7,6 +7,7 @@ SimpanData adalah aplikasi berbasis web yang dirancang untuk mempermudah manajem
 ## 🚀 Fitur Utama
 
 ### 👑 Panel Admin
+
 - **Dashboard Statistik**: Visualisasi data peserta (PKL, Magang, Aktif, Selesai) menggunakan Chart.js.
 - **Manajemen Peserta**: Kelola data lengkap peserta termasuk profil, asal instansi, dan status.
 - **Monitoring Absensi**: Pantau kehadiran peserta secara real-time dengan status (Hadir, Izin, Sakit, Alpa).
@@ -14,6 +15,7 @@ SimpanData adalah aplikasi berbasis web yang dirancang untuk mempermudah manajem
 - **Laporan & Feedback**: Pantau laporan berkala dari peserta dan kelola feedback yang masuk.
 
 ### 👤 Panel Peserta
+
 - **Dashboard Personal**: Ringkasan aktivitas dan status harian peserta.
 - **Absensi Mandiri**: Melakukan presensi masuk dan pulang melalui sistem.
 - **Manajemen Profil**: Lengkapi data diri dan foto profil.
@@ -37,6 +39,7 @@ SimpanData adalah aplikasi berbasis web yang dirancang untuk mempermudah manajem
 ## ⚙️ Persyaratan Sistem
 
 Pastikan perangkat Anda sudah terinstall:
+
 - PHP >= 8.2
 - Composer
 - Node.js & NPM
@@ -49,49 +52,62 @@ Pastikan perangkat Anda sudah terinstall:
 Ikuti langkah-langkah berikut untuk menjalankan project ini di komputer Anda:
 
 ### 1. Clone Repositori
+
 ```bash
 git clone https://github.com/username/SimpanData.git
 cd SimpanData
 ```
 
 ### 2. Instalasi Dependensi (Backend)
+
 ```bash
 composer install
 ```
 
 ### 3. Instalasi Dependensi (Frontend)
+
 ```bash
 npm install
 ```
 
 ### 4. Setup Environment File
+
 Salin file `.env.example` menjadi `.env` dan sesuaikan konfigurasi database Anda.
+
 ```bash
 copy .env.example .env
 ```
+
 _Edit file `.env` dan sesuaikan bagian `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD`._
 
 ### 5. Generate Application Key
+
 ```bash
 php artisan key:generate
 ```
 
 ### 6. Migrasi & Seeding Database
+
 Jalankan migrasi untuk membuat tabel dan seeder untuk data awal.
+
 ```bash
 php artisan migrate --seed
 ```
+
 _Gunakan `--seed` untuk menyertakan data dummy (Admin, Peserta, dll) agar aplikasi bisa langsung dicoba._
 
 ### 7. Build Assets & Jalankan Server
+
 Buka dua terminal berbeda:
 
 **Terminal 1 (Vite Dev Server):**
+
 ```bash
 npm run dev
 ```
 
 **Terminal 2 (Laravel Server):**
+
 ```bash
 php artisan serve
 ```
@@ -104,8 +120,7 @@ Aplikasi dapat diakses melalui `http://127.0.0.1:8000`.
 
 Jika Anda menggunakan `--seed`, Anda bisa masuk dengan akun berikut:
 
-- **Admin**: `admin@simpandata.com` / Password: `password`
-- **Peserta**: `peserta@simpandata.com` / Password: `password`
+- **Admin**: `admin@simpandata.com` / Password: `admin123`
 
 ---
 

@@ -73,14 +73,11 @@
                             Pengaturan
                         </a>
                         <div class="my-1 border-t border-gray-100"></div>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit"
-                                class="flex items-center w-full px-3 py-2 text-sm font-medium text-red-600 rounded-xl hover:bg-red-50 group transition-colors">
-                                <i class='mr-2 text-lg bx bx-log-out group-hover:text-red-600'></i>
-                                Keluar
-                            </button>
-                        </form>
+                        <button type="button" id="navbarLogoutBtn"
+                            class="flex items-center w-full px-3 py-2 text-sm font-medium text-red-600 rounded-xl hover:bg-red-50 group transition-colors">
+                            <i class='mr-2 text-lg bx bx-log-out group-hover:text-red-600'></i>
+                            Keluar
+                        </button>
                     </div>
                 </div>
             </div>
@@ -126,6 +123,17 @@
             function closeDropdown() {
                 dropdownMenu.classList.add('invisible', 'opacity-0', 'scale-95');
                 dropdownMenu.classList.remove('visible', 'opacity-100', 'scale-100');
+            }
+
+            const navbarLogoutBtn = document.getElementById('navbarLogoutBtn');
+            const logoutModal = document.getElementById('logout-modal');
+            
+            if (navbarLogoutBtn && logoutModal) {
+                navbarLogoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    closeDropdown();
+                    logoutModal.classList.add('show');
+                });
             }
         }
     });

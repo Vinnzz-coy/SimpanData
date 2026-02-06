@@ -1,3 +1,4 @@
+@php /** @var \App\Models\Peserta $peserta */ @endphp
 <div class="space-y-6">
     {{-- Header Section --}}
     <div class="p-5 border border-gray-200 rounded-lg bg-gradient-to-br from-gray-50 to-white">

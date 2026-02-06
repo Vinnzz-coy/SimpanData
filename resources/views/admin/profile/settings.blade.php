@@ -5,11 +5,75 @@
 @section('content')
 <div class="px-6 py-6 mx-auto max-w-4xl">
     <div class="mb-8">
-        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Pengaturan Keamanan</h1>
-        <p class="text-sm font-medium text-slate-600">Perbarui kata sandi Anda untuk menjaga keamanan akun.</p>
+        <h1 class="text-2xl font-bold tracking-tight text-slate-900">Pengaturan Akun</h1>
+        <p class="text-sm font-medium text-slate-600">Kelola informasi akun dan keamanan Anda.</p>
     </div>
 
-    <div class="p-8 bg-white border border-gray-100 shadow-soft rounded-2xl">
+    @if (session('success'))
+        <div class="flex items-center gap-3 p-4 mb-6 text-sm text-green-800 border border-green-100 rounded-2xl bg-green-50 animate-fade-in">
+            <i class='text-xl bx bx-check-circle'></i>
+            <span class="font-bold">{{ session('success') }}</span>
+        </div>
+    @endif
+
+    <div class="grid grid-cols-1 gap-8 mb-8">
+        <!-- Account Info Card -->
+        <div class="p-8 bg-white border border-gray-100 shadow-soft rounded-2xl">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="flex items-center justify-center w-12 h-12 text-indigo-600 bg-indigo-50 rounded-xl">
+                    <i class='text-2xl bx bx-user-circle'></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900">Informasi Akun</h2>
+                    <p class="text-sm font-medium text-slate-500">Detail identitas akun Anda saat ini.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-tight mb-1">Username</p>
+                    <p class="text-slate-900 font-semibold">{{ Auth::user()->username }}</p>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-tight mb-1">Email</p>
+                    <p class="text-slate-900 font-semibold">{{ Auth::user()->email }}</p>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 relative group/info">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-tight mb-1">Role</p>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2.5 py-1 text-xs font-bold text-indigo-700 bg-indigo-100 rounded-lg uppercase">
+                            {{ Auth::user()->role }}
+                        </span>
+                    </div>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 relative group/info">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-bold text-slate-500 uppercase tracking-tight mb-1">Status Akun</p>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                <p class="text-slate-900 font-semibold">Aktif</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('admin.profile.index') }}" class="inline-flex items-center justify-center w-8 h-8 text-indigo-600 bg-white border border-slate-100 rounded-lg hover:bg-indigo-50 transition-colors shadow-sm" title="Edit Profil">
+                            <i class='bx bx-edit-alt'></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Update Password Card -->
+        <div class="p-8 bg-white border border-gray-100 shadow-soft rounded-2xl">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="flex items-center justify-center w-12 h-12 text-amber-600 bg-amber-50 rounded-xl">
+                    <i class='text-2xl bx bx-lock-open-alt'></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900">Keamanan & Kata Sandi</h2>
+                    <p class="text-sm font-medium text-slate-500">Ubah kata sandi Anda secara berkala.</p>
+                </div>
+            </div>
         <form action="{{ route('admin.settings.update') }}" method="POST">
             @csrf
             <div class="space-y-6">
@@ -68,6 +132,7 @@
                 </button>
             </div>
         </form>
+        </div>
     </div>
 
     <!-- Security Tips -->

@@ -1,3 +1,4 @@
+@php /** @var \Illuminate\Pagination\LengthAwarePaginator|\App\Models\User[] $users */ @endphp
 @if($users->count() > 0)
 <div class="user-grid">
     <div class="grid grid-cols-1 gap-4 md:gap-5 sm:grid-cols-2 lg:grid-cols-3">

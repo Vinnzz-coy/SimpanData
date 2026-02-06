@@ -63,7 +63,8 @@
                         Anda.</p>
                 </div>
             </div>
-            <div class="flex items-center justify-between gap-3 px-4 py-3 border w-full md:w-auto border-blue-100 bg-blue-50/50 rounded-xl">
+            <div
+                class="flex items-center justify-between w-full gap-3 px-4 py-3 border border-blue-100 md:w-auto bg-blue-50/50 rounded-xl">
                 <div>
                     <p class="text-xs font-bold leading-none tracking-widest text-blue-500 uppercase">Status Program</p>
                     <p class="mt-1 text-base font-bold text-blue-900 uppercase">{{ $progress >= 100 ? 'Selesai' : 'Aktif' }}
@@ -123,13 +124,13 @@
                         <div>
                             <p class="text-xs font-bold uppercase text-slate-500">Mulai</p>
                             <p class="text-base font-bold text-slate-800 mt-0.5">
-                                {{ $peserta && $peserta->tanggal_mulai ? $peserta->tanggal_mulai->format('d M Y') : '-' }}
+                                {{ $peserta && $peserta->tanggal_mulai ? \Carbon\Carbon::parse($peserta->tanggal_mulai)->format('d M Y') : '-' }}
                             </p>
                         </div>
                         <div>
                             <p class="text-xs font-bold uppercase text-slate-500">Selesai</p>
                             <p class="text-base font-bold text-slate-800 mt-0.5">
-                                {{ $peserta && $peserta->tanggal_selesai ? $peserta->tanggal_selesai->format('d M Y') : '-' }}
+                                {{ $peserta && $peserta->tanggal_selesai ? \Carbon\Carbon::parse($peserta->tanggal_selesai)->format('d M Y') : '-' }}
                             </p>
                         </div>
                     </div>
@@ -159,12 +160,15 @@
                     </div>
 
                     <div class="flex flex-col gap-2 md:flex-row md:items-center">
-                        <select id="weekSelector" class="hidden w-full px-3 py-2 text-xs font-bold bg-white border border-gray-200 rounded-xl text-slate-600 focus:outline-none focus:border-primary md:w-auto md:py-1.5">
-                            @foreach($availableWeeks as $wk)
-                                <option value="{{ $wk['value'] }}" {{ $weekFilter == $wk['value'] ? 'selected' : '' }}>{{ $wk['label'] }}</option>
+                        <select id="weekSelector"
+                            class="hidden w-full px-3 py-2 text-xs font-bold bg-white border border-gray-200 rounded-xl text-slate-600 focus:outline-none focus:border-primary md:w-auto md:py-1.5">
+                            @foreach ($availableWeeks as $wk)
+                                <option value="{{ $wk['value'] }}" {{ $weekFilter == $wk['value'] ? 'selected' : '' }}>
+                                    {{ $wk['label'] }}</option>
                             @endforeach
                         </select>
-                        <div class="flex items-center gap-1 p-1 overflow-x-auto border border-gray-200 bg-gray-50 rounded-xl no-scrollbar md:overflow-visible" id="chartFilter">
+                        <div class="flex items-center gap-1 p-1 overflow-x-auto border border-gray-200 bg-gray-50 rounded-xl no-scrollbar md:overflow-visible"
+                            id="chartFilter">
                             <button data-filter="hari"
                                 class="filter-btn shrink-0 px-4 py-1.5 text-xs font-bold uppercase rounded-lg transition-all {{ $filter == 'hari' ? 'bg-white text-primary shadow-sm border border-gray-100' : 'text-slate-500 hover:text-slate-700' }}">Hari</button>
                             <button data-filter="minggu"
@@ -225,184 +229,12 @@
 
 @section('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let attendanceChart;
-            const ctxAttendance = document.getElementById('attendanceChart').getContext('2d');
-            const loadingOverlay = document.getElementById('chartLoading');
-
-            function initChart(labels, data) {
-                const attGradient = ctxAttendance.createLinearGradient(0, 0, 0, 400);
-                attGradient.addColorStop(0, 'rgba(16, 54, 125, 0.1)');
-                attGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
-                if (attendanceChart) {
-                    attendanceChart.destroy();
-                }
-
-                attendanceChart = new Chart(ctxAttendance, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Sesi Kehadiran',
-                            data: data,
-                            borderColor: '#10367D',
-                            borderWidth: 3,
-                            backgroundColor: attGradient,
-                            fill: true,
-                            tension: 0.1,
-                            pointBackgroundColor: '#fff',
-                            pointBorderColor: '#10367D',
-                            pointBorderWidth: 2,
-                            pointRadius: 4,
-                            pointHoverRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                backgroundColor: '#1E293B',
-                                padding: 12,
-                                cornerRadius: 8,
-                                displayColors: false,
-                            }
-                        },
-                        interaction: {
-                            mode: 'index',
-                            intersect: false,
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1,
-                                    font: {
-                                        size: 11,
-                                        weight: '600'
-                                    },
-                                    color: '#64748B'
-                                },
-                                grid: {
-                                    color: '#F1F5F9'
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    font: {
-                                        size: 11,
-                                        weight: 'bold'
-                                    },
-                                    color: '#64748B'
-                                },
-                                grid: {
-                                    display: false
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            initChart(@json($absensiData['labels']), @json($absensiData['data']));
-
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            const weekSelector = document.getElementById('weekSelector');
-
-            function toggleWeekSelector(filter) {
-                if (filter === 'minggu') {
-                    weekSelector.classList.remove('hidden');
-                } else {
-                    weekSelector.classList.add('hidden');
-                }
-            }
-
-            toggleWeekSelector("{{ $filter }}");
-
-            function fetchData(filter, week = null) {
-                loadingOverlay.classList.remove('hidden');
-
-                let url = `{{ route('peserta.dashboard') }}?filter=${filter}`;
-                if (filter === 'minggu' && week) {
-                    url += `&week=${week}`;
-                }
-
-                fetch(url, {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        initChart(data.labels, data.data);
-                        loadingOverlay.classList.add('hidden');
-                    })
-                    .catch(error => {
-                        console.error('Error fetching chart data:', error);
-                        loadingOverlay.classList.add('hidden');
-                    });
-            }
-
-            filterButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const filter = this.getAttribute('data-filter');
-
-                    filterButtons.forEach(b => {
-                        b.classList.remove('bg-white', 'text-primary', 'shadow-sm',
-                            'border', 'border-gray-100');
-                        b.classList.add('text-slate-400', 'hover:text-slate-600');
-                    });
-                    this.classList.add('bg-white', 'text-primary', 'shadow-sm', 'border',
-                        'border-gray-100');
-                    this.classList.remove('text-slate-400', 'hover:text-slate-600');
-
-                    toggleWeekSelector(filter);
-
-                    let weekVal = null;
-                    if (filter === 'minggu') {
-                        weekVal = weekSelector.value;
-                    }
-                    fetchData(filter, weekVal);
-                });
-            });
-
-            if (weekSelector) {
-                weekSelector.addEventListener('change', function() {
-                    fetchData('minggu', this.value);
-                });
-            }
-
-            const ctxGauge = document.getElementById('gaugeChart').getContext('2d');
-            new Chart(ctxGauge, {
-                type: 'doughnut',
-                data: {
-                    datasets: [{
-                        data: [{{ $performanceScore }}, {{ max(0, 100 - $performanceScore) }}],
-                        backgroundColor: ['#10367D', '#F1F5F9'],
-                        borderWidth: 0,
-                        circumference: 180,
-                        rotation: -90,
-                        cutout: '80%'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        tooltip: {
-                            enabled: false
-                        }
-                    },
-                    animation: {
-                        duration: 2000,
-                        easing: 'easeOutQuart'
-                    }
-                }
-            });
-        });
+        window.attendanceData = @json($absensiData);
+        window.performanceScore = {{ $performanceScore }};
+        window.routes = {
+            dashboard: "{{ route('peserta.dashboard') }}"
+        };
+        window.initialFilter = "{{ $filter }}";
     </script>
+    @vite('resources/js/peserta/dashboard.js')
 @endsection
