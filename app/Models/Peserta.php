@@ -5,6 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property int $user_id
+ * @property string|null $foto
+ * @property string $nama
+ * @property string $asal_sekolah_universitas
+ * @property string $jurusan
+ * @property string|null $alamat
+ * @property string|null $no_telepon
+ * @property string $jenis_kegiatan
+ * @property \Illuminate\Support\Carbon $tanggal_mulai
+ * @property \Illuminate\Support\Carbon $tanggal_selesai
+ * @property string $status
+ * @property \Illuminate\Support\Carbon $created_at
+ * @property \Illuminate\Support\Carbon $updated_at
+ * @property-read \App\Models\User $user
+ */
 class Peserta extends Model
 {
     use HasFactory;
