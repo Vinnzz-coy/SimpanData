@@ -87,27 +87,23 @@
     </div>
 
     <div class="grid grid-cols-1 gap-4 mb-4 md:gap-6 md:mb-6 lg:grid-cols-3">
-        <div class="lg:col-span-2">
-            <div class="h-full card">
-                <div
-                    class="flex flex-col justify-between gap-3 p-4 border-b border-gray-200 md:gap-4 md:p-5 sm:flex-row sm:items-center">
-                    <h2 class="text-base font-semibold text-gray-800 md:text-lg">Absensi</h2>
+        <div class="card mb-6 lg:col-span-2">
+            <div class="flex flex-col gap-4 p-4 border-b md:flex-row md:items-center md:justify-between">
+                <h2 class="text-base font-semibold text-gray-800 md:text-lg">
+                    Absensi
+                </h2>
 
-                    <div class="flex gap-3">
-                        <select id="absensiFilter"
-                            class="px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                            <option value="hari">Hari</option>
-                            <option value="minggu">Minggu</option>
-                            <option value="bulan">Bulan</option>
-                        </select>
-                    </div>
-                </div>
+                <select
+                    id="absensiFilter"
+                    class="px-4 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-indigo-500">
+                    <option value="hari">Hari</option>
+                    <option value="minggu">Minggu</option>
+                    <option value="bulan">Bulan</option>
+                </select>
+            </div>
 
-                <div class="p-4 md:p-5">
-                    <div class="chart-container h-[250px] md:h-[300px]">
-                        <canvas id="absensiChart"></canvas>
-                    </div>
-                </div>
+            <div class="p-4">
+                <canvas id="absensiChart" height="300" width="400"></canvas>
             </div>
         </div>
 
@@ -130,59 +126,20 @@
 
     <div class="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-3">
         <div class="lg:col-span-2">
-            <div class="flex flex-col h-full card">
-                <div
-                    class="flex flex-col flex-shrink-0 gap-3 p-4 border-b border-gray-200 md:gap-4 md:p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div class="h-full card">
+                <div class="p-4 border-b border-gray-200 md:p-5">
                     <h2 class="text-base font-semibold text-gray-800 md:text-lg">
-                        Daftar Peserta PKL & Magang
+                        Jumlah Peserta per Sekolah / Universitas
                     </h2>
-
-                    <div class="flex flex-col w-full gap-3 sm:w-auto sm:flex-row sm:items-center">
-                        <form method="GET" class="w-full sm:w-64">
-                            <div class="relative">
-                                <select name="asal_sekolah_universitas" onchange="this.form.submit()"
-                                    class="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white pr-10">
-                                    <option value="">Semua Sekolah/Universitas</option>
-                                    @foreach ($sekolahs as $item)
-                                        <option value="{{ $item->asal_sekolah_universitas }}"
-                                            {{ $asal == $item->asal_sekolah_universitas ? 'selected' : '' }}>
-                                            {{ $item->asal_sekolah_universitas }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <i class='absolute text-gray-400 transform -translate-y-1/2 right-3 top-1/2 bx bx-chevron-down'></i>
-                            </div>
-                        </form>
-
-                        <div class="relative w-full sm:w-64">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                <i class='bx bx-search'></i>
-                            </span>
-                            <input type="text" id="searchPeserta" placeholder="Cari nama peserta..."
-                                class="w-full py-2 pl-10 pr-4 text-sm transition-all duration-200 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-                    </div>
                 </div>
 
-                <div class="flex flex-col flex-1 min-h-0">
-                    <div class="flex-1 min-h-0 p-4 overflow-x-auto overflow-y-auto md:p-5 table-scroll">
-                        <table class="min-w-full text-sm text-left">
-                            <thead>
-                                <tr class="text-gray-600 border-b">
-                                    <th class="px-4 py-3">No</th>
-                                    <th class="px-4 py-3">Nama Peserta</th>
-                                    <th class="px-4 py-3">Jenis</th>
-                                    <th class="px-4 py-3">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="pesertaTableBody" class="divide-y">
-                                @include('admin.partials.peserta-rows', ['peserta' => $peserta])
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="flex-shrink-0 px-4 pt-2 pb-4 border-t border-gray-200 md:px-5" id="pesertaPagination">
-                        {{ $peserta->links() }}
+                <div class="p-4 md:p-5 overflow-x-auto">
+                    <div 
+                        id="chartWrapper"
+                        data-count="{{ count($pesertaPerSekolah) }}"
+                        class="min-w-full"
+                    >
+                        <canvas id="sekolahChart" height="320"></canvas>
                     </div>
                 </div>
             </div>
@@ -236,12 +193,12 @@
 @section('scripts')
     <script>
         window.dashboardData = {
-            absensiHari: @json($absensiDataHari),
-            absensiMinggu: @json($absensiDataMinggu),
-            absensiBulan: @json($absensiDataBulan),
-            totalPkl: {{ $totalPkl }},
-            totalMagang: {{ $totalMagang }}
+            totalPkl: {{ $totalPkl ?? 0 }},
+            totalMagang: {{ $totalMagang }},
+            pesertaSekolah: @json($pesertaPerSekolah ?? []),
+
         };
+        console.log('Dashboard Data Loaded:', window.dashboardData);
     </script>
     @vite('resources/js/admin/dashboard.js')
 @endsection
