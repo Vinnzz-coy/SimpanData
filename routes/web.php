@@ -24,6 +24,8 @@ Route::get('/terms-of-service', function () {
 
 Route::post('/send-otp', [AuthController::class, 'sendOtp'])->name('send.otp');
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('verify.otp');
+Route::post('/check-username', [AuthController::class, 'checkUsername'])->name('check.username');
+Route::post('/check-email-availability', [AuthController::class, 'checkEmailAvailability'])->name('check.email.availability');
 
 Route::get('/forgot-password', fn() => view('auth.forgot-password'))
     ->name('forgot.password.form');

@@ -104,7 +104,6 @@ class DashboardController extends Controller
                 'Sakit' => []
             ];
 
-            // Show hours from 07:00 to 17:00 (work hours)
             for ($i = 7; $i <= 17; $i++) {
                 $absensiData['labels'][] = sprintf("%02d:00", $i);
                 $hourData = $absensi->get($i, collect());
