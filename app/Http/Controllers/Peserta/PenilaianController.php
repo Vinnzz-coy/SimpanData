@@ -11,6 +11,8 @@ class PenilaianController extends Controller
     public function index()
     {
         $user = Auth::user();
-        return view('peserta.penilaian', compact('user'));
+        $peserta = $user->peserta()->with('penilaian.user')->first();
+
+        return view('peserta.penilaian', compact('user', 'peserta'));
     }
 }
