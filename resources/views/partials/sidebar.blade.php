@@ -60,6 +60,13 @@
                 </a>
                 <span class="tooltip">Laporan</span>
             </li>
+            <li>
+                <a href="{{ route('admin.arsip.index') }}" class="{{ request()->routeIs('admin.arsip.*') ? 'active' : '' }}">
+                    <i class='bx bx-archive'></i>
+                    <span class="links_name">Arsip</span>
+                </a>
+                <span class="tooltip">Arsip</span>
+            </li>
         @elseif($user->isPeserta())
             <li>
                 <a href="{{ route('peserta.dashboard') }}" class="{{ request()->routeIs('peserta.dashboard') ? 'active' : '' }}">
@@ -83,18 +90,18 @@
                 <span class="tooltip">Absensi</span>
             </li>
             <li>
-                <a href="{{ route('peserta.laporan') }}" class="{{ request()->routeIs('peserta.laporan') ? 'active' : '' }}">
-                    <i class='bx bx-file'></i>
-                    <span class="links_name">Laporan</span>
-                </a>
-                <span class="tooltip">Laporan</span>
-            </li>
-            <li>
                 <a href="{{ route('peserta.penilaian') }}" class="{{ request()->routeIs('peserta.penilaian') ? 'active' : '' }}">
                     <i class='bx bx-show-alt'></i>
                     <span class="links_name">Penilaian</span>
                 </a>
                 <span class="tooltip">Penilaian</span>
+            </li>
+            <li>
+                <a href="{{ route('peserta.laporan') }}" class="{{ request()->routeIs('peserta.laporan') ? 'active' : '' }}">
+                    <i class='bx bx-file'></i>
+                    <span class="links_name">Laporan</span>
+                </a>
+                <span class="tooltip">Laporan</span>
             </li>
             <li>
                 <a href="{{ route('peserta.feedback') }}" class="{{ request()->routeIs('peserta.feedback') ? 'active' : '' }}">
