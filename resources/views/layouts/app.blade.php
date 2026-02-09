@@ -110,6 +110,14 @@
             background: #a1a1a1;
         }
 
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
         * {
             -webkit-tap-highlight-color: transparent;
         }

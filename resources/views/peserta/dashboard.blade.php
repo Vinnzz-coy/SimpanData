@@ -4,6 +4,7 @@
 
 @section('content')
     @php
+        /** @var \App\Models\User $user */
         $jenisKegiatan = $peserta->jenis_kegiatan ?? 'Kegiatan';
     @endphp
 
@@ -62,8 +63,9 @@
                         Anda.</p>
                 </div>
             </div>
-            <div class="flex items-center gap-3 px-4 py-3 border border-blue-100 bg-blue-50/50 rounded-xl">
-                <div class="text-right">
+            <div
+                class="flex items-center justify-between w-full gap-3 px-4 py-3 border border-blue-100 md:w-auto bg-blue-50/50 rounded-xl">
+                <div>
                     <p class="text-xs font-bold leading-none tracking-widest text-blue-500 uppercase">Status Program</p>
                     <p class="mt-1 text-base font-bold text-blue-900 uppercase">{{ $progress >= 100 ? 'Selesai' : 'Aktif' }}
                     </p>
@@ -83,7 +85,7 @@
                     <span class="text-xs font-bold tracking-widest uppercase text-slate-500">Presensi</span>
                 </div>
                 <h3 class="text-3xl font-bold text-slate-800">{{ $totalHadir }} <span
-                        class="text-sm font-medium text-slate-400">Hari</span></h3>
+                        class="text-sm font-medium text-slate-400">presensi</span></h3>
                 <p class="mt-1 text-xs font-medium text-slate-500">Total kehadiran terverifikasi</p>
             </div>
 
@@ -102,12 +104,12 @@
             <div class="p-5 transition-all duration-300 card group">
                 <div class="flex items-start justify-between mb-4">
                     <div class="flex items-center justify-center w-10 h-10 text-xl text-green-500 rounded-lg bg-green-50">
-                        <i class='bx bx-line-chart'></i>
+                        <i class='bx bx-calendar-check'></i>
                     </div>
-                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Progres</span>
+                    <span class="text-xs font-bold tracking-widest uppercase text-slate-500">Hari</span>
                 </div>
-                <h3 class="text-3xl font-bold text-slate-800">{{ $progress }}<span
-                        class="text-sm font-medium text-slate-400">%</span></h3>
+                <h3 class="text-3xl font-bold text-slate-800">{{ $passedDays ?? 0 }} <span
+                        class="text-sm font-medium text-slate-400">/ {{ $totalDays ?? 0 }} Hari</span></h3>
                 <div class="w-full bg-gray-100 h-1.5 rounded-full mt-2">
                     <div class="h-full transition-all duration-700 bg-green-500 rounded-full"
                         style="width: {{ $progress }}%"></div>
@@ -122,13 +124,13 @@
                         <div>
                             <p class="text-xs font-bold uppercase text-slate-500">Mulai</p>
                             <p class="text-base font-bold text-slate-800 mt-0.5">
-                                {{ $peserta && $peserta->tanggal_mulai ? $peserta->tanggal_mulai->format('d M Y') : '-' }}
+                                {{ $peserta && $peserta->tanggal_mulai ? \Carbon\Carbon::parse($peserta->tanggal_mulai)->format('d M Y') : '-' }}
                             </p>
                         </div>
                         <div>
                             <p class="text-xs font-bold uppercase text-slate-500">Selesai</p>
                             <p class="text-base font-bold text-slate-800 mt-0.5">
-                                {{ $peserta && $peserta->tanggal_selesai ? $peserta->tanggal_selesai->format('d M Y') : '-' }}
+                                {{ $peserta && $peserta->tanggal_selesai ? \Carbon\Carbon::parse($peserta->tanggal_selesai)->format('d M Y') : '-' }}
                             </p>
                         </div>
                     </div>
@@ -156,16 +158,27 @@
                         <p class="text-xs font-medium text-slate-400 whitespace-nowrap">Statistik aktivitas harian dalam
                             satu periode</p>
                     </div>
-                    <div class="flex items-center p-1 border border-gray-200 bg-gray-50 rounded-xl" id="chartFilter">
-                        <button data-filter="hari"
-                            class="filter-btn px-4 py-1.5 text-xs font-bold uppercase rounded-lg transition-all {{ $filter == 'hari' ? 'bg-white text-primary shadow-sm border border-gray-100' : 'text-slate-500 hover:text-slate-700' }}">Hari</button>
-                        <button data-filter="minggu"
-                            class="filter-btn px-4 py-1.5 text-xs font-bold uppercase rounded-lg transition-all {{ $filter == 'minggu' ? 'bg-white text-primary shadow-sm border border-gray-100' : 'text-slate-500 hover:text-slate-700' }}">Minggu</button>
-                        <button data-filter="bulan"
-                            class="filter-btn px-4 py-1.5 text-xs font-bold uppercase rounded-lg transition-all {{ $filter == 'bulan' ? 'bg-white text-primary shadow-sm border border-gray-100' : 'text-slate-500 hover:text-slate-700' }}">Bulan</button>
+
+                    <div class="flex flex-col gap-2 md:flex-row md:items-center">
+                        <select id="weekSelector"
+                            class="hidden w-full px-3 py-2 text-xs font-bold bg-white border border-gray-200 rounded-xl text-slate-600 focus:outline-none focus:border-primary md:w-auto md:py-1.5">
+                            @foreach ($availableWeeks as $wk)
+                                <option value="{{ $wk['value'] }}" {{ $weekFilter == $wk['value'] ? 'selected' : '' }}>
+                                    {{ $wk['label'] }}</option>
+                            @endforeach
+                        </select>
+                        <div class="flex items-center gap-1 p-1 overflow-x-auto border border-gray-200 bg-gray-50 rounded-xl no-scrollbar md:overflow-visible"
+                            id="chartFilter">
+                            <button data-filter="hari"
+                                class="filter-btn shrink-0 px-4 py-1.5 text-xs font-bold uppercase rounded-lg transition-all {{ $filter == 'hari' ? 'bg-white text-primary shadow-sm border border-gray-100' : 'text-slate-500 hover:text-slate-700' }}">Hari</button>
+                            <button data-filter="minggu"
+                                class="filter-btn shrink-0 px-4 py-1.5 text-xs font-bold uppercase rounded-lg transition-all {{ $filter == 'minggu' ? 'bg-white text-primary shadow-sm border border-gray-100' : 'text-slate-500 hover:text-slate-700' }}">Minggu</button>
+                            <button data-filter="bulan"
+                                class="filter-btn shrink-0 px-4 py-1.5 text-xs font-bold uppercase rounded-lg transition-all {{ $filter == 'bulan' ? 'bg-white text-primary shadow-sm border border-gray-100' : 'text-slate-500 hover:text-slate-700' }}">Bulan</button>
+                        </div>
                     </div>
                 </div>
-                <div class="h-[320px] w-full relative">
+                <div class="h-64 md:h-[320px] w-full relative">
                     <div id="chartLoading"
                         class="absolute inset-0 bg-white/50 backdrop-blur-[1px] items-center justify-center z-10 hidden">
                         <div class="w-8 h-8 border-4 rounded-full border-primary/20 border-t-primary animate-spin"></div>
@@ -181,7 +194,7 @@
                 <div class="relative w-full aspect-square flex items-center justify-center max-w-[240px]">
                     <canvas id="gaugeChart"></canvas>
                     <div class="absolute flex flex-col items-center justify-center mt-8 text-center">
-                        <h2 class="text-6xl font-extrabold leading-none tracking-tighter text-slate-900">
+                        <h2 class="text-4xl font-extrabold leading-none tracking-tighter md:text-6xl text-slate-900">
                             {{ $performanceScore }}
                         </h2>
                         <p class="mt-2 text-xs font-bold tracking-widest uppercase text-slate-500">Skor Indeks</p>
@@ -216,151 +229,12 @@
 
 @section('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            let attendanceChart;
-            const ctxAttendance = document.getElementById('attendanceChart').getContext('2d');
-            const loadingOverlay = document.getElementById('chartLoading');
-
-            function initChart(labels, data) {
-                const attGradient = ctxAttendance.createLinearGradient(0, 0, 0, 400);
-                attGradient.addColorStop(0, 'rgba(16, 54, 125, 0.1)');
-                attGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
-                if (attendanceChart) {
-                    attendanceChart.destroy();
-                }
-
-                attendanceChart = new Chart(ctxAttendance, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Sesi Kehadiran',
-                            data: data,
-                            borderColor: '#10367D',
-                            borderWidth: 3,
-                            backgroundColor: attGradient,
-                            fill: true,
-                            tension: 0.1,
-                            pointBackgroundColor: '#fff',
-                            pointBorderColor: '#10367D',
-                            pointBorderWidth: 2,
-                            pointRadius: 4,
-                            pointHoverRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                backgroundColor: '#1E293B',
-                                padding: 12,
-                                cornerRadius: 8
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1,
-                                    font: {
-                                        size: 11,
-                                        weight: '600'
-                                    },
-                                    color: '#64748B'
-                                },
-                                grid: {
-                                    color: '#F1F5F9'
-                                }
-                            },
-                            x: {
-                                ticks: {
-                                    font: {
-                                        size: 11,
-                                        weight: 'bold'
-                                    },
-                                    color: '#64748B'
-                                },
-                                grid: {
-                                    display: false
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            initChart(@json($absensiData['labels']), @json($absensiData['data']));
-
-            // AJAX Filtering Logic
-            const filterButtons = document.querySelectorAll('.filter-btn');
-            filterButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const filter = this.getAttribute('data-filter');
-
-                    // Update UI active state
-                    filterButtons.forEach(b => {
-                        b.classList.remove('bg-white', 'text-primary', 'shadow-sm',
-                            'border', 'border-gray-100');
-                        b.classList.add('text-slate-400', 'hover:text-slate-600');
-                    });
-                    this.classList.add('bg-white', 'text-primary', 'shadow-sm', 'border',
-                        'border-gray-100');
-                    this.classList.remove('text-slate-400', 'hover:text-slate-600');
-
-                    // Show loading
-                    loadingOverlay.classList.remove('hidden');
-
-                    // Fetch data
-                    fetch(`{{ route('peserta.dashboard') }}?filter=${filter}`, {
-                            headers: {
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            initChart(data.labels, data.data);
-                            loadingOverlay.classList.add('hidden');
-                        })
-                        .catch(error => {
-                            console.error('Error fetching chart data:', error);
-                            loadingOverlay.classList.add('hidden');
-                        });
-                });
-            });
-
-            // Speedometer Chart
-            const ctxGauge = document.getElementById('gaugeChart').getContext('2d');
-            new Chart(ctxGauge, {
-                type: 'doughnut',
-                data: {
-                    datasets: [{
-                        data: [{{ $performanceScore }}, {{ max(0, 100 - $performanceScore) }}],
-                        backgroundColor: ['#10367D', '#F1F5F9'],
-                        borderWidth: 0,
-                        circumference: 180,
-                        rotation: -90,
-                        cutout: '80%'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        tooltip: {
-                            enabled: false
-                        }
-                    },
-                    animation: {
-                        duration: 2000,
-                        easing: 'easeOutQuart'
-                    }
-                }
-            });
-        });
+        window.attendanceData = @json($absensiData);
+        window.performanceScore = {{ $performanceScore }};
+        window.routes = {
+            dashboard: "{{ route('peserta.dashboard') }}"
+        };
+        window.initialFilter = "{{ $filter }}";
     </script>
+    @vite('resources/js/peserta/dashboard.js')
 @endsection

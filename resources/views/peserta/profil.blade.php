@@ -2,45 +2,14 @@
 
 @section('title', 'Data Diri')
 
+@php
+    /** @var \App\Models\User $user */
+@endphp
+
 @push('styles')
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <style>
-        #map {
-            height: 500px;
-            width: 100%;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .btn-gps-loading i {
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .map-preview-container {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            margin-top: 0;
-        }
-
-        .map-preview-container.active {
-            max-height: 500px;
-            opacity: 1;
-            margin-top: 1.5rem;
-        }
-    </style>
+    @vite(['resources/css/peserta/profil.css', 'resources/js/peserta/profil.js'])
 @endpush
 
 @section('content')
@@ -239,7 +208,7 @@
                             </div>
                             <div>
                                 <h4 class="text-xl font-extrabold tracking-tight text-slate-900">Panduan Sistem</h4>
-                                <p class="text-sm text-slate-500 font-bold uppercase tracking-widest">Langkah awal untuk
+                                <p class="text-sm font-bold tracking-widest uppercase text-slate-500">Langkah awal untuk
                                     Anda</p>
                             </div>
                         </div>
@@ -251,7 +220,7 @@
                                     1</div>
                                 <div>
                                     <p class="text-sm font-extrabold text-slate-900">Lengkapi Profil</p>
-                                    <p class="text-sm text-slate-600 font-medium leading-relaxed">Pastikan data diri
+                                    <p class="text-sm font-medium leading-relaxed text-slate-600">Pastikan data diri
                                         valid untuk verifikasi.</p>
                                 </div>
                             </li>
@@ -261,7 +230,7 @@
                                     2</div>
                                 <div>
                                     <p class="text-sm font-extrabold text-slate-900">Presensi Harian</p>
-                                    <p class="text-sm text-slate-600 font-medium leading-relaxed">Lakukan absen Masuk &
+                                    <p class="text-sm font-medium leading-relaxed text-slate-600">Lakukan absen Masuk &
                                         Pulang setiap hari.</p>
                                 </div>
                             </li>
@@ -271,7 +240,7 @@
                                     3</div>
                                 <div>
                                     <p class="text-sm font-extrabold text-slate-900">Kirim Laporan</p>
-                                    <p class="text-sm text-slate-600 font-medium leading-relaxed">Update progres
+                                    <p class="text-sm font-medium leading-relaxed text-slate-600">Update progres
                                         kegiatan Anda secara rutin.</p>
                                 </div>
                             </li>
@@ -497,146 +466,4 @@
 @section('scripts')
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const profileView = document.getElementById('profileView');
-            const editView = document.getElementById('editView');
-            const btnEditProfile = document.getElementById('btnEditProfile');
-            const btnCancelEdit = document.getElementById('btnCancelEdit');
-            const fotoInput = document.getElementById('fotoInput');
-            const imagePreview = document.getElementById('imagePreview');
-
-            const btnGetGPS = document.getElementById('btnGetGPS');
-            const alamatInput = document.getElementById('alamatInput');
-            const mapContainer = document.getElementById('mapContainer');
-            const locationLabel = document.getElementById('locationLabel');
-            const mapDiv = document.getElementById('map');
-            let map, marker, currentLat, currentLng;
-
-            function showInlineMap() {
-                mapContainer.classList.add('active');
-                if (map) {
-                    setTimeout(() => {
-                        map.invalidateSize();
-                    }, 100);
-                }
-            }
-
-            function initMap(lat, lng) {
-                currentLat = lat;
-                currentLng = lng;
-
-                showInlineMap();
-
-                if (!map) {
-                    map = L.map('map').setView([lat, lng], 17);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '© OpenStreetMap'
-                    }).addTo(map);
-                    marker = L.marker([lat, lng], {
-                        draggable: true
-                    }).addTo(map);
-
-                    marker.on('dragend', function(e) {
-                        const newPos = marker.getLatLng();
-                        currentLat = newPos.lat;
-                        currentLng = newPos.lng;
-                        locationLabel.innerHTML =
-                            `<i class='mr-1 bx bx-sync bx-spin'></i> Memperbarui Alamat...`;
-                        reverseGeocode(currentLat, currentLng);
-                    });
-                } else {
-                    map.setView([lat, lng], 17);
-                    marker.setLatLng([lat, lng]);
-                }
-                locationLabel.innerHTML =
-                    `<i class='mr-1 text-green-500 bx bx-check-double'></i> Lokasi Anda Sekarang: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-            }
-
-            async function reverseGeocode(lat, lng) {
-                try {
-                    const response = await fetch(
-                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
-                    );
-                    const data = await response.json();
-                    if (data.display_name) {
-                        alamatInput.value = data.display_name;
-                        locationLabel.innerHTML =
-                            `<i class='mr-1 text-green-500 bx bxs-check-circle'></i> Alamat Tersinkronisasi`;
-                    }
-                } catch (error) {
-                    console.error('Error reverse geocoding:', error);
-                    locationLabel.innerHTML =
-                        `<i class='mr-1 text-red-500 bx bx-error-circle'></i> Gagal Mendapatkan Alamat`;
-                }
-            }
-
-            if (btnGetGPS) {
-                btnGetGPS.addEventListener('click', function() {
-                    if (!navigator.geolocation) {
-                        alert('Geolocation tidak didukung oleh browser Anda.');
-                        return;
-                    }
-
-                    btnGetGPS.disabled = true;
-                    btnGetGPS.classList.add('btn-gps-loading');
-                    btnGetGPS.innerHTML = "<i class='bx bx-loader-alt'></i> Mencari...";
-
-                    navigator.geolocation.getCurrentPosition(
-                        async (position) => {
-                                const {
-                                    latitude,
-                                    longitude
-                                } = position.coords;
-                                initMap(latitude, longitude);
-                                await reverseGeocode(latitude, longitude);
-
-                                btnGetGPS.disabled = false;
-                                btnGetGPS.classList.remove('btn-gps-loading');
-                                btnGetGPS.innerHTML = "<i class='bx bx-check'></i> Berhasil";
-                                setTimeout(() => {
-                                    btnGetGPS.innerHTML =
-                                        "<i class='text-base bx bx-map-pin'></i> Ambil dari GPS";
-                                }, 3000);
-                            },
-                            (error) => {
-                                btnGetGPS.disabled = false;
-                                btnGetGPS.classList.remove('btn-gps-loading');
-                                btnGetGPS.innerHTML =
-                                    "<i class='text-base bx bx-map-pin'></i> Ambil dari GPS";
-                                alert('Gagal mengambil lokasi: ' + error.message);
-                            }, {
-                                enableHighAccuracy: true
-                            }
-                    );
-                });
-            }
-
-            if (btnEditProfile) {
-                btnEditProfile.addEventListener('click', () => {
-                    profileView.classList.add('hidden');
-                    editView.classList.remove('hidden');
-                });
-            }
-
-            if (btnCancelEdit) {
-                btnCancelEdit.addEventListener('click', () => {
-                    editView.classList.add('hidden');
-                    profileView.classList.remove('hidden');
-                });
-            }
-
-            fotoInput.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        imagePreview.innerHTML =
-                            `<img src="${e.target.result}" class="object-cover w-full h-full">`;
-                    }
-                    reader.readAsDataURL(file);
-                }
-            });
-        });
-    </script>
 @endsection
