@@ -78,9 +78,9 @@
             <li>
                 <a href="{{ route('peserta.absensi') }}" class="{{ request()->routeIs('peserta.absensi') ? 'active' : '' }}">
                     <i class='bx bx-building'></i>
-                    <span class="links_name">Data Absensi</span>
+                    <span class="links_name">Absensi</span>
                 </a>
-                <span class="tooltip">Data Absensi</span>
+                <span class="tooltip">Absensi</span>
             </li>
             <li>
                 <a href="{{ route('peserta.laporan') }}" class="{{ request()->routeIs('peserta.laporan') ? 'active' : '' }}">

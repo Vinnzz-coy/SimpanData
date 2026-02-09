@@ -1,10 +1,11 @@
-// Authentication Page Logic
-
 let currentStep = 1;
 let emailVerified = false;
 let resendTimer = null;
+let usernameTimeout;
+let emailTimeout;
+let usernameValid = false;
+let emailValid = false;
 
-// Get CSRF Token from meta tag
 const getCsrfToken = () => document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
 window.showLogin = function() {
@@ -124,18 +125,120 @@ window.collectOtp = function() {
     return otp;
 }
 
+window.checkUsernameAvailability = async function() {
+    const username = document.getElementById('username').value;
+    const statusDiv = document.getElementById('usernameStatus');
+    
+    if (!username) {
+        statusDiv.innerHTML = '';
+        usernameValid = false;
+        updateSendOtpButton();
+        return;
+    }
+    
+    if (username.length < 3) {
+        statusDiv.innerHTML = '<span class="text-red-600"><i class="mr-1 fas fa-times"></i>Username minimal 3 karakter</span>';
+        usernameValid = false;
+        updateSendOtpButton();
+        return;
+    }
+    
+    try {
+        const response = await fetch(window.routes.checkUsername, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken(),
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ username })
+        });
+        
+        const data = await response.json();
+        
+        if (data.available) {
+            statusDiv.innerHTML = '<span class="text-green-600"><i class="mr-1 fas fa-check"></i>Username tersedia</span>';
+            usernameValid = true;
+        } else {
+            statusDiv.innerHTML = '<span class="text-red-600"><i class="mr-1 fas fa-times"></i>Username sudah digunakan</span>';
+            usernameValid = false;
+        }
+    } catch (error) {
+        console.error('Error checking username:', error);
+        statusDiv.innerHTML = '<span class="text-gray-500"><i class="mr-1 fas fa-exclamation-triangle"></i>Tidak dapat memeriksa username</span>';
+        usernameValid = false;
+    }
+    
+    updateSendOtpButton();
+}
+
+window.checkEmailAvailability = async function() {
+    const email = document.getElementById('emailInput').value;
+    const statusDiv = document.getElementById('emailStatus');
+    
+    if (!email) {
+        statusDiv.innerHTML = '';
+        emailValid = false;
+        updateSendOtpButton();
+        return;
+    }
+    
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+        statusDiv.innerHTML = '<span class="text-red-600"><i class="mr-1 fas fa-times"></i>Format email tidak valid</span>';
+        emailValid = false;
+        updateSendOtpButton();
+        return;
+    }
+    
+    try {
+        const response = await fetch(window.routes.checkEmailAvailability, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken(),
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ email })
+        });
+        
+        const data = await response.json();
+        
+        if (data.available) {
+            statusDiv.innerHTML = '<span class="text-green-600"><i class="mr-1 fas fa-check"></i>Email tersedia</span>';
+            emailValid = true;
+        } else {
+            statusDiv.innerHTML = '<span class="text-red-600"><i class="mr-1 fas fa-times"></i>Email sudah terdaftar</span>';
+            emailValid = false;
+        }
+    } catch (error) {
+        console.error('Error checking email:', error);
+        statusDiv.innerHTML = '<span class="text-gray-500"><i class="mr-1 fas fa-exclamation-triangle"></i>Tidak dapat memeriksa email</span>';
+        emailValid = false;
+    }
+    
+    updateSendOtpButton();
+}
+
+function updateSendOtpButton() {
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    if (sendOtpBtn) {
+        sendOtpBtn.disabled = !(usernameValid && emailValid);
+    }
+}
+
 window.sendOtp = async function() {
     const email = document.getElementById('emailInput').value;
+    const username = document.getElementById('username').value;
     const sendOtpBtn = document.getElementById('sendOtpBtn');
 
-    if (!email) {
-        showToast('Email wajib diisi', 'error');
+    if (!usernameValid || !emailValid) {
+        showToast('Pastikan username dan email valid dan tersedia', 'error');
         return;
     }
 
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(email)) {
-        showToast('Format email tidak valid', 'error');
+    if (!email || !username) {
+        showToast('Email dan username wajib diisi', 'error');
         return;
     }
 
@@ -154,7 +257,10 @@ window.sendOtp = async function() {
                 "X-CSRF-TOKEN": getCsrfToken(),
                 "Accept": "application/json"
             },
-            body: JSON.stringify({ email: email })
+            body: JSON.stringify({ 
+                email: email,
+                username: username
+            })
         });
 
         const data = await response.json();
@@ -458,5 +564,27 @@ document.addEventListener('DOMContentLoaded', function() {
     const firstInput = document.querySelector('input:not([type="hidden"])');
     if (firstInput && !firstInput.value) {
         setTimeout(() => firstInput.focus(), 300);
+    }
+    
+    // Add debounced validation for username
+    const usernameInput = document.getElementById('username');
+    if (usernameInput) {
+        usernameInput.addEventListener('input', function() {
+            clearTimeout(usernameTimeout);
+            const statusDiv = document.getElementById('usernameStatus');
+            statusDiv.innerHTML = '<span class="text-gray-500"><i class="mr-1 fas fa-spinner fa-spin"></i>Memeriksa...</span>';
+            usernameTimeout = setTimeout(checkUsernameAvailability, 500);
+        });
+    }
+    
+    // Add debounced validation for email
+    const emailInput = document.getElementById('emailInput');
+    if (emailInput) {
+        emailInput.addEventListener('input', function() {
+            clearTimeout(emailTimeout);
+            const statusDiv = document.getElementById('emailStatus');
+            statusDiv.innerHTML = '<span class="text-gray-500"><i class="mr-1 fas fa-spinner fa-spin"></i>Memeriksa...</span>';
+            emailTimeout = setTimeout(checkEmailAvailability, 500);
+        });
     }
 });

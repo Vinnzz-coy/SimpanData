@@ -145,11 +145,44 @@ class AuthController extends Controller
         }
     }
 
+    public function checkUsername(Request $request)
+    {
+        $exists = User::where('username', $request->username)->exists();
+        
+        return response()->json([
+            'available' => !$exists,
+            'message' => $exists ? 'Username sudah digunakan' : 'Username tersedia'
+        ]);
+    }
+
+    public function checkEmailAvailability(Request $request)
+    {
+        $exists = User::where('email', $request->email)->exists();
+        
+        return response()->json([
+            'available' => !$exists,
+            'message' => $exists ? 'Email sudah terdaftar' : 'Email tersedia'
+        ]);
+    }
+
     public function sendOtp(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|unique:user,email',
+            'username' => 'required|string|min:3|unique:user,username'
+        ], [
+            'email.unique' => 'Email sudah terdaftar dalam sistem',
+            'username.unique' => 'Username sudah digunakan',
+            'username.min' => 'Username minimal 3 karakter'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
         $otp = random_int(100000, 999999);
 

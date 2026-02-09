@@ -76,6 +76,49 @@ class DashboardController extends Controller
                 'feedbacks',
                 'pesertaPerSekolah'
             ));
+        } catch (\Exception $e) {
+            return view('admin.dashboard', [
+                'totalPkl' => 0,
+                'totalMagang' => 0,
+                'aktif' => 0,
+                'selesai' => 0,
+                'peserta' => collect(),
+                'sekolahs' => collect(),
+                'asal' => null,
+                'feedbacks' => collect(),
+                'absensiDataHari' => $this->getDefaultAbsensiData('hari'),
+                'absensiDataMinggu' => $this->getDefaultAbsensiData('minggu'),
+                'absensiDataBulan' => $this->getDefaultAbsensiData('bulan'),
+            ]);
+        }
+    }
+
+    private function getAbsensiDataHariIni()
+    {
+        try {
+            $today = Carbon::today();
+
+            $absensi = Absensi::selectRaw('HOUR(waktu_absen) as jam, status, COUNT(*) as jumlah')
+                ->whereDate('waktu_absen', $today)
+                ->whereIn('status', ['Hadir', 'Izin', 'Sakit'])
+                ->groupBy('jam', 'status')
+                ->get()
+                ->groupBy('jam');
+
+            $absensiData = [
+                'labels' => [],
+                'Hadir' => [],
+                'Izin' => [],
+                'Sakit' => []
+            ];
+
+            for ($i = 7; $i <= 17; $i++) {
+                $absensiData['labels'][] = sprintf("%02d:00", $i);
+                $hourData = $absensi->get($i, collect());
+                $absensiData['Hadir'][] = $hourData->where('status', 'Hadir')->sum('jumlah') ?? 0;
+                $absensiData['Izin'][] = $hourData->where('status', 'Izin')->sum('jumlah') ?? 0;
+                $absensiData['Sakit'][] = $hourData->where('status', 'Sakit')->sum('jumlah') ?? 0;
+            }
 
     }
 

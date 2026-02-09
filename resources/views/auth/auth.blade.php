@@ -132,6 +132,7 @@
                             placeholder="Buat Username"
                             class="w-full px-4 py-3 transition duration-200 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light hover:border-gray-400"
                             required>
+                        <div id="usernameStatus" class="mt-1 text-sm min-h-[20px]"></div>
                     </div>
 
                     <div class="space-y-2">
@@ -142,6 +143,7 @@
                             placeholder="simpandata@gmail.com"
                             class="w-full px-4 py-3 transition duration-200 border border-gray-300 rounded-lg focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary-light hover:border-gray-400"
                             required>
+                        <div id="emailStatus" class="mt-1 text-sm min-h-[20px]"></div>
                     </div>
 
                     <button type="button" onclick="sendOtp()" id="sendOtpBtn"
@@ -266,7 +268,9 @@
     <script>
         window.routes = {
             sendOtp: "{{ route('send.otp') }}",
-            verifyOtp: "{{ route('verify.otp') }}"
+            verifyOtp: "{{ route('verify.otp') }}",
+            checkUsername: "{{ route('check.username') }}",
+            checkEmailAvailability: "{{ route('check.email.availability') }}"
         };
         window.authConfig = {
             hasRegisterErrors: {{ $errors->has('username') || $errors->has('email') || $errors->has('password') ? 'true' : 'false' }}
