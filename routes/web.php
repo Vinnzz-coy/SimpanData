@@ -78,8 +78,26 @@ Route::middleware(['auth', 'role:peserta'])->group(function () {
     Route::get('/peserta/absensi', [App\Http\Controllers\Peserta\AbsensiController::class, 'index'])
         ->name('peserta.absensi');
 
+    Route::post('/peserta/absensi', [App\Http\Controllers\Peserta\AbsensiController::class, 'store'])
+        ->name('absensi.store');
+
     Route::get('/peserta/laporan', [App\Http\Controllers\Peserta\LaporanController::class, 'index'])
-        ->name('peserta.laporan');
+        ->name('laporan.index');
+
+    Route::post('/peserta/laporan', [App\Http\Controllers\Peserta\LaporanController::class, 'store'])
+        ->name('laporan.store');
+
+    Route::get('/peserta/laporan/{id}', [App\Http\Controllers\Peserta\LaporanController::class, 'show'])
+        ->name('laporan.show');
+
+    Route::get('/peserta/laporan/{id}/edit', [App\Http\Controllers\Peserta\LaporanController::class, 'edit'])
+        ->name('laporan.edit');
+
+    Route::put('/peserta/laporan/{id}', [App\Http\Controllers\Peserta\LaporanController::class, 'update'])
+        ->name('laporan.update');
+
+    Route::delete('/peserta/laporan/{id}', [App\Http\Controllers\Peserta\LaporanController::class, 'destroy'])
+        ->name('laporan.destroy');
 
     Route::get('/peserta/penilaian', [App\Http\Controllers\Peserta\PenilaianController::class, 'index'])
         ->name('peserta.penilaian');

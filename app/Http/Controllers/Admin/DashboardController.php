@@ -13,7 +13,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-
+        try {
             $totalPkl = Peserta::where('jenis_kegiatan', 'PKL')->count();
             $totalMagang = Peserta::where('jenis_kegiatan', 'Magang')->count();
             $aktif = Peserta::where('status', 'Aktif')->count();
@@ -86,9 +86,7 @@ class DashboardController extends Controller
                 'sekolahs' => collect(),
                 'asal' => null,
                 'feedbacks' => collect(),
-                'absensiDataHari' => $this->getDefaultAbsensiData('hari'),
-                'absensiDataMinggu' => $this->getDefaultAbsensiData('minggu'),
-                'absensiDataBulan' => $this->getDefaultAbsensiData('bulan'),
+                'pesertaPerSekolah' => collect(),
             ]);
         }
     }
@@ -120,6 +118,15 @@ class DashboardController extends Controller
                 $absensiData['Sakit'][] = $hourData->where('status', 'Sakit')->sum('jumlah') ?? 0;
             }
 
+            return $absensiData;
+        } catch (\Exception $e) {
+            return [
+                'labels' => [],
+                'Hadir' => [],
+                'Izin' => [],
+                'Sakit' => []
+            ];
+        }
     }
 
 

@@ -83,7 +83,7 @@
                 <span class="tooltip">Absensi</span>
             </li>
             <li>
-                <a href="{{ route('peserta.laporan') }}" class="{{ request()->routeIs('peserta.laporan') ? 'active' : '' }}">
+                <a href="{{ route('laporan.index') }}" class="{{ request()->routeIs('laporan.*') ? 'active' : '' }}">
                     <i class='bx bx-file'></i>
                     <span class="links_name">Laporan</span>
                 </a>
