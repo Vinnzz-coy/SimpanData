@@ -6,6 +6,7 @@ use App\Models\Peserta;
 use App\Models\Absensi;
 use App\Models\Laporan;
 use App\Models\Feedback;
+use App\Models\Partner;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -52,11 +53,34 @@ class IndexController extends Controller
                 ->first();
 
             $feedbacks = Feedback::with('peserta:id,nama,jenis_kegiatan')
+                ->where('tampilkan', true)
                 ->where('pengirim', 'Peserta')
-                ->where('dibaca', true)
                 ->latest()
                 ->limit(20)
                 ->get();
+
+            if ($feedbacks->count() > 0) {
+                while ($feedbacks->count() < 10) {
+                    $feedbacks = $feedbacks->concat($feedbacks);
+                }
+            }
+
+            $averageRating = Feedback::where('tampilkan', true)
+                ->whereNotNull('rating')
+                ->avg('rating');
+
+            $averageRating = round($averageRating, 1);
+            $totalReviews = Feedback::where('tampilkan', true)
+                ->whereNotNull('rating')
+                ->count();
+
+            $partners = Partner::latest()->get();
+
+            if ($partners->count() > 0) {
+                while ($partners->count() < 10) {
+                    $partners = $partners->concat($partners);
+                }
+            }
 
             return view('index', compact(
                 'totalPeserta',
@@ -69,7 +93,10 @@ class IndexController extends Controller
                 'feedbackProgress',
                 'recentAbsensi',
                 'recentLaporan',
-                'feedbacks'
+                'feedbacks',
+                'averageRating',
+                'totalReviews',
+                'partners'
             ));
         } catch (\Exception $e) {
             return view('index', [
@@ -84,6 +111,9 @@ class IndexController extends Controller
                 'recentAbsensi' => null,
                 'recentLaporan' => null,
                 'feedbacks' => collect(),
+                'averageRating' => 0,
+                'totalReviews' => 0,
+                'partners' => collect(),
             ]);
         }
     }

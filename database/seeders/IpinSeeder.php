@@ -41,8 +41,8 @@ class IpinSeeder extends Seeder
             ]
         );
 
-        // 3. Generate Absensi for the last 6 months
-        $startDate = Carbon::now()->subMonths(6);
+        // 3. Generate Absensi for the last 3 months
+        $startDate = Carbon::now()->subMonths(3);
         $endDate = Carbon::now();
 
         $period = CarbonPeriod::create($startDate, $endDate);

@@ -15,6 +15,8 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->enum('pengirim', ['Peserta', 'Admin']);
             $table->text('pesan');
+            $table->boolean('tampilkan')->default(false);
+            $table->integer('rating')->nullable();
             $table->boolean('dibaca')->default(false);
             $table->timestamps();
         });

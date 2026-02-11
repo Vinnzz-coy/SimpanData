@@ -52,12 +52,12 @@ class DashboardController extends Controller
                 ->limit(20)
                 ->get();
 
-            
+
 
             $pesertaPerSekolah = Peserta::select(
-                    'asal_sekolah_universitas',
-                    DB::raw('count(*) as total')
-                )
+                'asal_sekolah_universitas',
+                DB::raw('count(*) as total')
+            )
                 ->whereNotNull('asal_sekolah_universitas')
                 ->where('asal_sekolah_universitas', '!=', '')
                 ->groupBy('asal_sekolah_universitas')
@@ -128,6 +128,4 @@ class DashboardController extends Controller
             ];
         }
     }
-
-
 }

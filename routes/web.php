@@ -79,7 +79,7 @@ Route::middleware(['auth', 'role:peserta'])->group(function () {
         ->name('peserta.absensi');
 
     Route::post('/peserta/absensi', [App\Http\Controllers\Peserta\AbsensiController::class, 'store'])
-        ->name('absensi.store');
+        ->name('peserta.absensi.store');
 
     Route::get('/peserta/laporan', [App\Http\Controllers\Peserta\LaporanController::class, 'index'])
         ->name('laporan.index');
@@ -105,6 +105,9 @@ Route::middleware(['auth', 'role:peserta'])->group(function () {
     Route::get('/peserta/feedback', [App\Http\Controllers\Peserta\FeedbackController::class, 'index'])
         ->name('peserta.feedback');
 
+    Route::post('/peserta/feedback', [App\Http\Controllers\Peserta\FeedbackController::class, 'store'])
+        ->name('peserta.feedback.store');
+
     Route::get('/peserta/settings', [App\Http\Controllers\Peserta\SettingsController::class, 'index'])->name('peserta.settings.index');
     Route::post('/peserta/settings', [App\Http\Controllers\Peserta\SettingsController::class, 'update'])->name('peserta.settings.update');
 });
@@ -127,6 +130,15 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('admin/user', App\Http\Controllers\Admin\UserController::class)->only(['index', 'show'])->names([
         'index' => 'admin.user.index',
         'show' => 'admin.user.show',
+    ]);
+
+    Route::resource('admin/partners', App\Http\Controllers\Admin\PartnerController::class)->names([
+        'index' => 'admin.partners.index',
+        'create' => 'admin.partners.create',
+        'store' => 'admin.partners.store',
+        'edit' => 'admin.partners.edit',
+        'update' => 'admin.partners.update',
+        'destroy' => 'admin.partners.destroy',
     ]);
 
     Route::get('/admin/penilaian', [App\Http\Controllers\Admin\PenilaianController::class, 'index'])->name('admin.penilaian.index');
