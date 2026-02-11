@@ -24,6 +24,49 @@ SimpanData adalah aplikasi berbasis web yang dirancang untuk mempermudah manajem
 
 ---
 
+## 🔄 Mekanisme Kinerja Magang
+
+Sistem **SimpanData** mengadopsi alur kerja yang terintegrasi untuk memastikan siklus magang berjalan secara profesional, transparan, dan terukur. Berikut adalah urutan mekanisme kinerjanya:
+
+### 1. Fase Registrasi & Onboarding
+*   **🔑 Pembuatan Akun**: Admin mendaftarkan peserta ke dalam sistem. Akun default dibuat untuk akses awal.
+*   **📝 Aktivasi Profil**: Peserta login pertama kali untuk melengkapi data diri, mengunggah foto profil, dan memverifikasi alamat sekolah/universitas serta masa magang.
+*   **✅ Verifikasi Data**: Admin memverifikasi kelengkapan profil peserta untuk memastikan validitas administratif.
+
+### 2. Siklus Operasional Harian
+*   **📍 Presensi Geospasial**: Peserta melakukan absen **Masuk** dan **Pulang** secara mandiri. Sistem menggunakan **Reverse Geocoding (Nominatim API)** untuk mendeteksi alamat asli secara real-time berdasarkan koordinat GPS.
+*   **🏥 Manajemen Kondisi**: Peserta dapat memilih status *Hadir, Izin,* atau *Sakit*. Jika memilih Izin/Sakit, sistem secara otomatis menyesuaikan formulir untuk pengisian keterangan tanpa perlu input mode kerja (WFO/WFA).
+*   **📅 Monitoring Kehadiran**: Admin memantau status kehadiran seluruh peserta melalui dashboard pusat untuk mendeteksi ketidakhadiran tanpa keterangan secara dini.
+
+### 3. Monitoring & Evaluasi Berkelanjutan
+*   **💬 Dual-Feedback System**: Tersedia saluran komunikasi dua arah. Peserta dapat memberikan feedback atau bertanya, sementara Admin dapat memberikan instruksi atau evaluasi berkala langsung di portal masing-masing.
+*   **📊 Performance Tracking**: Sistem menghitung skor kinerja sementara berdasarkan persentase kehadiran dan ketepatan waktu absensi yang ditampilkan dalam grafik interaktif.
+
+### 4. Penilaian Akhir & Pengarsipan
+*   **🏅 Penilaian 5 Pilar**: Di akhir periode, Admin melakukan evaluasi berdasarkan 5 pilar kompetensi (Kedisiplinan, Keterampilan, Kerjasama, Inisiatif, Komunikasi).
+*   **📉 Penentuan Predikat**: Sistem secara otomatis menghitung *Mean Average* dan memberikan predikat (Grade A-E) secara instan.
+*   **📦 Pengarsipan**: Setelah magang selesai, data peserta dipindahkan ke modul **Arsip** untuk menjaga kebersihan database aktif sambil tetap menyimpan ringkasan kinerja untuk referensi masa depan.
+
+---
+
+## 🔍 Analisis Pengembangan (Roadmap)
+
+Berdasarkan analisis struktur proyek saat ini, berikut adalah poin-poin pengembangan yang dapat ditingkatkan (Future Improvements):
+
+1.  **🚀 Modul Laporan Harian (On-Progress)**:
+    *   Mengganti placeholder Laporan dengan sistem pengisian log aktivitas harian yang memungkinkan peserta menceritakan detail tugas yang dikerjakan.
+    *   Fitur unggah bukti file/gambar aktivitas.
+2.  **📑 Export & Reporting**:
+    *   Integrasi penuh Phpspreadsheet untuk mencetak *Sertifikat Penilaian* dan *Rekap Absensi* dalam format PDF atau Excel secara otomatis.
+3.  **🔔 Sistem Notifikasi Otomatis**:
+    *   Pengiriman notifikasi (Email/WhatsApp) jika peserta lupa melakukan absen pulang atau jika performa menurun di bawah standar.
+4.  **📤 Bulk Import Peserta**:
+    *   Fitur untuk mendaftarkan banyak peserta sekaligus melalui file CSV/Excel guna efisiensi administrasi bagi instansi dengan banyak peserta.
+5.  **📜 Log Audit Aktivitas**:
+    *   Pencatatan riwayat perubahan data (audit log) untuk melacak siapa dan kapan perubahan nilai atau status peserta dilakukan demi aspek keamanan data.
+
+---
+
 ## 🛠️ Tech Stack
 
 - **Framework**: [Laravel 12](https://laravel.com)
@@ -32,7 +75,7 @@ SimpanData adalah aplikasi berbasis web yang dirancang untuk mempermudah manajem
 - **Bundler**: [Vite](https://vitejs.dev/)
 - **Interactivity**: [Alpine.js](https://alpinejs.dev/) & Vanilla JavaScript
 - **Icons**: [Boxicons](https://boxicons.com/) & Font Awesome
-- **Other**: Phpspreadsheet (untuk export/rekap data)
+- **Other**: Phpspreadsheet (untuk export/rekap data), Nominatim API (Reverse Geocoding)
 
 ---
 

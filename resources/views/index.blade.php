@@ -15,67 +15,110 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
-    tailwind.config = {
-    theme: {
-        extend: {
-        fontFamily: {
-            inter: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        },
-        colors: {
-            primary: '#3b82f6',
-            'primary-dark': '#1e40af',
-            secondary: '#64748b',
-            background: '#ffffff',
-            surface: '#f8fafc',
-            'text-primary': '#1e293b',
-            'text-secondary': '#64748b',
-            border: '#e2e8f0',
-        },
-        boxShadow: {
-            custom: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-            'custom-lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-        },
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#3b82f6',
+                        'primary-dark': '#1e40af',
+                        secondary: '#64748b',
+                        background: '#ffffff',
+                        surface: '#f8fafc',
+                        'text-primary': '#1e293b',
+                        'text-secondary': '#64748b',
+                        border: '#e2e8f0',
+                    },
+                    boxShadow: {
+                        custom: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        'custom-lg': '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                    },
 
-        animation: {
-            'scroll-left':  'scroll-left 80s linear infinite',
-            'scroll-right': 'scroll-right 80s linear infinite',
-            'blob':  'blob 7s infinite',
-            'float': 'float 3s ease-in-out infinite',
-        },
+                    animation: {
+                        'scroll-left': 'scroll-left 80s linear infinite',
+                        'scroll-right': 'scroll-right 80s linear infinite',
+                        'blob': 'blob 7s infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                    },
 
-        keyframes: {
-            'scroll-left': {
-            '0%':   { transform: 'translateX(0)' },
-            '100%': { transform: 'translateX(-100%)' },
+                    keyframes: {
+                        'scroll-left': {
+                            '0%': {
+                                transform: 'translateX(0)'
+                            },
+                            '100%': {
+                                transform: 'translateX(-50%)'
+                            },
+                        },
+
+                        'scroll-right': {
+                            '0%': {
+                                transform: 'translateX(-50%)'
+                            },
+                            '100%': {
+                                transform: 'translateX(0)'
+                            },
+                        },
+
+                        blob: {
+                            '0%, 100%': {
+                                transform: 'translate(0,0) scale(1)'
+                            },
+                            '33%': {
+                                transform: 'translate(30px,-50px) scale(1.1)'
+                            },
+                            '66%': {
+                                transform: 'translate(-20px,20px) scale(0.9)'
+                            },
+                        },
+
+                        float: {
+                            '0%, 100%': {
+                                transform: 'translateY(0)'
+                            },
+                            '50%': {
+                                transform: 'translateY(-10px)'
+                            },
+                        },
+                    },
+                },
             },
-
-            'scroll-right': {
-            '0%':   { transform: 'translateX(-100%)' },
-            '100%': { transform: 'translateX(0)' },
-            },
-
-            blob: {
-            '0%, 100%': { transform: 'translate(0,0) scale(1)' },
-            '33%': { transform: 'translate(30px,-50px) scale(1.1)' },
-            '66%': { transform: 'translate(-20px,20px) scale(0.9)' },
-            },
-
-            float: {
-            '0%, 100%': { transform: 'translateY(0)' },
-            '50%': { transform: 'translateY(-10px)' },
-            },
-        },
-        },
-    },
-    }
+        }
     </script>
 
 
     <link rel="stylesheet" href="{{ asset('css/landing.css') }}">
+    <style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        .animate-marquee {
+            animation: marquee 80s linear infinite;
+        }
+    </style>
 </head>
 
 <body class="font-inter">
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 bg-white/70 backdrop-blur-sm">
+    <nav id="navbar"
+        class="fixed top-0 left-0 right-0 z-50 py-4 transition-all duration-300 bg-white/70 backdrop-blur-sm">
         <div class="flex items-center justify-between px-6 mx-auto max-w-7xl">
             <a href="#home" class="flex items-center gap-3 no-underline">
                 <img src="{{ asset('storage/logo/logo_simpandata.webp') }}" alt="SimpanData Logo"
@@ -89,6 +132,9 @@
                 </li>
                 <li><a href="#features"
                         class="no-underline text-text-secondary font-medium transition-colors duration-300 relative hover:text-primary after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">Fitur</a>
+                </li>
+                <li><a href="#partners"
+                        class="no-underline text-text-secondary font-medium transition-colors duration-300 relative hover:text-primary after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">Partner</a>
                 </li>
                 <li><a href="#feedback"
                         class="no-underline text-text-secondary font-medium transition-colors duration-300 relative hover:text-primary after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-0.5 after:bg-primary after:transition-all after:duration-300 hover:after:w-full">Testimoni</a>
@@ -110,6 +156,8 @@
             <ul class="p-0 list-none">
                 <li class="mb-2"><a href="#home" class="block p-3 no-underline text-text-primary">Beranda</a></li>
                 <li class="mb-2"><a href="#features" class="block p-3 no-underline text-text-primary">Fitur</a></li>
+                <li class="mb-2"><a href="#partners" class="block p-3 no-underline text-text-primary">Partner</a>
+                </li>
                 <li class="mb-2"><a href="#feedback" class="block p-3 no-underline text-text-primary">Testimoni</a>
                 </li>
             </ul>
@@ -131,7 +179,8 @@
 
         <div class="relative z-10 w-full max-w-4xl px-6 mx-auto">
             <div class="flex flex-col items-center text-center hero-content">
-                <h1 class="mb-6 text-5xl font-extrabold leading-tight reveal-scale md:text-6xl lg:text-7xl text-text-primary">
+                <h1
+                    class="mb-6 text-5xl font-extrabold leading-tight reveal-scale md:text-6xl lg:text-7xl text-text-primary">
                     Kelola PKL & Magang
                     <span class="block mt-2 gradient-text">Jadi Lebih Mudah</span>
                 </h1>
@@ -163,15 +212,20 @@
         <div class="relative flex overflow-hidden group">
             <div class="flex min-w-full gap-16 py-4 pr-16 animate-scroll-left whitespace-nowrap shrink-0">
                 @for ($i = 0; $i < 10; $i++)
-                    <div class="flex items-center justify-center w-64 h-32 transition-all duration-300 transform cursor-pointer hover:scale-110 hover:drop-shadow-lg opacity-60 hover:opacity-100 filter grayscale hover:grayscale-0">
-                        <img src="{{ asset('storage/logo/Logo_GI.png') }}" alt="Logo Partner" class="object-contain w-full h-full">
+                    <div
+                        class="flex items-center justify-center w-64 h-32 transition-all duration-300 transform opacity-100 cursor-pointer hover:scale-110 hover:drop-shadow-lg">
+                        <img src="{{ asset('storage/logo/Logo_GI.png') }}" alt="Logo Partner"
+                            class="object-contain w-full h-full">
                     </div>
                 @endfor
             </div>
-            <div class="flex min-w-full gap-16 py-4 pr-16 animate-scroll-left whitespace-nowrap shrink-0" aria-hidden="true">
+            <div class="flex min-w-full gap-16 py-4 pr-16 animate-scroll-left whitespace-nowrap shrink-0"
+                aria-hidden="true">
                 @for ($i = 0; $i < 10; $i++)
-                    <div class="flex items-center justify-center w-64 h-32 transition-all duration-300 transform cursor-pointer hover:scale-110 hover:drop-shadow-lg opacity-60 hover:opacity-100 filter grayscale hover:grayscale-0">
-                        <img src="{{ asset('storage/logo/Logo_GI.png') }}" alt="Logo Partner" class="object-contain w-full h-full">
+                    <div
+                        class="flex items-center justify-center w-64 h-32 transition-all duration-300 transform opacity-100 cursor-pointer hover:scale-110 hover:drop-shadow-lg">
+                        <img src="{{ asset('storage/logo/Logo_GI.png') }}" alt="Logo Partner"
+                            class="object-contain w-full h-full">
                     </div>
                 @endfor
             </div>
@@ -278,6 +332,135 @@
         </div>
     </section>
 
+    <section id="partners" class="py-20 overflow-hidden bg-white">
+        <div class="px-6 mx-auto max-w-7xl">
+            <div class="mb-16 text-center">
+                <span
+                    class="inline-flex items-center gap-2 px-4 py-2 mb-4 text-sm font-medium bg-blue-100 rounded-full reveal text-primary">
+                    <i class='bx bx-buildings'></i>
+                    Partner Kami
+                </span>
+                <h2 class="mb-4 text-4xl font-bold reveal text-text-primary">
+                    Institusi yang <span class="gradient-text">Bekerja Sama</span>
+                </h2>
+                <p class="max-w-2xl mx-auto text-lg reveal text-text-secondary">
+                    Kami bangga dapat bekerja sama dengan berbagai institusi pendidikan terkemuka di Indonesia.
+                </p>
+            </div>
+
+        </div>
+        </div>
+
+        @if ($partners->count() > 0)
+            <div
+                class="relative py-10 group overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+                <div class="flex">
+                    <div
+                        class="flex shrink-0 animate-marquee items-center group-hover:[animation-play-state:paused] gap-8 pr-8">
+                        @foreach ($partners as $partner)
+                            <div class="relative flex-shrink-0 w-32 h-32 md:w-36 md:h-36">
+                                <div
+                                    class="absolute inset-0 z-10 flex overflow-hidden transition-all duration-500 ease-out bg-white shadow-sm cursor-pointer rounded-2xl border-2 border-slate-200 group/card hover:w-[85vw] hover:-translate-x-1/2 hover:left-1/2 md:hover:w-[32rem] md:hover:-translate-x-16 md:hover:left-0 hover:z-50 hover:shadow-2xl hover:border-primary">
+                                    <div
+                                        class="flex items-center justify-center flex-shrink-0 w-32 h-32 p-6 transition-all duration-300 bg-white md:w-36 md:h-36">
+                                        @if ($partner->logo)
+                                            <img src="{{ asset('storage/' . $partner->logo) }}"
+                                                alt="{{ $partner->nama }}"
+                                                class="object-contain w-full h-full transition-all duration-300 opacity-100">
+                                        @else
+                                            <i class='text-4xl text-gray-300 bx bx-buildings'></i>
+                                        @endif
+                                    </div>
+                                    <div
+                                        class="flex-1 min-w-[200px] p-6 flex flex-col justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 delay-100 bg-gray-50/50 border-l border-gray-100">
+                                        <h4 class="mb-2 text-lg font-bold text-gray-900 line-clamp-1 title"
+                                            title="{{ $partner->nama }}">{{ $partner->nama }}</h4>
+                                        <div class="space-y-2">
+                                            <div class="flex items-start gap-2 text-sm text-gray-600">
+                                                <i class='mt-1 bx bx-buildings text-primary'></i>
+                                                <span class="font-semibold leading-snug line-clamp-2">{{ $partner->nama }}</span>
+                                            </div>
+                                            @if ($partner->alamat)
+                                                <div class="flex items-start gap-2 text-sm text-gray-600">
+                                                    <i class='mt-1 bx bx-map text-primary'></i>
+                                                    <span
+                                                        class="leading-snug line-clamp-2">{{ $partner->alamat }}</span>
+                                                </div>
+                                            @endif
+                                            @if ($partner->deskripsi)
+                                                <div class="flex items-start gap-2 text-sm text-gray-600">
+                                                    <i class='mt-1 bx bx-info-circle text-primary'></i>
+                                                    <span
+                                                        class="leading-snug line-clamp-3">{{ $partner->deskripsi }}</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <div class="flex shrink-0 animate-marquee items-center group-hover:[animation-play-state:paused] gap-8 pr-8"
+                        aria-hidden="true">
+                        @foreach ($partners as $partner)
+                            <div class="relative flex-shrink-0 w-32 h-32 md:w-36 md:h-36">
+                                <div
+                                    class="absolute inset-0 z-10 flex overflow-hidden transition-all duration-500 ease-out bg-white shadow-sm cursor-pointer rounded-2xl border-2 border-slate-200 group/card hover:w-[85vw] hover:-translate-x-1/2 hover:left-1/2 md:hover:w-[32rem] md:hover:-translate-x-16 md:hover:left-0 hover:z-50 hover:shadow-2xl hover:border-primary">
+
+                                    <div
+                                        class="flex items-center justify-center flex-shrink-0 w-32 h-32 p-6 transition-all duration-300 bg-white md:w-36 md:h-36">
+                                        @if ($partner->logo)
+                                            <img src="{{ asset('storage/' . $partner->logo) }}"
+                                                alt="{{ $partner->nama }}"
+                                                class="object-contain w-full h-full transition-all duration-300 opacity-100">
+                                        @else
+                                            <i class='text-4xl text-gray-300 bx bx-buildings'></i>
+                                        @endif
+                                    </div>
+
+                                    <div
+                                        class="flex-1 min-w-[200px] p-6 flex flex-col justify-center opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 delay-100 bg-gray-50/50 border-l border-gray-100">
+                                        <h4 class="mb-2 text-lg font-bold text-gray-900 line-clamp-1 title"
+                                            title="{{ $partner->nama }}">{{ $partner->nama }}</h4>
+
+                                        <div class="space-y-2">
+                                            <div class="flex items-start gap-2 text-sm text-gray-600">
+                                                <i class='mt-1 bx bx-buildings text-primary'></i>
+                                                <span class="font-semibold leading-snug line-clamp-2">{{ $partner->nama }}</span>
+                                            </div>
+                                            @if ($partner->alamat)
+                                                <div class="flex items-start gap-2 text-sm text-gray-600">
+                                                    <i class='mt-1 bx bx-map text-primary'></i>
+                                                    <span
+                                                        class="leading-snug line-clamp-2">{{ $partner->alamat }}</span>
+                                                </div>
+                                            @endif
+
+                                            @if ($partner->deskripsi)
+                                                <div class="flex items-start gap-2 text-sm text-gray-600">
+                                                    <i class='mt-1 bx bx-info-circle text-primary'></i>
+                                                    <span
+                                                        class="leading-snug line-clamp-3">{{ $partner->deskripsi }}</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        @else
+            <div class="py-12 text-center text-gray-400 reveal">
+                <i class='mb-4 text-6xl opacity-50 bx bx-buildings'></i>
+                <p>Belum ada data partner yang ditampilkan.</p>
+            </div>
+        @endif
+        </div>
+    </section>
+
     <section id="feedback" class="py-20 overflow-hidden bg-gradient-to-b from-white to-slate-50">
         <div class="px-6 mx-auto max-w-7xl">
             <div class="mb-16 text-center">
@@ -293,37 +476,86 @@
                     Banyak pengguna yang sudah merasakan kemudahan dalam mengelola program PKL dan magang
                     dengan SimpanData. Berikut adalah beberapa testimoni dari mereka.
                 </p>
+
+                @if ($totalReviews > 0)
+                    <div class="flex items-center justify-center gap-2 mt-6 reveal">
+                        <div class="flex text-xl text-yellow-400">
+                            @for ($i = 1; $i <= 5; $i++)
+                                @if ($i <= round($averageRating))
+                                    <i class='bx bxs-star'></i>
+                                @elseif($i - 0.5 <= $averageRating)
+                                    <i class='bx bxs-star-half'></i>
+                                @else
+                                    <i class='bx bx-star'></i>
+                                @endif
+                            @endfor
+                        </div>
+                        <span class="text-lg font-bold text-text-primary">{{ $averageRating }}</span>
+                        <span class="text-sm text-text-secondary">({{ $totalReviews }} ulasan)</span>
+                    </div>
+                @endif
             </div>
         </div>
 
-        @if($feedbacks && $feedbacks->count() > 0)
+        @if ($feedbacks && $feedbacks->count() > 0)
             <div class="relative py-8 overflow-hidden feedback-container" id="feedbackContainer1">
-                <div class="feedback-track animate-scroll-right" style="animation-duration: 100s; animation-direction: reverse;" id="feedbackTrack1">
-                    @foreach($feedbacks as $feedback)
-                        <div class="flex-shrink-0 w-full max-w-sm p-6 bg-white border rounded-2xl shadow-custom border-border">
+                <div class="feedback-track animate-scroll-right"
+                    style="animation-duration: 80s; animation-direction: reverse;" id="feedbackTrack1">
+                    @foreach ($feedbacks as $feedback)
+                        <div
+                            class="flex-shrink-0 w-full max-w-sm p-6 transition-all duration-300 bg-white border cursor-pointer rounded-2xl shadow-custom border-border hover:scale-105 hover:shadow-xl hover:z-10 hover:border-primary/30">
                             <div class="flex items-center gap-4 mb-4">
-                                <div class="flex items-center justify-center w-12 h-12 font-bold text-white rounded-full bg-gradient-to-br from-primary to-primary-dark">
+                                <div
+                                    class="flex items-center justify-center w-12 h-12 font-bold text-white rounded-full bg-gradient-to-br from-primary to-primary-dark">
                                     {{ $feedback->peserta ? strtoupper(substr($feedback->peserta->nama, 0, 1)) : 'U' }}
                                 </div>
                                 <div>
-                                    <h4 class="m-0 font-bold text-text-primary">{{ $feedback->peserta ? $feedback->peserta->nama : 'Pengguna' }}</h4>
-                                    <p class="m-0 text-sm text-text-secondary">{{ $feedback->peserta ? $feedback->peserta->jenis_kegiatan : 'Peserta' }}</p>
+                                    <h4 class="m-0 font-bold text-text-primary">
+                                        {{ $feedback->peserta ? $feedback->peserta->nama : 'Pengguna' }}</h4>
+                                    <p class="m-0 text-sm text-text-secondary">
+                                        {{ $feedback->peserta ? $feedback->peserta->jenis_kegiatan : 'Peserta' }}</p>
                                 </div>
                             </div>
+                            @if ($feedback->rating)
+                                <div class="flex mb-2 text-sm text-yellow-400">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= $feedback->rating)
+                                            <i class='bx bxs-star'></i>
+                                        @else
+                                            <i class='text-gray-200 bx bx-star'></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                            @endif
                             <p class="text-text-secondary line-clamp-3">{{ $feedback->pesan }}</p>
                         </div>
                     @endforeach
-                    @foreach($feedbacks as $feedback)
-                        <div class="flex-shrink-0 w-full max-w-sm p-6 bg-white border rounded-2xl shadow-custom border-border">
+                    @foreach ($feedbacks as $feedback)
+                        <div
+                            class="flex-shrink-0 w-full max-w-sm p-6 transition-all duration-300 bg-white border cursor-pointer rounded-2xl shadow-custom border-border hover:scale-105 hover:shadow-xl hover:z-10 hover:border-primary/30">
                             <div class="flex items-center gap-4 mb-4">
-                                <div class="flex items-center justify-center w-12 h-12 font-bold text-white rounded-full bg-gradient-to-br from-primary to-primary-dark">
+                                <div
+                                    class="flex items-center justify-center w-12 h-12 font-bold text-white rounded-full bg-gradient-to-br from-primary to-primary-dark">
                                     {{ $feedback->peserta ? strtoupper(substr($feedback->peserta->nama, 0, 1)) : 'U' }}
                                 </div>
                                 <div>
-                                    <h4 class="m-0 font-bold text-text-primary">{{ $feedback->peserta ? $feedback->peserta->nama : 'Pengguna' }}</h4>
-                                    <p class="m-0 text-sm text-text-secondary">{{ $feedback->peserta ? $feedback->peserta->jenis_kegiatan : 'Peserta' }}</p>
+                                    <h4 class="m-0 font-bold text-text-primary">
+                                        {{ $feedback->peserta ? $feedback->peserta->nama : 'Pengguna' }}</h4>
+                                    <p class="m-0 text-sm text-text-secondary">
+                                        {{ $feedback->peserta ? $feedback->peserta->jenis_kegiatan : 'Peserta' }}</p>
                                 </div>
                             </div>
+                            @if ($feedback->rating)
+                                <div class="flex mb-2 text-sm text-yellow-400">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= $feedback->rating)
+                                            <i class='bx bxs-star'></i>
+                                        @else
+                                            <i class='text-gray-200 bx bx-star'></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                            @endif
                             <p class="text-text-secondary line-clamp-3">{{ $feedback->pesan }}</p>
                         </div>
                     @endforeach
@@ -331,32 +563,63 @@
             </div>
 
             <div class="relative py-8 mt-8 overflow-hidden feedback-container" id="feedbackContainer2">
-                <div class="feedback-track animate-scroll-left" style="animation-duration: 100s; animation-direction: reverse;" id="feedbackTrack2">
-                    @foreach($feedbacks as $feedback)
-                        <div class="flex-shrink-0 w-full max-w-sm p-6 bg-white border rounded-2xl shadow-custom border-border">
+                <div class="feedback-track animate-scroll-left"
+                    style="animation-duration: 80s; animation-direction: reverse;" id="feedbackTrack2">
+                    @foreach ($feedbacks as $feedback)
+                        <div
+                            class="flex-shrink-0 w-full max-w-sm p-6 transition-all duration-300 bg-white border cursor-pointer rounded-2xl shadow-custom border-border hover:scale-105 hover:shadow-xl hover:z-10 hover:border-primary/30">
                             <div class="flex items-center gap-4 mb-4">
-                                <div class="flex items-center justify-center w-12 h-12 font-bold text-white rounded-full bg-gradient-to-br from-primary to-primary-dark">
+                                <div
+                                    class="flex items-center justify-center w-12 h-12 font-bold text-white rounded-full bg-gradient-to-br from-primary to-primary-dark">
                                     {{ $feedback->peserta ? strtoupper(substr($feedback->peserta->nama, 0, 1)) : 'U' }}
                                 </div>
                                 <div>
-                                    <h4 class="m-0 font-bold text-text-primary">{{ $feedback->peserta ? $feedback->peserta->nama : 'Pengguna' }}</h4>
-                                    <p class="m-0 text-sm text-text-secondary">{{ $feedback->peserta ? $feedback->peserta->jenis_kegiatan : 'Peserta' }}</p>
+                                    <h4 class="m-0 font-bold text-text-primary">
+                                        {{ $feedback->peserta ? $feedback->peserta->nama : 'Pengguna' }}</h4>
+                                    <p class="m-0 text-sm text-text-secondary">
+                                        {{ $feedback->peserta ? $feedback->peserta->jenis_kegiatan : 'Peserta' }}</p>
                                 </div>
                             </div>
+                            @if ($feedback->rating)
+                                <div class="flex mb-2 text-sm text-yellow-400">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= $feedback->rating)
+                                            <i class='bx bxs-star'></i>
+                                        @else
+                                            <i class='text-gray-200 bx bx-star'></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                            @endif
                             <p class="text-text-secondary line-clamp-3">{{ $feedback->pesan }}</p>
                         </div>
                     @endforeach
-                    @foreach($feedbacks as $feedback)
-                        <div class="flex-shrink-0 w-full max-w-sm p-6 bg-white border rounded-2xl shadow-custom border-border">
+                    @foreach ($feedbacks as $feedback)
+                        <div
+                            class="flex-shrink-0 w-full max-w-sm p-6 transition-all duration-300 bg-white border cursor-pointer rounded-2xl shadow-custom border-border hover:scale-105 hover:shadow-xl hover:z-10 hover:border-primary/30">
                             <div class="flex items-center gap-4 mb-4">
-                                <div class="flex items-center justify-center w-12 h-12 font-bold text-white rounded-full bg-gradient-to-br from-primary to-primary-dark">
+                                <div
+                                    class="flex items-center justify-center w-12 h-12 font-bold text-white rounded-full bg-gradient-to-br from-primary to-primary-dark">
                                     {{ $feedback->peserta ? strtoupper(substr($feedback->peserta->nama, 0, 1)) : 'U' }}
                                 </div>
                                 <div>
-                                    <h4 class="m-0 font-bold text-text-primary">{{ $feedback->peserta ? $feedback->peserta->nama : 'Pengguna' }}</h4>
-                                    <p class="m-0 text-sm text-text-secondary">{{ $feedback->peserta ? $feedback->peserta->jenis_kegiatan : 'Peserta' }}</p>
+                                    <h4 class="m-0 font-bold text-text-primary">
+                                        {{ $feedback->peserta ? $feedback->peserta->nama : 'Pengguna' }}</h4>
+                                    <p class="m-0 text-sm text-text-secondary">
+                                        {{ $feedback->peserta ? $feedback->peserta->jenis_kegiatan : 'Peserta' }}</p>
                                 </div>
                             </div>
+                            @if ($feedback->rating)
+                                <div class="flex mb-2 text-sm text-yellow-400">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($i <= $feedback->rating)
+                                            <i class='bx bxs-star'></i>
+                                        @else
+                                            <i class='text-gray-200 bx bx-star'></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                            @endif
                             <p class="text-text-secondary line-clamp-3">{{ $feedback->pesan }}</p>
                         </div>
                     @endforeach
@@ -381,8 +644,7 @@
                 <div class="grid grid-cols-1 gap-12 mb-12 md:grid-cols-2 lg:grid-cols-4">
                     <div class="lg:col-span-1">
                         <a href="#home" class="flex items-center gap-3 mb-6 no-underline group">
-                            <img src="{{ asset('storage/logo/logo_simpandata.webp') }}"
-                                alt="SimpanData Logo"
+                            <img src="{{ asset('storage/logo/logo_simpandata.webp') }}" alt="SimpanData Logo"
                                 class="object-contain w-12 h-12 transition-transform duration-300 border-2 rounded-lg border-primary group-hover:scale-110">
                             <span class="text-2xl font-extrabold text-white">SimpanData</span>
                         </a>
@@ -391,30 +653,6 @@
                             Sistem pengelolaan kegiatan PKL dan magang yang rapi, terstruktur,
                             dan dapat diandalkan untuk institusi pendidikan dan perusahaan.
                         </p>
-
-                        <div class="flex gap-3">
-                            <a href="https://github.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="flex items-center justify-center text-white no-underline transition-all duration-300 rounded-lg w-11 h-11 bg-slate-800 hover:bg-primary hover:scale-110 hover:shadow-lg hover:shadow-primary/50"
-                                title="GitHub">
-                                <i class='bx bxl-github'></i>
-                            </a>
-                            <a href="https://twitter.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="flex items-center justify-center text-white no-underline transition-all duration-300 rounded-lg w-11 h-11 bg-slate-800 hover:bg-blue-500 hover:scale-110 hover:shadow-lg hover:shadow-blue-500/50"
-                                title="Twitter">
-                                <i class='bx bxl-twitter'></i>
-                            </a>
-                            <a href="https://linkedin.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="flex items-center justify-center text-white no-underline transition-all duration-300 rounded-lg w-11 h-11 bg-slate-800 hover:bg-blue-600 hover:scale-110 hover:shadow-lg hover:shadow-blue-600/50"
-                                title="LinkedIn">
-                                <i class='bx bxl-linkedin'></i>
-                            </a>
-                        </div>
                     </div>
 
                     <div>
@@ -475,7 +713,8 @@
                 <div class="pt-8 border-t border-slate-700">
                     <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
                         <p class="text-sm text-slate-400">
-                            &copy; {{ date('Y') }} <span class="font-semibold text-white">SimpanData</span>. All rights reserved.
+                            &copy; {{ date('Y') }} <span class="font-semibold text-white">SimpanData</span>. All
+                            rights reserved.
                         </p>
                     </div>
                 </div>
@@ -485,4 +724,5 @@
 
     <script src="{{ asset('js/landing.js') }}"></script>
 </body>
+
 </html>

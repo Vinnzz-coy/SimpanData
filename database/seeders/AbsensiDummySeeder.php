@@ -13,54 +13,72 @@ class AbsensiDummySeeder extends Seeder
 {
     public function run(): void
     {
-        $pesertaIds = Peserta::pluck('id');
+        $pesertas = Peserta::all();
 
-        if ($pesertaIds->isEmpty()) {
-            $user = User::create([
-                'username' => 'peserta_dummy',
-                'email' => 'peserta_dummy@example.com',
-                'password' => Hash::make('password'),
-                'role' => 'peserta',
-            ]);
-
-            $peserta = Peserta::create([
-                'user_id' => $user->id,
-                'nama' => 'Peserta Dummy',
-                'asal_sekolah_universitas' => 'SMK Dummy',
-                'jurusan' => 'Teknik Informatika',
-                'alamat' => 'Jl. Dummy No. 1',
-                'no_telepon' => '081234567890',
-                'jenis_kegiatan' => 'PKL',
-                'tanggal_mulai' => Carbon::now()->subWeeks(2)->toDateString(),
-                'tanggal_selesai' => Carbon::now()->addMonths(3)->toDateString(),
-                'status' => 'Aktif',
-            ]);
-
-            $pesertaIds = collect([$peserta->id]);
+        if ($pesertas->isEmpty()) {
+            return;
         }
 
-        $statuses = ['Hadir', 'Izin', 'Sakit'];
-        $modes = ['WFO', 'WFA'];
-        $absenTypes = ['Masuk', 'Pulang'];
+        $startDate = Carbon::now()->subMonths(3);
+        $endDate = Carbon::now();
+        $period = \Carbon\CarbonPeriod::create($startDate, $endDate);
 
-        for ($i = 0; $i < 20; $i++) {
-            $pesertaId = $pesertaIds->random();
-            $status = $statuses[array_rand($statuses)];
-            $jenisAbsen = $absenTypes[array_rand($absenTypes)];
+        foreach ($pesertas as $peserta) {
+            // Skip Ipin if handled by IpinSeeder (optional, but safer to avoid duplicates if run together)
+            if (strtolower($peserta->nama) === 'ipin') {
+                continue;
+            }
 
-            $date = Carbon::now()->subDays(rand(0, 14))->toDateString();
-            $time = $jenisAbsen === 'Masuk'
-                ? Carbon::createFromTime(rand(7, 9), rand(0, 59))
-                : Carbon::createFromTime(rand(16, 18), rand(0, 59));
+            foreach ($period as $date) {
+                if ($date->isWeekend()) {
+                    continue;
+                }
 
-            Absensi::create([
-                'peserta_id' => $pesertaId,
-                'jenis_absen' => $jenisAbsen,
-                'waktu_absen' => Carbon::parse($date . ' ' . $time->format('H:i:s')),
-                'mode_kerja' => $status === 'Hadir' ? $modes[array_rand($modes)] : null,
-                'status' => $status,
-                'wa_pengirim' => null,
-            ]);
+                // Randomize attendance probability (90% present)
+                if (rand(1, 100) > 90) {
+                    continue; // Skip this day (Alpha/Sakit/Izin logic could be added here)
+                }
+
+                // Generate Masuk
+                $jamMasuk = $date->copy()->setTime(rand(7, 8), rand(0, 59), rand(0, 59));
+                if ($jamMasuk->hour == 7 && $jamMasuk->minute < 30) {
+                    $jamMasuk->addMinutes(30);
+                }
+
+                $modeKerja = (rand(1, 10) > 3) ? 'WFO' : 'WFA';
+
+                Absensi::firstOrCreate(
+                    [
+                        'peserta_id' => $peserta->id,
+                        'jenis_absen' => 'Masuk',
+                        'waktu_absen' => $jamMasuk->format('Y-m-d H:i:s'), // Use string format for comparison
+                    ],
+                    [
+                        'mode_kerja' => $modeKerja,
+                        'status' => 'Hadir',
+                        'wa_pengirim' => $peserta->no_telepon,
+                    ]
+                );
+
+                // Generate Pulang
+                $jamPulang = $date->copy()->setTime(rand(16, 17), rand(0, 59), rand(0, 59));
+                 if ($jamPulang->hour == 16 && $jamPulang->minute < 30) {
+                    $jamPulang->addMinutes(30);
+                }
+
+                Absensi::firstOrCreate(
+                    [
+                        'peserta_id' => $peserta->id,
+                        'jenis_absen' => 'Pulang',
+                        'waktu_absen' => $jamPulang->format('Y-m-d H:i:s'),
+                    ],
+                    [
+                        'mode_kerja' => $modeKerja,
+                        'status' => 'Hadir',
+                        'wa_pengirim' => $peserta->no_telepon,
+                    ]
+                );
+            }
         }
     }
 }

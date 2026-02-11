@@ -47,6 +47,13 @@
                 <span class="tooltip">Data User</span>
             </li>
             <li>
+                <a href="{{ route('admin.partners.index') }}" class="{{ request()->routeIs('admin.partners.*') ? 'active' : '' }}">
+                    <i class='bx bx-buildings'></i>
+                    <span class="links_name">Data Partner</span>
+                </a>
+                <span class="tooltip">Data Partner</span>
+            </li>
+            <li>
                 <a href="{{ route('admin.penilaian.index') }}" class="{{ request()->routeIs('admin.penilaian.*') ? 'active' : '' }}">
                     <i class='bx bx-show-alt'></i>
                     <span class="links_name">Penilaian</span>

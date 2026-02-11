@@ -14,10 +14,13 @@ class Feedback extends Model
         'peserta_id',
         'pengirim',
         'pesan',
+        'tampilkan',
+        'rating',
         'dibaca',
     ];
     protected $casts = [
         'dibaca' => 'boolean',
+        'tampilkan' => 'boolean',
     ];
     public function peserta()
     {
