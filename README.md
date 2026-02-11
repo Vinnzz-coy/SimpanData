@@ -27,7 +27,7 @@ SimpanData adalah aplikasi berbasis web yang dirancang untuk mempermudah manajem
 ## 🛠️ Tech Stack
 
 - **Framework**: [Laravel 12](https://laravel.com)
-- **Database**: [PostgreSQL](https://www.postgresql.org/) / SQLite
+- **Database**: [PostgreSQL](https://www.postgresql.org/)
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **Bundler**: [Vite](https://vitejs.dev/)
 - **Interactivity**: [Alpine.js](https://alpinejs.dev/) & Vanilla JavaScript
@@ -78,7 +78,23 @@ Salin file `.env.example` menjadi `.env` dan sesuaikan konfigurasi database Anda
 copy .env.example .env
 ```
 
-_Edit file `.env` dan sesuaikan bagian `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD`._
+_Edit file `.env` dan sesuaikan bagian `DB_CONNECTION` untuk database._
+
+#### 📧 Konfigurasi Email (SMTP)
+Sesuaikan bagian Mail untuk fitur pengiriman email (seperti OTP atau Notifikasi):
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD="your-app-password"
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=your-email@gmail.com
+MAIL_FROM_NAME="${APP_NAME}"
+```
+> [!IMPORTANT]
+> Gunakan **App Password** Gmail jika Anda menggunakan SMTP Google, jangan gunakan password akun utama demi keamanan.
 
 ### 5. Generate Application Key
 
@@ -113,6 +129,114 @@ php artisan serve
 ```
 
 Aplikasi dapat diakses melalui `http://127.0.0.1:8000`.
+
+---
+
+## 📊 Sistem Penilaian Peserta
+
+SimpanData menggunakan sistem penilaian kinerja yang canggih untuk mengevaluasi peserta PKL dan Magang secara objektif dan transparan.
+
+### 📐 Aspek Penilaian Utama
+Terdapat **5 Pilar Utama** yang dinilai dengan rentang skor **1 - 100**:
+
+| Aspek | Deskripsi Kompetensi |
+| :--- | :--- |
+| 🕒 **Kedisiplinan** | Ketepatan waktu, tingkat kehadiran, dan kepatuhan terhadap SOP perusahaan. |
+| 🛠️ **Keterampilan** | Penguasaan teknis tools, kualitas hasil kerja, dan efisiensi penyelesaian tugas. |
+| 🤝 **Kerjasama** | Kemampuan berkoordinasi dalam tim, proaktif membantu rekan, dan etika kolaborasi. |
+| 💡 **Inisiatif** | Kemampuan mencari solusi mandiri, memberikan ide kreatif, dan sikap proaktif. |
+| 💬 **Komunikasi** | Kejelasan penyampaian informasi, etika berbicara, dan kemampuan mendengarkan. |
+
+---
+
+### 🔄 Alur Kerja Penilaian (Sederhana)
+Proses penilaian dirancang agar cepat dan instan dengan langkah berikut:
+
+1.  **Pilih Peserta**: Admin memilih peserta dari daftar (otomatis terfilter berdasarkan status aktif/selesai).
+2.  **Input Nilai**: Masukkan skor (1-100) menggunakan slider atau tombol cepat kategori.
+3.  **Live Preview**: Sistem langsung menghitung **Nilai Akhir** dan menentukan **Grade** (A-E) secara otomatis di layar.
+4.  **Simpan**: Klik simpan, data dikirim via AJAX, dan seluruh halaman (tabel & statistik) akan diperbarui saat itu juga tanpa reload.
+
+---
+
+### 🔢 Mekanisme Perhitungan
+
+Logika perhitungan menggunakan metode **Mean Average** untuk memastikan keadilan bagi seluruh peserta:
+
+> [!TIP]
+> **Rumus Nilai Akhir:**
+> $$\text{Nilai Akhir} = \frac{\sum(\text{Kedisiplinan, Keterampilan, Kerjasama, Inisiatif, Komunikasi})}{5}$$
+
+**Klasifikasi Predikat & Grade:**
+
+| Rentang Nilai | Grade | Status | Warna Indikator |
+| :--- | :---: | :--- | :--- |
+| **90 - 100** | <kbd>A</kbd> | 🌟 Sangat Memuaskan | **Hijau (Emerald)** |
+| **80 - 89** | <kbd>B</kbd> | ✅ Memuaskan | **Biru (Blue)** |
+| **70 - 79** | <kbd>C</kbd> | ⚠️ Cukup | **Kuning (Amber)** |
+| **60 - 69** | <kbd>D</kbd> | ❌ Kurang | **Oranye (Orange)** |
+| **0 - 59** | <kbd>E</kbd> | 🆘 Sangat Kurang | **Merah (Red)** |
+
+---
+
+### 🚀 Fitur Canggih UI Penilaian
+Aplikasi ini dilengkapi dengan fitur UI/UX modern untuk mempermudah tugas Admin:
+
+*   **⚡ Intelligent Filtering**: Filter data secara instan berdasarkan *Nama, Sekolah/Universitas, Jenis Kegiatan (PKL/Magang),* dan *Status Penilaian*.
+*   **📊 Dynamic Stats Sync**: Kartu statistik (Total, Sudah Dinilai, Belum Dinilai, Rata-rata) akan **otomatis menyinkronkan angkanya** sesuai dengan filter yang aktif secara real-time tanpa reload halaman.
+*   **🎨 Color-Coded Indicators**: Slider penilaian berubah warna secara dinamis memberikan feedback psikologis yang cepat kepada penilai.
+*   **🔘 Quick Value Presets**: Tombol cepat untuk kategori (Kurang, Cukup, Baik, Sangat Baik) untuk pengisian nilai instan.
+*   **🛡️ Clean Code Architecture**: Logika penilaian dipisahkan ke dalam [penilaian.js](public/js/admin/penilaian.js) untuk menjaga performa dan kemudahan maintenance.
+
+---
+
+## 📁 Struktur Folder Proyek
+
+Organisasi file dalam sistem **SipanData** dirancang untuk skalabilitas dan kemudahan pemeliharaan:
+
+```text
+SipanData/
+├── app/
+│   ├── Http/Controllers/        # Logika Navigasi & Request Handler
+│   │   ├── Admin/               # Pengelolaan Dashboard, Peserta, Absensi, Penilaian
+│   │   │   ├── AbsensiController.php
+│   │   │   ├── ArsipController.php
+│   │   │   ├── PenilaianController.php
+│   │   │   └── UserController.php
+│   │   └── Peserta/             # Fitur mandiri Peserta (Absensi, Laporan, Profile)
+│   │       ├── DashboardController.php
+│   │       └── PenilaianController.php
+│   ├── Models/                  # Definisi Entitas & Relasi Database (Eloquent)
+│   │   ├── User.php
+│   │   ├── Peserta.php
+│   │   ├── Penilaian.php
+│   │   └── Absensi.php
+│   └── Providers/               # Konfigurasi Service Providers sistem
+├── bootstrap/                   # Inisialisasi framework Laravel
+├── config/                      # Kumpulan file konfigurasi (App, DB, Auth, Mail)
+├── database/
+│   ├── migrations/              # Definisi struktur tabel (Blueprint)
+│   ├── seeders/                 # Pengisian data awal otomatis
+│   └── factories/               # Generator data dummy untuk testing
+├── public/                      # Direktori Akses Publik
+│   ├── build/                   # Hasil kompilasi aset oleh Vite
+│   ├── css/                     # File styling eksternal (termasuk penilaian peserta)
+│   └── js/                      # Script interaktif sistem
+├── resources/
+│   ├── css/                     # Sumber asli Tailwind & Global CSS
+│   ├── js/                      # Sumber asli JavaScript (Vite entry points)
+│   └── views/                   # Template Antarmuka (Blade Engine)
+│       ├── admin/               # Halaman khusus pengelolaan Admin
+│       ├── peserta/             # Halaman portal mandiri Peserta
+│       ├── layouts/             # Master template (App structure)
+│       ├── partials/            # Komponen kecil yang dapat digunakan ulang (Reusable)
+│       └── auth/                # Halaman Login & Registrasi
+├── routes/                      # Definisi URL & Middleware Security
+│   ├── web.php                  # Rute navigasi browser
+│   └── console.php              # Perintah CLI kustom
+├── storage/                     # Penyimpanan log, cache, dan file upload peserta
+└── vite.config.js               # Konfigurasi Asset Bundler (Vite)
+```
 
 ---
 

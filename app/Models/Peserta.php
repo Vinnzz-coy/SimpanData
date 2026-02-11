@@ -66,4 +66,9 @@ class Peserta extends Model
     {
         return $this->hasOne(Arsip::class);
     }
+
+    public function penilaian()
+    {
+        return $this->hasOne(Penilaian::class);
+    }
 }

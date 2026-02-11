@@ -129,9 +129,13 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         'show' => 'admin.user.show',
     ]);
 
-    Route::get('/admin/penilaian', function () {
-        return view('admin.penilaian.index');
-    })->name('admin.penilaian.index');
+    Route::get('/admin/penilaian', [App\Http\Controllers\Admin\PenilaianController::class, 'index'])->name('admin.penilaian.index');
+    Route::get('/admin/penilaian/peserta-grid', [App\Http\Controllers\Admin\PenilaianController::class, 'getPesertaGrid'])->name('admin.penilaian.peserta-grid');
+    Route::get('/admin/penilaian/{id}', [App\Http\Controllers\Admin\PenilaianController::class, 'show'])->name('admin.penilaian.show');
+    Route::post('/admin/penilaian', [App\Http\Controllers\Admin\PenilaianController::class, 'store'])->name('admin.penilaian.store');
+    Route::put('/admin/penilaian/{id}', [App\Http\Controllers\Admin\PenilaianController::class, 'update'])->name('admin.penilaian.update');
+
+    Route::get('/admin/arsip', [App\Http\Controllers\Admin\ArsipController::class, 'index'])->name('admin.arsip.index');
 
     Route::get('/admin/laporan', function () {
         return view('admin.laporan.index');
