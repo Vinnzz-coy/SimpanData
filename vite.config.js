@@ -13,7 +13,8 @@ export default defineConfig({
                 'resources/css/admin/peserta.css',
                 'resources/js/admin/peserta.js',
                 'resources/css/sidebar.css',
-                'resources/js/sidebar.js'
+                'resources/js/sidebar.js',
+                'resources/js/peserta/absensi.js'
             ],
             refresh: true,
         }),
