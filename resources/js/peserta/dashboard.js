@@ -196,7 +196,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         ctx.fillStyle = color;
                         ctx.arc(startX, startY, 3, 0, 2 * Math.PI);
                         ctx.fill();
-                        // 3. Draw text (The count)
                         ctx.font = '700 13px "Inter", "Plus Jakarta Sans", sans-serif';
                         ctx.fillStyle = '#1E293B';
                         ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
@@ -208,7 +207,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         const textX = endX + (isRightSide ? textPadding : -textPadding);
                         ctx.fillText(value, textX, endY);
                         
-                        // Reset shadow for next draws
                         ctx.shadowBlur = 0;
                     });
                 });

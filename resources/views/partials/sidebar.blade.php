@@ -104,7 +104,7 @@
                 <span class="tooltip">Penilaian</span>
             </li>
             <li>
-                <a href="{{ route('peserta.laporan') }}" class="{{ request()->routeIs('peserta.laporan') ? 'active' : '' }}">
+                <a href="{{ route('peserta.laporan.index') }}" class="{{ request()->routeIs('peserta.laporan.index') ? 'active' : '' }}">
                     <i class='bx bx-file'></i>
                     <span class="links_name">Laporan</span>
                 </a>
