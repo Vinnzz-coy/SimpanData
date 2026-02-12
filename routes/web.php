@@ -149,9 +149,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/admin/arsip', [App\Http\Controllers\Admin\ArsipController::class, 'index'])->name('admin.arsip.index');
 
-    Route::get('/admin/laporan', function () {
-        return view('admin.laporan.index');
-    })->name('admin.laporan.index');
+    Route::get('/admin/laporan', [App\Http\Controllers\Admin\LaporanController::class, 'index'])->name('admin.laporan.index');
+    Route::patch('/admin/laporan/{id}/status', [App\Http\Controllers\Admin\LaporanController::class, 'updateStatus'])->name('admin.laporan.update-status');
 
     Route::get('/admin/profile', [App\Http\Controllers\Admin\ProfileController::class, 'index'])->name('admin.profile.index');
     Route::post('/admin/profile', [App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('admin.profile.update');

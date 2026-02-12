@@ -16,7 +16,9 @@ class RoleMiddleware
         }
 
         if (Auth::user()->role !== $role) {
-            abort(403, 'Akses ditolak');
+            $dashboard = Auth::user()->role === 'admin' ? '/admin/dashboard' : '/peserta/dashboard';
+            
+            return redirect($dashboard)->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
         }
 
         return $next($request);

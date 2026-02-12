@@ -107,7 +107,6 @@ class DashboardController extends Controller
             $performanceScore = round((($attendanceRate * 0.5) + ($reportRate * 0.5)) * 100);
             $performanceScore = min($performanceScore, 100);
 
-            // Statistik Kehadiran for Donut Chart
             $attendanceStats = \App\Models\Absensi::where('peserta_id', $peserta->id)
                 ->selectRaw('status, COUNT(*) as count')
                 ->groupBy('status')

@@ -44,7 +44,6 @@ class AbsensiController extends Controller
             'notes' => 'nullable|string|max:500',
         ]);
 
-        // Validate mode_kerja is required only when status is "Hadir"
         if ($request->status === 'Hadir' && !$request->mode_kerja) {
             return redirect()->back()
                 ->withErrors(['mode_kerja' => 'Mode kerja wajib diisi untuk status Hadir.'])

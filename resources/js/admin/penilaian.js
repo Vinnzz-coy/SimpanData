@@ -361,3 +361,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     calculateNilaiAkhir();
 });
+
+window.updateSliderValue = updateSliderValue;
+window.setSliderValue = setSliderValue;
+window.openPenilaianModal = openPenilaianModal;
+window.openEditModal = openEditModal;
+window.openDetailModal = openDetailModal;
+window.closePenilaianModal = closePenilaianModal;
+window.closeDetailModal = closeDetailModal;
+window.editFromDetail = editFromDetail;
+window.resetFilters = resetFilters;
+window.refreshPesertaGrid = refreshPesertaGrid;
