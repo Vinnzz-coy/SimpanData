@@ -18,16 +18,18 @@ class AbsensiController extends Controller
 
         $todayAttendance = Absensi::where('peserta_id', $peserta->id)
             ->whereDate('waktu_absen', Carbon::today())
-            ->orderBy('waktu_absen', 'asc')
             ->get();
 
-        $canCheckOut = $todayAttendance->where('jenis_absen', 'Masuk')->count() > 0
-            && $todayAttendance->where('jenis_absen', 'Pulang')->count() == 0;
+        $hasMasuk = $todayAttendance->where('jenis_absen', 'Masuk')->where('status', 'Hadir')->isNotEmpty();
+        $hasPulang = $todayAttendance->where('jenis_absen', 'Pulang')->isNotEmpty();
+        $isIzinSakit = $todayAttendance->whereIn('status', ['Izin', 'Sakit'])->isNotEmpty();
 
         return view('peserta.absensi', compact(
             'peserta',
             'todayAttendance',
-            'canCheckOut'
+            'hasMasuk',
+            'hasPulang',
+            'isIzinSakit'
         ));
     }
 
@@ -86,7 +88,7 @@ class AbsensiController extends Controller
         $absensi->save();
 
         return redirect()->route('peserta.absensi')
-            ->with('success', 'Absensi ' . strtolower($jenisAbsen) . ' berhasil dicatat.');
+            ->with('success', 'absensi berhasil');
     }
 
     public function history()

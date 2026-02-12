@@ -238,17 +238,27 @@ function toggleWorkModeVisibility() {
 
 function validateForm() {
     const attendanceType = document.getElementById("attendance-type").value;
-    const status = document.querySelector('input[name="status"]:checked');
+    const statusRadio = document.querySelector('input[name="status"]:checked');
+    const statusHidden = document.querySelector('input[name="status"][type="hidden"]');
+    const status = statusRadio || statusHidden;
+    
     const lat = document.getElementById("latitude").value;
     const lng = document.getElementById("longitude").value;
     const submitBtn = document.getElementById("submit-btn");
+
+    if (!submitBtn) return;
 
     let modeKerjaValid = true;
     if (status && status.value === "Hadir") {
         const modeKerja = document.querySelector(
             'input[name="mode_kerja"]:checked',
         );
-        modeKerjaValid = !!modeKerja;
+        // If we are in "Pulang" mode, we might not show mode_kerja again.
+        // Let's check if the mode_kerja section is visible.
+        const workModeSection = document.getElementById("work-mode-section");
+        if (workModeSection && !workModeSection.classList.contains("hidden")) {
+            modeKerjaValid = !!modeKerja;
+        }
     }
 
     if (attendanceType && status && lat && lng && modeKerjaValid) {
@@ -271,7 +281,10 @@ function handleFormSubmit(e) {
         return;
     }
 
-    const status = document.querySelector('input[name="status"]:checked');
+    const statusRadio = document.querySelector('input[name="status"]:checked');
+    const statusHidden = document.querySelector('input[name="status"][type="hidden"]');
+    const status = statusRadio || statusHidden;
+
     if (!status) {
         e.preventDefault();
         alert("Silakan pilih status kehadiran");
@@ -301,11 +314,6 @@ function handleFormSubmit(e) {
                 ? "Check In"
                 : "Check Out"
             : "Kirim Keterangan";
-
-    if (!confirm(`Apakah Anda yakin ingin melakukan ${typeLabel}?`)) {
-        e.preventDefault();
-        return;
-    }
 
     const submitBtn = document.getElementById("submit-btn");
     if (submitBtn) {

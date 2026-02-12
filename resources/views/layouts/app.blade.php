@@ -10,6 +10,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        (function() {
+            const sidebarState = localStorage.getItem("sidebarState");
+            if (sidebarState === "open" && window.innerWidth > 1200) {
+                document.documentElement.classList.add("sidebar-is-open");
+            }
+        })();
+    </script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -18,6 +26,18 @@
             --sidebar-width: 80px;
             --sidebar-expanded-width: 260px;
             --transition-speed: 0.4s;
+        }
+
+        .sidebar-is-open :root {
+            --sidebar-width: var(--sidebar-expanded-width);
+        }
+
+        .sidebar-is-open .sidebar {
+            width: var(--sidebar-expanded-width) !important;
+        }
+
+        body.no-transition * {
+            transition: none !important;
         }
 
         body {
@@ -327,7 +347,7 @@
     </script>
     @stack('styles')
 </head>
-<body class="relative min-h-screen font-sans bg-gray-50">
+<body class="relative min-h-screen font-sans bg-gray-50 no-transition">
     <div id="toastContainer" class="fixed z-50 max-w-full space-y-3 top-5 right-5 w-80"></div>
 
     <!-- Include Sidebar -->
@@ -356,7 +376,7 @@
 
             function updateMainContentLayout() {
                 if (window.innerWidth > 1200) {
-                    if (sidebar.classList.contains('open')) {
+                    if (sidebar.classList.contains('open') || document.documentElement.classList.contains('sidebar-is-open')) {
                         mainContent.style.setProperty('--sidebar-width', '260px');
                         mainContent.classList.add('sidebar-expanded');
                     } else {
@@ -370,6 +390,18 @@
             }
 
             updateMainContentLayout();
+
+            if (document.documentElement.classList.contains('sidebar-is-open') && sidebar && !sidebar.classList.contains('open')) {
+                sidebar.classList.add('open');
+                const menuIcon = document.querySelector("#btn i");
+                if (menuIcon) {
+                    menuIcon.classList.replace("bx-menu", "bx-menu-alt-right");
+                }
+            }
+
+            setTimeout(() => {
+                body.classList.remove('no-transition');
+            }, 100);
 
             const observer = new MutationObserver(function(mutations) {
                 mutations.forEach(function(mutation) {

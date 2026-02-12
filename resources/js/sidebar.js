@@ -9,18 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function loadSidebarState() {
         if (sidebar) {
-            sidebar.style.transition = "none";
-
-            if (sidebarState && window.innerWidth > 1200) {
-                sidebar.classList.add("open");
-            } else {
-                sidebar.classList.remove("open");
-            }
-
-            setTimeout(() => {
-                sidebar.style.transition = "";
-            }, 50);
-
+            sidebarState = sidebar.classList.contains("open");
             updateMenuIcon();
         }
     }
@@ -32,9 +21,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (isOpen) {
             sidebar.classList.remove("open");
+            document.documentElement.classList.remove("sidebar-is-open");
             sidebarState = false;
         } else {
             sidebar.classList.add("open");
+            document.documentElement.classList.add("sidebar-is-open");
             sidebarState = true;
         }
 
