@@ -16,16 +16,35 @@
         </div>
     @endif
 
-    @if(session('error'))
-        <div class="flex items-center justify-between p-4 border-l-4 border-red-500 rounded-lg shadow-sm bg-red-50 animate-fade-in">
+    @if(isset($todayReport) && $todayReport->status == 'Revisi')
+        <div class="flex items-center justify-between p-4 border-l-4 border-amber-500 rounded-lg shadow-sm bg-amber-50 animate-fade-in">
             <div class="flex items-center space-x-3">
-                <i class='text-xl text-red-500 bx bxs-error-circle'></i>
+                <i class='text-xl text-amber-500 bx bxs-info-circle'></i>
                 <div>
-                    <p class="text-base font-bold text-red-900">Gagal!</p>
-                    <p class="text-sm text-red-700">{{ session('error') }}</p>
+                    <p class="text-base font-bold text-amber-900">Perhatian: Revisi Diperlukan (Hari Ini)</p>
+                    <p class="text-sm text-amber-700">Admin meminta Anda untuk memperbaiki laporan harian ini. Silakan perbarui konten form di bawah lalu kirim kembali.</p>
                 </div>
             </div>
         </div>
+    @endif
+
+    @if(isset($pendingRevisions))
+        @foreach($pendingRevisions as $rev)
+            @if($rev->tanggal_laporan != date('Y-m-d'))
+                <div class="flex items-center justify-between p-4 border-l-4 border-amber-500 rounded-lg shadow-sm bg-amber-50 animate-fade-in">
+                    <div class="flex items-center space-x-3">
+                        <i class='text-xl text-amber-500 bx bxs-time-five'></i>
+                        <div>
+                            <p class="text-base font-bold text-amber-900">Revisi Belum Selesai ({{ \Carbon\Carbon::parse($rev->tanggal_laporan)->translatedFormat('d F Y') }})</p>
+                            <p class="text-sm text-amber-700">Laporan Anda pada tanggal ini perlu diperbaiki.</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('laporan.edit', $rev->id) }}" class="px-4 py-2 bg-amber-100 text-amber-800 rounded-lg text-xs font-bold hover:bg-amber-200 transition whitespace-nowrap">
+                        Edit Laporan
+                    </a>
+                </div>
+            @endif
+        @endforeach
     @endif
 
     <div class="p-6 card shadow-soft">
@@ -73,8 +92,11 @@
         </div>
     </div>
 
-    <form action="{{ route('laporan.store') }}" method="POST" enctype="multipart/form-data" id="report-form">
+    <form action="{{ isset($todayReport) ? route('laporan.update', $todayReport->id) : route('laporan.store') }}" method="POST" enctype="multipart/form-data" id="report-form">
         @csrf
+        @if(isset($todayReport))
+            @method('PUT')
+        @endif
         <input type="hidden" name="tanggal_laporan" value="{{ date('Y-m-d') }}">
 
         <div class="p-6 card shadow-soft md:p-8">
@@ -162,7 +184,7 @@
                                    name="status" 
                                    value="Dikirim" 
                                    class="w-5 h-5 text-green-600 focus:ring-green-500"
-                                   {{ old('status', $todayReport->status ?? '') == 'Dikirim' ? 'checked' : '' }}>
+                                   {{ in_array(old('status', $todayReport->status ?? ''), ['Dikirim', 'Revisi']) ? 'checked' : '' }}>
                             <div class="ml-4">
                                 <span class="text-base font-bold text-slate-800">Kirim</span>
                                 <p class="text-sm text-slate-500">Kirim untuk review</p>
