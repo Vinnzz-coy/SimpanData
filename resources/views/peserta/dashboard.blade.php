@@ -187,39 +187,47 @@
                 </div>
             </div>
 
-            <div class="flex flex-col items-center p-6 lg:col-span-4 card md:p-8 shadow-soft">
-                <h4 class="w-full mb-10 text-lg font-bold tracking-tight text-center uppercase text-slate-800">Kinerja
-                    {{ $jenisKegiatan }}</h4>
+            <div class="flex flex-col p-6 lg:col-span-4 card md:p-8 shadow-soft">
+                <h4 class="w-full mb-6 text-lg font-bold tracking-tight uppercase text-slate-800">Statistik Kehadiran</h4>
 
-                <div class="relative w-full aspect-square flex items-center justify-center max-w-[240px]">
-                    <canvas id="gaugeChart"></canvas>
-                    <div class="absolute flex flex-col items-center justify-center mt-8 text-center">
-                        <h2 class="text-4xl font-extrabold leading-none tracking-tighter md:text-6xl text-slate-900">
-                            {{ $performanceScore }}
+                <div class="relative w-full aspect-square flex items-center justify-center max-w-[280px] mx-auto mb-8">
+                    <canvas id="attendanceDonutChart"></canvas>
+                    <div class="absolute flex flex-col items-center justify-center text-center">
+                        <h2 class="text-3xl font-extrabold leading-none tracking-tighter text-slate-900">
+                            {{ array_sum($attendanceBreakdown) }}
                         </h2>
-                        <p class="mt-2 text-xs font-bold tracking-widest uppercase text-slate-500">Skor Indeks</p>
+                        <p class="mt-1 text-[10px] font-bold tracking-widest uppercase text-slate-500">Total Hari</p>
                     </div>
                 </div>
 
-                <div class="w-full mt-10 space-y-4">
-                    <div class="p-4 text-center border border-slate-100 bg-slate-50 rounded-xl">
-                        <p class="mb-2 text-xs font-bold leading-none tracking-widest uppercase text-slate-500">
-                            Evaluasi Kinerja</p>
-                        <p class="text-base font-bold text-slate-800">
-                            @if ($performanceScore >= 80)
-                                Sangat Baik
-                            @elseif($performanceScore >= 60)
-                                Baik
-                            @else
-                                Perlu Ditingkatkan
-                            @endif
-                        </p>
+                <div class="w-full space-y-3">
+                    <div class="flex items-center justify-between p-3 border border-slate-50 bg-slate-50/50 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                            <span class="text-xs font-bold text-slate-700">Hadir</span>
+                        </div>
+                        <span class="text-sm font-bold text-slate-900">{{ $attendanceBreakdown['Hadir'] }}</span>
                     </div>
-                    <div class="flex items-start gap-3 p-4 border border-blue-100 bg-blue-50/50 rounded-xl">
-                        <i class='bx bxs-info-circle text-blue-500 text-lg mt-0.5'></i>
-                        <p class="text-xs font-bold leading-tight text-slate-600">Data dikalkulasi berdasarkan
-                            intensitas kehadiran dan ketertiban pelaporan Anda selama masa
-                            {{ strtolower($jenisKegiatan) }}.</p>
+                    <div class="flex items-center justify-between p-3 border border-slate-50 bg-slate-50/50 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                            <span class="text-xs font-bold text-slate-700">Izin</span>
+                        </div>
+                        <span class="text-sm font-bold text-slate-900">{{ $attendanceBreakdown['Izin'] }}</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border border-slate-50 bg-slate-50/50 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                            <span class="text-xs font-bold text-slate-700">Sakit</span>
+                        </div>
+                        <span class="text-sm font-bold text-slate-900">{{ $attendanceBreakdown['Sakit'] }}</span>
+                    </div>
+                    <div class="flex items-center justify-between p-3 border border-slate-50 bg-slate-50/50 rounded-xl">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 bg-slate-400 rounded-full"></div>
+                            <span class="text-xs font-bold text-slate-700">Alpha</span>
+                        </div>
+                        <span class="text-sm font-bold text-slate-900">{{ $attendanceBreakdown['Alpha'] }}</span>
                     </div>
                 </div>
             </div>
@@ -230,7 +238,7 @@
 @section('scripts')
     <script>
         window.attendanceData = @json($absensiData);
-        window.performanceScore = {{ $performanceScore }};
+        window.attendanceBreakdown = @json($attendanceBreakdown);
         window.routes = {
             dashboard: "{{ route('peserta.dashboard') }}"
         };

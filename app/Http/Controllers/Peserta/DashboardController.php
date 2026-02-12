@@ -106,6 +106,21 @@ class DashboardController extends Controller
 
             $performanceScore = round((($attendanceRate * 0.5) + ($reportRate * 0.5)) * 100);
             $performanceScore = min($performanceScore, 100);
+
+            // Statistik Kehadiran for Donut Chart
+            $attendanceStats = \App\Models\Absensi::where('peserta_id', $peserta->id)
+                ->selectRaw('status, COUNT(*) as count')
+                ->groupBy('status')
+                ->get()
+                ->pluck('count', 'status')
+                ->toArray();
+
+            $attendanceBreakdown = [
+                'Hadir' => $attendanceStats['Hadir'] ?? 0,
+                'Izin' => $attendanceStats['Izin'] ?? 0,
+                'Sakit' => $attendanceStats['Sakit'] ?? 0,
+                'Alpha' => $attendanceStats['Alpha'] ?? 0,
+            ];
         } else {
             $absensiData = match($filter) {
                 'hari' => ['labels' => ['08:00','10:00','12:00','14:00','16:00','18:00'], 'data' => [0,0,0,0,0,0]],
@@ -113,6 +128,7 @@ class DashboardController extends Controller
                 'bulan' => ['labels' => ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'], 'data' => [0,0,0,0,0,0,0,0,0,0,0,0]],
                 default => ['labels' => ['08:00','10:00','12:00','14:00','16:00','18:00'], 'data' => [0,0,0,0,0,0]],
             };
+            $attendanceBreakdown = ['Hadir' => 0, 'Izin' => 0, 'Sakit' => 0, 'Alpha' => 0];
         }
 
         if ($request->ajax()) {
@@ -122,7 +138,7 @@ class DashboardController extends Controller
         return view('peserta.dashboard', compact(
             'user', 'peserta', 'totalHadir', 'totalLaporan', 'absensiHariIni',
             'progress', 'absensiData', 'performanceScore', 'recentActivities', 'filter', 'availableWeeks', 'weekFilter',
-            'passedDays', 'totalDays'
+            'passedDays', 'totalDays', 'attendanceBreakdown'
         ));
     }
 
