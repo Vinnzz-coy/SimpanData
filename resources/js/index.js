@@ -155,18 +155,14 @@ function initializeFeedback() {
         track2.classList.remove("paused");
     }
 
-    // Add event listeners to containers
     container1.addEventListener("mouseenter", handleMouseEnter);
     container1.addEventListener("mouseleave", handleMouseLeave);
     container2.addEventListener("mouseenter", handleMouseEnter);
     container2.addEventListener("mouseleave", handleMouseLeave);
 }
 
-// Initialize everything when DOM is loaded
 document.addEventListener("DOMContentLoaded", function () {
-    // Initialize feedback section
     initializeFeedback();
 
-    // Add smooth scrolling
     document.documentElement.style.scrollBehavior = "smooth";
 });

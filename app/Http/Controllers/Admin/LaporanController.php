@@ -18,7 +18,6 @@ class LaporanController extends Controller
 
         $query = Laporan::with('peserta');
 
-        // Statistics calculation
         $statsQuery = Laporan::query();
         if ($tanggal) {
             $statsQuery->whereDate('tanggal_laporan', $tanggal);
@@ -28,13 +27,15 @@ class LaporanController extends Controller
                 $q->where('asal_sekolah_universitas', $sekolah);
             });
         }
+        if ($status) {
+            $statsQuery->where('status', $status);
+        }
 
         $totalReports = (clone $statsQuery)->count();
         $pendingReports = (clone $statsQuery)->where('status', 'Dikirim')->count();
         $approvedReports = (clone $statsQuery)->where('status', 'Disetujui')->count();
         $revisedReports = (clone $statsQuery)->where('status', 'Revisi')->count();
 
-        // Filtering
         if ($status) {
             $query->where('status', $status);
         }
@@ -60,10 +61,10 @@ class LaporanController extends Controller
             ->get();
 
         return view('admin.laporan.index', compact(
-            'laporans', 
-            'sekolahs', 
-            'status', 
-            'sekolah', 
+            'laporans',
+            'sekolahs',
+            'status',
+            'sekolah',
             'tanggal',
             'totalReports',
             'pendingReports',
@@ -83,8 +84,8 @@ class LaporanController extends Controller
             'status' => $request->status
         ]);
 
-        $message = $request->status == 'Disetujui' 
-            ? 'Laporan berhasil disetujui.' 
+        $message = $request->status == 'Disetujui'
+            ? 'Laporan berhasil disetujui.'
             : 'Laporan ditandai untuk revisi.';
 
         return redirect()->back()->with('success', $message);

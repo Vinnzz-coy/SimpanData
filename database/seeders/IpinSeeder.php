@@ -53,49 +53,56 @@ class IpinSeeder extends Seeder
                 continue;
             }
 
-            // Randomize times slightly for realism
-            // Masuk: 07:30 - 08:30
-            $jamMasuk = $date->copy()->setTime(rand(7, 8), rand(0, 59), rand(0, 59));
-            if ($jamMasuk->hour == 7 && $jamMasuk->minute < 30) {
-                $jamMasuk->addMinutes(30); // Ensure after 7:30
+            // 90% chance of attendance for Ipin
+            if (rand(1, 100) > 10) {
+                $status = (rand(1, 100) > 90) ? fake()->randomElement(['Izin', 'Sakit']) : 'Hadir';
+
+                // Randomize times slightly for realism
+                // Masuk: 07:15 - 08:15
+                $jamMasuk = $date->copy()->setTime(7, rand(15, 59));
+                if (rand(1, 10) > 8) { // 20% chance of being slightly late
+                    $jamMasuk = $date->copy()->setTime(8, rand(0, 15));
+                }
+
+                // Pulang: 16:30 - 18:00
+                $jamPulang = $date->copy()->setTime(16, rand(30, 59));
+                if (rand(1, 10) > 5) {
+                    $jamPulang = $date->copy()->setTime(17, rand(0, 30));
+                }
+
+                // Determine Mode Kerja (mostly WFO)
+                $modeKerja = (rand(1, 10) > 1) ? 'WFO' : 'WFA';
+
+                // Create 'Masuk' record
+                Absensi::firstOrCreate(
+                    [
+                        'peserta_id' => $peserta->id,
+                        'jenis_absen' => 'Masuk',
+                        'waktu_absen' => $jamMasuk,
+                    ],
+                    [
+                        'mode_kerja' => $modeKerja,
+                        'status' => $status,
+                        'wa_pengirim' => $peserta->no_telepon,
+                    ]
+                );
+
+                if ($status === 'Hadir') {
+                    // Create 'Pulang' record
+                    Absensi::firstOrCreate(
+                        [
+                            'peserta_id' => $peserta->id,
+                            'jenis_absen' => 'Pulang',
+                            'waktu_absen' => $jamPulang,
+                        ],
+                        [
+                            'mode_kerja' => $modeKerja,
+                            'status' => 'Hadir',
+                            'wa_pengirim' => $peserta->no_telepon,
+                        ]
+                    );
+                }
             }
-
-            // Pulang: 16:30 - 18:00
-            $jamPulang = $date->copy()->setTime(rand(16, 17), rand(0, 59), rand(0, 59));
-             if ($jamPulang->hour == 16 && $jamPulang->minute < 30) {
-                $jamPulang->addMinutes(30); // Ensure after 16:30
-            }
-
-            // Determine Mode Kerja (mostly WFO, occasionally WFA)
-            $modeKerja = (rand(1, 10) > 2) ? 'WFO' : 'WFA';
-
-            // Create 'Masuk' record
-            Absensi::firstOrCreate(
-                [
-                    'peserta_id' => $peserta->id,
-                    'jenis_absen' => 'Masuk',
-                    'waktu_absen' => $jamMasuk,
-                ],
-                [
-                    'mode_kerja' => $modeKerja,
-                    'status' => 'Hadir', // Assuming 'Hadir' is valid enum
-                    'wa_pengirim' => $peserta->no_telepon,
-                ]
-            );
-
-            // Create 'Pulang' record
-            Absensi::firstOrCreate(
-                [
-                    'peserta_id' => $peserta->id,
-                    'jenis_absen' => 'Pulang',
-                    'waktu_absen' => $jamPulang,
-                ],
-                [
-                    'mode_kerja' => $modeKerja,
-                    'status' => 'Hadir',
-                    'wa_pengirim' => $peserta->no_telepon,
-                ]
-            );
         }
     }
 }

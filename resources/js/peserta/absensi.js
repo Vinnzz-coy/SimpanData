@@ -253,8 +253,6 @@ function validateForm() {
         const modeKerja = document.querySelector(
             'input[name="mode_kerja"]:checked',
         );
-        // If we are in "Pulang" mode, we might not show mode_kerja again.
-        // Let's check if the mode_kerja section is visible.
         const workModeSection = document.getElementById("work-mode-section");
         if (workModeSection && !workModeSection.classList.contains("hidden")) {
             modeKerjaValid = !!modeKerja;
@@ -358,7 +356,6 @@ async function getAddress(lat, lng) {
         console.error("Error fetching address:", error);
         if (addressText) addressText.textContent = "Gagal memuat alamat";
     } finally {
-        // Always re-enable refresh button and validate form at the end of the chain
         if (refreshBtn) {
             refreshBtn.disabled = false;
             refreshBtn.classList.remove("opacity-50", "cursor-not-allowed");

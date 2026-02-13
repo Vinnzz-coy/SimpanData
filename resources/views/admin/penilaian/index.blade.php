@@ -19,7 +19,7 @@
 
         <div class="p-4 md:p-6">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div class="overflow-hidden rounded-lg shadow-sm bg-gradient-to-br from-indigo-500 to-purple-500">
+                <div class="overflow-hidden transition-all duration-300 border rounded-lg shadow-sm bg-gradient-to-br from-indigo-500 to-purple-500 hover:shadow-xl hover:-translate-y-1 group border-white/10">
                     <div class="p-5">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
@@ -40,7 +40,7 @@
                     </div>
                 </div>
 
-                <div class="overflow-hidden rounded-lg shadow-sm bg-gradient-to-br from-emerald-500 to-teal-500">
+                <div class="overflow-hidden transition-all duration-300 border rounded-lg shadow-sm bg-gradient-to-br from-emerald-500 to-teal-500 hover:shadow-xl hover:-translate-y-1 group border-white/10">
                     <div class="p-5">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
@@ -61,7 +61,7 @@
                     </div>
                 </div>
 
-                <div class="overflow-hidden rounded-lg shadow-sm bg-gradient-to-br from-amber-500 to-orange-500">
+                <div class="overflow-hidden transition-all duration-300 border rounded-lg shadow-sm bg-gradient-to-br from-amber-500 to-orange-500 hover:shadow-xl hover:-translate-y-1 group border-white/10">
                     <div class="p-5">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
@@ -82,7 +82,7 @@
                     </div>
                 </div>
 
-                <div class="overflow-hidden rounded-lg shadow-sm bg-gradient-to-br from-blue-500 to-indigo-500">
+                <div class="overflow-hidden transition-all duration-300 border rounded-lg shadow-sm bg-gradient-to-br from-blue-500 to-indigo-500 hover:shadow-xl hover:-translate-y-1 group border-white/10">
                     <div class="p-5">
                         <div class="flex items-center justify-between">
                             <div class="flex-1">
@@ -433,5 +433,5 @@
         csrfToken: '{{ csrf_token() }}'
     };
 </script>
-<script src="{{ asset('js/admin/penilaian.js') }}"></script>
+@vite('resources/js/admin/penilaian.js')
 @endsection

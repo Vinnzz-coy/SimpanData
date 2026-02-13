@@ -41,7 +41,7 @@ class LaporanController extends Controller
             ->orderBy('tanggal_laporan', 'desc')
             ->get();
 
-        return view('peserta.laporan', compact('user', 'peserta', 'todayReport', 'recentReports', 'hasMoreReports', 'pendingRevisions'));
+        return view('peserta.laporan.laporan', compact('user', 'peserta', 'todayReport', 'recentReports', 'hasMoreReports', 'pendingRevisions'));
     }
 
     public function store(Request $request)
@@ -103,11 +103,11 @@ class LaporanController extends Controller
             'status' => $request->status,
         ]);
 
-        $message = $request->status == 'Draft' 
-            ? 'Laporan berhasil disimpan sebagai draft.' 
+        $message = $request->status == 'Draft'
+            ? 'Laporan berhasil disimpan sebagai draft.'
             : 'Laporan berhasil dikirim untuk review.';
 
-        return redirect()->route('laporan.index')
+        return redirect()->route('peserta.laporan.index')
             ->with('success', $message);
     }
 
@@ -125,7 +125,7 @@ class LaporanController extends Controller
             ->where('peserta_id', $peserta->id)
             ->firstOrFail();
 
-        return view('peserta.laporan-show', compact('user', 'peserta', 'laporan'));
+        return view('peserta.laporan.laporan-show', compact('user', 'peserta', 'laporan'));
     }
 
     public function edit(string $id)
@@ -143,11 +143,11 @@ class LaporanController extends Controller
             ->firstOrFail();
 
         if ($laporan->status == 'Disetujui') {
-            return redirect()->route('laporan.show', $id)
+            return redirect()->route('peserta.laporan.show', $id)
                 ->with('error', 'Laporan yang sudah disetujui tidak dapat diedit.');
         }
 
-        return view('peserta.laporan-edit', compact('user', 'peserta', 'laporan'));
+        return view('peserta.laporan.laporan-edit', compact('user', 'peserta', 'laporan'));
     }
 
     public function update(Request $request, string $id)
@@ -165,7 +165,7 @@ class LaporanController extends Controller
             ->firstOrFail();
 
         if ($laporan->status == 'Disetujui') {
-            return redirect()->route('laporan.show', $id)
+            return redirect()->route('peserta.laporan.show', $id)
                 ->with('error', 'Laporan yang sudah disetujui tidak dapat diedit.');
         }
         $validator = Validator::make($request->all(), [
@@ -207,11 +207,11 @@ class LaporanController extends Controller
             'status' => $request->status,
         ]);
 
-        $message = $request->status == 'Draft' 
-            ? 'Laporan berhasil diupdate sebagai draft.' 
+        $message = $request->status == 'Draft'
+            ? 'Laporan berhasil diupdate sebagai draft.'
             : 'Laporan berhasil dikirim untuk review.';
 
-        return redirect()->route('laporan.index')
+        return redirect()->route('peserta.laporan.index')
             ->with('success', $message);
     }
 
@@ -239,7 +239,7 @@ class LaporanController extends Controller
 
         $laporan->delete();
 
-        return redirect()->route('laporan.index')
+        return redirect()->route('peserta.laporan.index')
             ->with('success', 'Laporan berhasil dihapus.');
     }
 }

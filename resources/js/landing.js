@@ -1,6 +1,5 @@
 
 document.addEventListener('DOMContentLoaded', function() {
-    // renderFeedbacks removed as we use Blade now
 
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const mobileMenu = document.getElementById('mobileMenu');
@@ -209,7 +208,7 @@ if (typeof ScrollReveal !== 'undefined') {
         duration: 1000,
         delay: 200
     });
-    
+
     sr.reveal('.marquee-section .group', {
         origin: 'bottom',
         distance: '40px',

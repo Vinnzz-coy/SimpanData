@@ -14,7 +14,12 @@ export default defineConfig({
                 'resources/js/admin/peserta.js',
                 'resources/css/sidebar.css',
                 'resources/js/sidebar.js',
-                'resources/js/peserta/absensi.js'
+                'resources/js/peserta/absensi.js',
+                'resources/js/peserta/laporan.js',
+                'resources/js/admin/laporan.js',
+                'resources/js/admin/penilaian.js',
+                'resources/js/index.js',
+                'resources/js/landing.js'
             ],
             refresh: true,
         }),

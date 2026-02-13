@@ -5,9 +5,9 @@
             &copy; {{ date('Y') }}  SimpanData. All rights reserved.
         </div>
         <div class="flex items-center space-x-4">
-            <a href="#" class="text-sm text-gray-600 hover:text-primary">Privacy Policy</a>
-            <a href="#" class="text-sm text-gray-600 hover:text-primary">Terms of Service</a>
-            <a href="#" class="text-sm text-gray-600 hover:text-primary">Help</a>
+            <a href="{{ route('privacy.policy') }}" class="text-sm text-gray-600 hover:text-primary">Privacy Policy</a>
+            <a href="{{ route('terms.of.service') }}" class="text-sm text-gray-600 hover:text-primary">Terms of Service</a>
+            <a href="{{ route('help') }}" class="text-sm text-gray-600 hover:text-primary">Help</a>
         </div>
     </div>
 </footer>

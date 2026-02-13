@@ -378,7 +378,8 @@
                                         <div class="space-y-2">
                                             <div class="flex items-start gap-2 text-sm text-gray-600">
                                                 <i class='mt-1 bx bx-buildings text-primary'></i>
-                                                <span class="font-semibold leading-snug line-clamp-2">{{ $partner->nama }}</span>
+                                                <span
+                                                    class="font-semibold leading-snug line-clamp-2">{{ $partner->nama }}</span>
                                             </div>
                                             @if ($partner->alamat)
                                                 <div class="flex items-start gap-2 text-sm text-gray-600">
@@ -427,7 +428,8 @@
                                         <div class="space-y-2">
                                             <div class="flex items-start gap-2 text-sm text-gray-600">
                                                 <i class='mt-1 bx bx-buildings text-primary'></i>
-                                                <span class="font-semibold leading-snug line-clamp-2">{{ $partner->nama }}</span>
+                                                <span
+                                                    class="font-semibold leading-snug line-clamp-2">{{ $partner->nama }}</span>
                                             </div>
                                             @if ($partner->alamat)
                                                 <div class="flex items-start gap-2 text-sm text-gray-600">
@@ -706,6 +708,13 @@
                                     <span>Terms of Service</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{ route('help') }}"
+                                    class="flex items-center gap-2 text-sm no-underline transition-all duration-300 text-slate-300 hover:text-primary hover:translate-x-1">
+                                    <i class='bx bx-chevron-right'></i>
+                                    <span>Help</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -722,7 +731,7 @@
         </div>
     </footer>
 
-    <script src="{{ asset('js/landing.js') }}"></script>
+    @vite('resources/js/landing.js')
 </body>
 
 </html>
