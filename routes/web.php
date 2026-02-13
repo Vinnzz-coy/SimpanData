@@ -6,6 +6,20 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\Admin\PesertaController;
 use App\Http\Controllers\Admin\AbsensiController;
+use App\Http\Controllers\Admin\LaporanController as AdminLaporanController;
+use App\Http\Controllers\Peserta\LaporanController as PesertaLaporanController;
+use App\Http\Controllers\Peserta\DashboardController as PesertaDashboardController;
+use App\Http\Controllers\Peserta\ProfilController as PesertaProfilController;
+use App\Http\Controllers\Peserta\AbsensiController as PesertaAbsensiController;
+use App\Http\Controllers\Peserta\PenilaianController as PesertaPenilaianController;
+use App\Http\Controllers\Peserta\FeedbackController as PesertaFeedbackController;
+use App\Http\Controllers\Peserta\SettingsController as PesertaSettingsController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\PartnerController as AdminPartnerController;
+use App\Http\Controllers\Admin\PenilaianController as AdminPenilaianController;
+use App\Http\Controllers\Admin\ArsipController as AdminArsipController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
+use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 
 Route::get('/', [IndexController::class, 'index'])->name('index');
 Route::get('/auth', fn() => view('auth.auth'))->name('auth');
@@ -21,6 +35,10 @@ Route::get('/privacy-policy', function () {
 Route::get('/terms-of-service', function () {
     return view('legal.terms-of-service');
 })->name('terms.of.service');
+
+Route::get('/help', function () {
+    return view('legal.help');
+})->name('help');
 
 Route::post('/send-otp', [AuthController::class, 'sendOtp'])->name('send.otp');
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('verify.otp');
@@ -66,50 +84,50 @@ Route::get('/admin/dashboard', [DashboardController::class, 'index'])
     ->name('admin.dashboard');
 
 Route::middleware(['auth', 'role:peserta'])->group(function () {
-    Route::get('/peserta/dashboard', [App\Http\Controllers\Peserta\DashboardController::class, 'index'])
+    Route::get('/peserta/dashboard', [PesertaDashboardController::class, 'index'])
         ->name('peserta.dashboard');
 
-    Route::get('/peserta/profil', [App\Http\Controllers\Peserta\ProfilController::class, 'index'])
+    Route::get('/peserta/profil', [PesertaProfilController::class, 'index'])
         ->name('peserta.profil');
 
-    Route::post('/peserta/profil', [App\Http\Controllers\Peserta\ProfilController::class, 'update'])
+    Route::post('/peserta/profil', [PesertaProfilController::class, 'update'])
         ->name('peserta.profil.update');
 
-    Route::get('/peserta/absensi', [App\Http\Controllers\Peserta\AbsensiController::class, 'index'])
+    Route::get('/peserta/absensi', [PesertaAbsensiController::class, 'index'])
         ->name('peserta.absensi');
 
-    Route::post('/peserta/absensi', [App\Http\Controllers\Peserta\AbsensiController::class, 'store'])
+    Route::post('/peserta/absensi', [PesertaAbsensiController::class, 'store'])
         ->name('peserta.absensi.store');
 
-    Route::get('/peserta/laporan', [App\Http\Controllers\Peserta\LaporanController::class, 'index'])
+    Route::get('/peserta/laporan', [PesertaLaporanController::class, 'index'])
         ->name('peserta.laporan.index');
 
-    Route::post('/peserta/laporan', [App\Http\Controllers\Peserta\LaporanController::class, 'store'])
+    Route::post('/peserta/laporan', [PesertaLaporanController::class, 'store'])
         ->name('peserta.laporan.store');
 
-    Route::get('/peserta/laporan/{id}', [App\Http\Controllers\Peserta\LaporanController::class, 'show'])
+    Route::get('/peserta/laporan/{id}', [PesertaLaporanController::class, 'show'])
         ->name('peserta.laporan.show');
 
-    Route::get('/peserta/laporan/{id}/edit', [App\Http\Controllers\Peserta\LaporanController::class, 'edit'])
+    Route::get('/peserta/laporan/{id}/edit', [PesertaLaporanController::class, 'edit'])
         ->name('peserta.laporan.edit');
 
-    Route::put('/peserta/laporan/{id}', [App\Http\Controllers\Peserta\LaporanController::class, 'update'])
+    Route::put('/peserta/laporan/{id}', [PesertaLaporanController::class, 'update'])
         ->name('peserta.laporan.update');
 
-    Route::delete('/peserta/laporan/{id}', [App\Http\Controllers\Peserta\LaporanController::class, 'destroy'])
+    Route::delete('/peserta/laporan/{id}', [PesertaLaporanController::class, 'destroy'])
         ->name('peserta.laporan.destroy');
 
-    Route::get('/peserta/penilaian', [App\Http\Controllers\Peserta\PenilaianController::class, 'index'])
+    Route::get('/peserta/penilaian', [PesertaPenilaianController::class, 'index'])
         ->name('peserta.penilaian');
 
-    Route::get('/peserta/feedback', [App\Http\Controllers\Peserta\FeedbackController::class, 'index'])
+    Route::get('/peserta/feedback', [PesertaFeedbackController::class, 'index'])
         ->name('peserta.feedback');
 
-    Route::post('/peserta/feedback', [App\Http\Controllers\Peserta\FeedbackController::class, 'store'])
+    Route::post('/peserta/feedback', [PesertaFeedbackController::class, 'store'])
         ->name('peserta.feedback.store');
 
-    Route::get('/peserta/settings', [App\Http\Controllers\Peserta\SettingsController::class, 'index'])->name('peserta.settings.index');
-    Route::post('/peserta/settings', [App\Http\Controllers\Peserta\SettingsController::class, 'update'])->name('peserta.settings.update');
+    Route::get('/peserta/settings', [PesertaSettingsController::class, 'index'])->name('peserta.settings.index');
+    Route::post('/peserta/settings', [PesertaSettingsController::class, 'update'])->name('peserta.settings.update');
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -127,12 +145,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         ->middleware(['auth', 'role:admin'])
         ->name('admin.absensi.index');
 
-    Route::resource('admin/user', App\Http\Controllers\Admin\UserController::class)->only(['index', 'show'])->names([
+    Route::resource('admin/user', AdminUserController::class)->only(['index', 'show'])->names([
         'index' => 'admin.user.index',
         'show' => 'admin.user.show',
     ]);
 
-    Route::resource('admin/partners', App\Http\Controllers\Admin\PartnerController::class)->names([
+    Route::resource('admin/partners', AdminPartnerController::class)->names([
         'index' => 'admin.partners.index',
         'create' => 'admin.partners.create',
         'store' => 'admin.partners.store',
@@ -141,20 +159,22 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         'destroy' => 'admin.partners.destroy',
     ]);
 
-    Route::get('/admin/penilaian', [App\Http\Controllers\Admin\PenilaianController::class, 'index'])->name('admin.penilaian.index');
-    Route::get('/admin/penilaian/peserta-grid', [App\Http\Controllers\Admin\PenilaianController::class, 'getPesertaGrid'])->name('admin.penilaian.peserta-grid');
-    Route::get('/admin/penilaian/{id}', [App\Http\Controllers\Admin\PenilaianController::class, 'show'])->name('admin.penilaian.show');
-    Route::post('/admin/penilaian', [App\Http\Controllers\Admin\PenilaianController::class, 'store'])->name('admin.penilaian.store');
-    Route::put('/admin/penilaian/{id}', [App\Http\Controllers\Admin\PenilaianController::class, 'update'])->name('admin.penilaian.update');
+    Route::get('/admin/penilaian', [AdminPenilaianController::class, 'index'])->name('admin.penilaian.index');
+    Route::get('/admin/penilaian/peserta-grid', [AdminPenilaianController::class, 'getPesertaGrid'])->name('admin.penilaian.peserta-grid');
+    Route::get('/admin/penilaian/{id}', [AdminPenilaianController::class, 'show'])->name('admin.penilaian.show');
+    Route::post('/admin/penilaian', [AdminPenilaianController::class, 'store'])->name('admin.penilaian.store');
+    Route::put('/admin/penilaian/{id}', [AdminPenilaianController::class, 'update'])->name('admin.penilaian.update');
 
-    Route::get('/admin/arsip', [App\Http\Controllers\Admin\ArsipController::class, 'index'])->name('admin.arsip.index');
+    Route::get('/admin/arsip', [AdminArsipController::class, 'index'])->name('admin.arsip.index');
 
-    Route::get('/admin/laporan', [App\Http\Controllers\Admin\LaporanController::class, 'index'])->name('admin.laporan.index');
-    Route::patch('/admin/laporan/{id}/status', [App\Http\Controllers\Admin\LaporanController::class, 'updateStatus'])->name('admin.laporan.update-status');
+    Route::get('/admin/laporan', [AdminLaporanController::class, 'index'])->name('admin.laporan.index');
+    Route::get('/admin/laporan/{id}', [AdminLaporanController::class, 'show'])->name('admin.laporan.show');
+    Route::patch('/admin/laporan/{id}/status', [AdminLaporanController::class, 'updateStatus'])->name('admin.laporan.update-status');
 
-    Route::get('/admin/profile', [App\Http\Controllers\Admin\ProfileController::class, 'index'])->name('admin.profile.index');
-    Route::post('/admin/profile', [App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('admin.profile.update');
 
-    Route::get('/admin/settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('admin.settings.index');
-    Route::post('/admin/settings', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('admin.settings.update');
+    Route::get('/admin/profile', [AdminProfileController::class, 'index'])->name('admin.profile.index');
+    Route::post('/admin/profile', [AdminProfileController::class, 'update'])->name('admin.profile.update');
+
+    Route::get('/admin/settings', [AdminSettingsController::class, 'index'])->name('admin.settings.index');
+    Route::post('/admin/settings', [AdminSettingsController::class, 'update'])->name('admin.settings.update');
 });

@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     borderWidth: 3,
                     backgroundColor: attGradient,
                     fill: true,
-                    tension: 0.1,
+                    tension: 0.5,
                     pointBackgroundColor: '#fff',
                     pointBorderColor: '#10367D',
                     pointBorderWidth: 2,
@@ -166,16 +166,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     chart.getDatasetMeta(i).data.forEach((datapoint, index) => {
                         const { x, y, startAngle, endAngle, outerRadius } = datapoint;
                         const value = chart.data.datasets[i].data[index];
-                        if (value === 0) return; 
+                        if (value === 0) return;
                         const midAngle = (startAngle + endAngle) / 2;
                         const isRightSide = Math.cos(midAngle) >= 0;
-                        
+
                         const startX = x + Math.cos(midAngle) * outerRadius;
                         const startY = y + Math.sin(midAngle) * outerRadius;
-                        
+
                         const bendX = x + Math.cos(midAngle) * (outerRadius + 20);
                         const bendY = y + Math.sin(midAngle) * (outerRadius + 20);
-                        
+
                         const lineLength = 30;
                         const endX = bendX + (isRightSide ? lineLength : -lineLength);
                         const endY = bendY;
@@ -202,11 +202,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         ctx.shadowBlur = 4;
                         ctx.textAlign = isRightSide ? 'left' : 'right';
                         ctx.textBaseline = 'middle';
-                        
+
                         const textPadding = 10;
                         const textX = endX + (isRightSide ? textPadding : -textPadding);
                         ctx.fillText(value, textX, endY);
-                        
+
                         ctx.shadowBlur = 0;
                     });
                 });

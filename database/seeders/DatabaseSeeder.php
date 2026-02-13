@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Feedback;
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,8 +15,5 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(AdminUserSeeder::class);
-        $this->call(IpinSeeder::class);
-        $this->call(PesertaDummySeeder::class);
-        $this->call(AbsensiDummySeeder::class);
     }
 }

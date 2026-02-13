@@ -58,9 +58,9 @@
                             </p>
                         </div>
                         <a href="{{ Storage::url($laporan->file_path) }}"
-                           target="_blank"
-                           download
-                           class="px-4 py-2 text-sm font-bold text-white transition-all duration-200 bg-purple-600 rounded-lg hover:bg-purple-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
+                            target="_blank"
+                            download
+                            class="px-4 py-2 text-sm font-bold text-white transition-all duration-200 bg-purple-600 rounded-lg hover:bg-purple-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
                             <i class='bx bx-download'></i> Download
                         </a>
                     </div>
@@ -97,7 +97,7 @@
                     </button>
                 </form>
                 <a href="{{ route('peserta.laporan.edit', $laporan->id) }}"
-                   class="px-4 py-2 text-sm font-bold text-white transition-all duration-200 bg-purple-600 rounded-lg hover:bg-purple-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
+                    class="px-4 py-2 text-sm font-bold text-white transition-all duration-200 bg-purple-600 rounded-lg hover:bg-purple-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
                     <div class="flex items-center gap-2">
                         <i class='text-base bx bx-edit'></i>
                         <span>Edit Laporan</span>

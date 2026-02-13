@@ -34,7 +34,7 @@
                     class="object-contain w-10 h-10 border-2 rounded-lg border-primary">
                 <span class="text-xl font-extrabold text-gray-900">SimpanData</span>
             </a>
-            <a href="{{ route('index') }}"
+            <a href="javascript:history.back()"
                 class="px-5 py-2 text-sm font-medium no-underline transition-all duration-300 bg-transparent border rounded-lg border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-primary hover:text-primary">
                 <i class="fas fa-arrow-left mr-2"></i>Kembali
             </a>

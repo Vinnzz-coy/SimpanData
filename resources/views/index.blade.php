@@ -708,6 +708,13 @@
                                     <span>Terms of Service</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{ route('help') }}"
+                                    class="flex items-center gap-2 text-sm no-underline transition-all duration-300 text-slate-300 hover:text-primary hover:translate-x-1">
+                                    <i class='bx bx-chevron-right'></i>
+                                    <span>Help</span>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
