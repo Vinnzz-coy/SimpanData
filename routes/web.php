@@ -17,7 +17,6 @@ use App\Http\Controllers\Peserta\SettingsController as PesertaSettingsController
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\PartnerController as AdminPartnerController;
 use App\Http\Controllers\Admin\PenilaianController as AdminPenilaianController;
-use App\Http\Controllers\Admin\ArsipController as AdminArsipController;
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 
@@ -40,19 +39,29 @@ Route::get('/help', function () {
     return view('legal.help');
 })->name('help');
 
-Route::post('/send-otp', [AuthController::class, 'sendOtp'])->name('send.otp');
-Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('verify.otp');
-Route::post('/check-username', [AuthController::class, 'checkUsername'])->name('check.username');
-Route::post('/check-email-availability', [AuthController::class, 'checkEmailAvailability'])->name('check.email.availability');
+Route::middleware(['throttle:5,1'])->group(function () {
+    Route::post('/send-otp', [AuthController::class, 'sendOtp'])->name('send.otp');
+    Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('verify.otp');
+    Route::post('/check-username', [AuthController::class, 'checkUsername'])->name('check.username');
+    Route::post('/check-email-availability', [AuthController::class, 'checkEmailAvailability'])->name('check.email.availability');
+});
 
 Route::get('/forgot-password', fn() => view('auth.forgot-password'))
     ->name('forgot.password.form');
 
-Route::post('/check-email', [AuthController::class, 'checkEmail'])
-    ->name('check.email');
+Route::middleware(['throttle:5,1'])->group(function () {
+    Route::post('/check-email', [AuthController::class, 'checkEmail'])
+        ->name('check.email');
 
-Route::post('/forgot-password', [AuthController::class, 'sendForgotPasswordOtp'])
-    ->name('forgot.password.post');
+    Route::post('/forgot-password', [AuthController::class, 'sendForgotPasswordOtp'])
+        ->name('forgot.password.post');
+
+    Route::post('/verify-reset-otp', [AuthController::class, 'verifyResetOtp'])
+        ->name('verify.reset.otp.post');
+
+    Route::post('/send-reset-otp', [AuthController::class, 'sendResetOtp'])
+        ->name('send.reset.otp');
+});
 
 Route::get('/verify-reset-otp', function () {
     if (!session('reset_email')) {
@@ -61,12 +70,6 @@ Route::get('/verify-reset-otp', function () {
     }
     return view('auth.verify-reset-otp');
 })->name('verify.reset.otp');
-
-Route::post('/verify-reset-otp', [AuthController::class, 'verifyResetOtp'])
-    ->name('verify.reset.otp.post');
-
-Route::post('/send-reset-otp', [AuthController::class, 'sendResetOtp'])
-    ->name('send.reset.otp');
 
 Route::get('/reset-password', function () {
     if (!session('reset_verified')) {
@@ -142,7 +145,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     ]);
 
     Route::get('/admin/absensi', [AbsensiController::class, 'index'])
-        ->middleware(['auth', 'role:admin'])
         ->name('admin.absensi.index');
 
     Route::resource('admin/user', AdminUserController::class)->only(['index', 'show'])->names([
@@ -164,8 +166,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/penilaian/{id}', [AdminPenilaianController::class, 'show'])->name('admin.penilaian.show');
     Route::post('/admin/penilaian', [AdminPenilaianController::class, 'store'])->name('admin.penilaian.store');
     Route::put('/admin/penilaian/{id}', [AdminPenilaianController::class, 'update'])->name('admin.penilaian.update');
-
-    Route::get('/admin/arsip', [AdminArsipController::class, 'index'])->name('admin.arsip.index');
 
     Route::get('/admin/laporan', [AdminLaporanController::class, 'index'])->name('admin.laporan.index');
     Route::get('/admin/laporan/{id}', [AdminLaporanController::class, 'show'])->name('admin.laporan.show');

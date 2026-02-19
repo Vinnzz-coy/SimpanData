@@ -10,7 +10,7 @@
 
     <div class="space-y-6">
         <div class="space-y-3 animate-fade-in">
-            @if (!$peserta)
+            @if (!$peserta || !$peserta->is_lengkap)
                 <div class="flex items-center justify-between p-4 border-l-4 border-red-500 rounded-lg shadow-sm bg-red-50">
                     <div class="flex items-center space-x-3">
                         <i class='text-xl text-red-500 bx bxs-error-circle'></i>
@@ -223,12 +223,6 @@
                         <span class="text-sm font-bold text-slate-900">{{ $attendanceBreakdown['Sakit'] }}</span>
                     </div>
                     <div class="flex items-center justify-between p-3 border border-slate-50 bg-slate-50/50 rounded-xl">
-                        <div class="flex items-center gap-3">
-                            <div class="w-3 h-3 bg-slate-400 rounded-full"></div>
-                            <span class="text-xs font-bold text-slate-700">Alpha</span>
-                        </div>
-                        <span class="text-sm font-bold text-slate-900">{{ $attendanceBreakdown['Alpha'] }}</span>
-                    </div>
                 </div>
             </div>
         </div>

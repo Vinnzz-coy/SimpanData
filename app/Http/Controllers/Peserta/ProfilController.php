@@ -43,6 +43,10 @@ class ProfilController extends Controller
         ]);
         
         if ($request->hasFile('foto')) {
+            $peserta = \App\Models\Peserta::where('user_id', $user->id)->first();
+            if ($peserta && $peserta->foto) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($peserta->foto);
+            }
             $path = $request->file('foto')->store('peserta', 'public');
             $data['foto'] = $path;
         }

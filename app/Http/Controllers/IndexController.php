@@ -29,7 +29,7 @@ class IndexController extends Controller
                 ->count('peserta_id');
 
             $tingkatKehadiran = $pesertaAktif > 0
-                ? round(($totalAbsensiHadir / $pesertaAktif) * 100)
+                ? min(100, round(($totalAbsensiHadir / $pesertaAktif) * 100))
                 : 0;
 
             $laporanMasuk = Laporan::where('status', 'Dikirim')->count();
@@ -59,9 +59,10 @@ class IndexController extends Controller
                 ->limit(20)
                 ->get();
 
-            if ($feedbacks->count() > 0) {
+            if ($feedbacks->count() > 0 && $feedbacks->count() < 10) {
+                $original = $feedbacks->values();
                 while ($feedbacks->count() < 10) {
-                    $feedbacks = $feedbacks->concat($feedbacks);
+                    $feedbacks = $feedbacks->concat($original->take(10 - $feedbacks->count()));
                 }
             }
 
@@ -76,9 +77,10 @@ class IndexController extends Controller
 
             $partners = Partner::latest()->get();
 
-            if ($partners->count() > 0) {
+            if ($partners->count() > 0 && $partners->count() < 10) {
+                $original = $partners->values();
                 while ($partners->count() < 10) {
-                    $partners = $partners->concat($partners);
+                    $partners = $partners->concat($original->take(10 - $partners->count()));
                 }
             }
 

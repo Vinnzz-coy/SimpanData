@@ -7,26 +7,26 @@
                 <img src="{{ asset('storage/'.$user->peserta->foto) }}"
                     alt="{{ $user->username }}"
                     class="object-cover w-20 h-20 border-4 border-white rounded-full shadow-lg">
-                @if($user->peserta)
+                @if($user->peserta && $user->peserta->is_lengkap)
                 <div class="absolute bottom-0 right-0 flex items-center justify-center w-6 h-6 border-2 border-white rounded-full bg-emerald-500">
                     <i class='text-xs text-white bx bx-check'></i>
                 </div>
                 @else
                 <div class="absolute bottom-0 right-0 flex items-center justify-center w-6 h-6 border-2 border-white rounded-full bg-amber-500">
-                    <i class='text-xs text-white bx bx-x'></i>
+                    <i class='text-xs text-white bx bx-error'></i>
                 </div>
                 @endif
             </div>
             @else
             <div class="relative flex items-center justify-center flex-shrink-0 w-20 h-20 text-3xl font-bold text-white rounded-full shadow-lg bg-gradient-to-br from-indigo-500 to-purple-500">
                 {{ strtoupper(substr($user->username, 0, 1)) }}
-                @if($user->peserta)
+                @if($user->peserta && $user->peserta->is_lengkap)
                 <div class="absolute bottom-0 right-0 flex items-center justify-center w-6 h-6 border-2 border-white rounded-full bg-emerald-500">
                     <i class='text-xs text-white bx bx-check'></i>
                 </div>
                 @else
                 <div class="absolute bottom-0 right-0 flex items-center justify-center w-6 h-6 border-2 border-white rounded-full bg-amber-500">
-                    <i class='text-xs text-white bx bx-x'></i>
+                    <i class='text-xs text-white bx bx-error'></i>
                 </div>
                 @endif
             </div>
@@ -39,13 +39,13 @@
                     <span class="px-3 py-1 text-xs font-semibold text-indigo-700 bg-indigo-100 border border-indigo-200 rounded-full">
                         {{ ucfirst($user->role) }}
                     </span>
-                    @if($user->peserta)
+                    @if($user->peserta && $user->peserta->is_lengkap)
                     <span class="px-3 py-1 text-xs font-semibold border rounded-full text-emerald-700 bg-emerald-100 border-emerald-200">
                         <i class='mr-1 bx bx-check'></i> Profil Terisi
                     </span>
                     @else
                     <span class="px-3 py-1 text-xs font-semibold border rounded-full text-amber-700 bg-amber-100 border-amber-200">
-                        <i class='mr-1 bx bx-x'></i> Profil Belum Terisi
+                        <i class='mr-1 bx bx-error'></i> Profil Belum Lengkap
                     </span>
                     @endif
                 </div>
@@ -64,7 +64,7 @@
         </div>
     </div>
 
-    @if($user->peserta)
+    @if($user->peserta && $user->peserta->is_lengkap)
     <div class="space-y-4">
         <h5 class="flex items-center gap-2 text-lg font-bold text-gray-800">
             <i class='text-indigo-600 bx bx-user-circle'></i>

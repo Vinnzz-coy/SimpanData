@@ -27,9 +27,16 @@ class UserController extends Controller
 
         if ($request->filled('profile_status')) {
             if ($request->profile_status === 'complete') {
-                $baseQuery->has('peserta');
+                $baseQuery->whereHas('peserta', function ($q) {
+                    $q->terisi();
+                });
             } elseif ($request->profile_status === 'incomplete') {
-                $baseQuery->doesntHave('peserta');
+                $baseQuery->where(function ($q) {
+                    $q->doesntHave('peserta')
+                      ->orWhereHas('peserta', function ($sq) {
+                          $sq->belumTerisi();
+                      });
+                });
             }
         }
 
@@ -43,8 +50,16 @@ class UserController extends Controller
 
         $statsQuery = clone $baseQuery;
         $totalPeserta = (clone $statsQuery)->count();
-        $profileComplete = (clone $statsQuery)->has('peserta')->count();
-        $profileIncomplete = (clone $statsQuery)->doesntHave('peserta')->count();
+        $profileComplete = (clone $statsQuery)->whereHas('peserta', function ($q) {
+            $q->terisi();
+        })->count();
+        
+        $profileIncomplete = (clone $statsQuery)->where(function ($q) {
+            $q->doesntHave('peserta')
+              ->orWhereHas('peserta', function ($sq) {
+                  $sq->belumTerisi();
+              });
+        })->count();
 
         if ($request->ajax()) {
             return response()->json([

@@ -227,6 +227,7 @@
                             <th class="px-4 py-3 font-semibold uppercase tracking-wider text-[11px]">Mode</th>
                             <th class="px-4 py-3 font-semibold uppercase tracking-wider text-[11px]">Status</th>
                             <th class="px-4 py-3 font-semibold uppercase tracking-wider text-[11px]">WA Pengirim</th>
+                            <th class="px-4 py-3 font-semibold uppercase tracking-wider text-[11px] text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y">
@@ -277,10 +278,25 @@
                                 <td class="px-4 py-3 text-gray-600">
                                     {{ $item->peserta->no_telepon ?? ($item->wa_pengirim ?? '-') }}
                                 </td>
+                                <td class="px-4 py-3 text-center">
+                                    @if($item->latitude && $item->longitude)
+                                        <button type="button"
+                                            onclick="openLocationModal('{{ $item->peserta->nama ?? '-' }}', '{{ $item->waktu_absen ? \Carbon\Carbon::parse($item->waktu_absen)->format('Y-m-d H:i') : '-' }}', '{{ $item->jenis_absen }}', '{{ $item->status }}', '{{ $item->mode_kerja ?? '-' }}', {{ $item->latitude }}, {{ $item->longitude }}, '{{ addslashes($item->wa_pengirim ?? '') }}')"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 hover:border-blue-300 transition-all duration-200 group">
+                                            <i class='bx bx-map text-sm group-hover:animate-bounce'></i>
+                                            <span>Lokasi</span>
+                                        </button>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-400 bg-gray-50 rounded-lg cursor-not-allowed">
+                                            <i class='bx bx-map text-sm'></i>
+                                            <span>N/A</span>
+                                        </span>
+                                    @endif
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-4 py-8 text-center text-gray-500">
+                                <td colspan="8" class="px-4 py-8 text-center text-gray-500">
                                     <div class="flex flex-col items-center justify-center">
                                         <i class='mb-2 text-4xl text-gray-300 bx bx-info-circle'></i>
                                         <p>Tidak ada data absensi untuk filter yang dipilih</p>
@@ -299,10 +315,80 @@
             @endif
         </div>
 
+        {{-- Location Modal --}}
+        <div id="locationModal" class="fixed inset-0 z-50 flex items-center justify-center hidden" style="background:rgba(0,0,0,0.5);">
+            <div class="relative w-full max-w-2xl mx-4 bg-white shadow-2xl rounded-2xl animate-fade-in-up">
+                <div class="flex items-center justify-between p-5 border-b border-gray-100">
+                    <div class="flex items-center gap-3">
+                        <div class="flex items-center justify-center w-10 h-10 text-xl text-blue-600 bg-blue-50 rounded-xl">
+                            <i class='bx bx-map'></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-gray-800">Detail Lokasi Absensi</h3>
+                            <p class="text-xs text-gray-500" id="modalSubtitle"></p>
+                        </div>
+                    </div>
+                    <button onclick="closeLocationModal()" class="flex items-center justify-center w-8 h-8 text-gray-400 transition-colors rounded-lg hover:text-gray-600 hover:bg-gray-100">
+                        <i class='bx bx-x text-xl'></i>
+                    </button>
+                </div>
+
+                <div class="p-5 space-y-4">
+                    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                        <div class="p-3 rounded-xl bg-gray-50">
+                            <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Nama</p>
+                            <p class="text-sm font-bold text-gray-800 truncate" id="modalNama"></p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-gray-50">
+                            <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Jenis</p>
+                            <p class="text-sm font-bold text-gray-800" id="modalJenis"></p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-gray-50">
+                            <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Status</p>
+                            <p class="text-sm font-bold text-gray-800" id="modalStatus"></p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-gray-50">
+                            <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Mode</p>
+                            <p class="text-sm font-bold text-gray-800" id="modalMode"></p>
+                        </div>
+                    </div>
+
+                    <div id="modalCatatanWrapper" class="hidden">
+                        <div class="flex items-start gap-2 p-3 border border-amber-100 rounded-xl bg-amber-50/50">
+                            <i class='mt-0.5 text-amber-500 bx bx-note'></i>
+                            <div>
+                                <p class="text-[10px] font-semibold uppercase tracking-wider text-amber-400 mb-0.5">Catatan</p>
+                                <p class="text-xs font-medium leading-relaxed text-gray-700" id="modalCatatan"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="mapContainer" class="w-full overflow-hidden border border-gray-200 rounded-xl" style="height:320px;"></div>
+
+                    <div class="flex items-start gap-2 p-3 border border-blue-100 rounded-xl bg-blue-50/50">
+                        <i class='mt-0.5 text-blue-500 bx bx-current-location'></i>
+                        <div>
+                            <p class="text-[10px] font-semibold uppercase tracking-wider text-blue-400 mb-0.5">Alamat</p>
+                            <p class="text-xs font-medium leading-relaxed text-gray-700" id="modalAddress">Memuat alamat...</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 text-xs text-gray-400">
+                        <i class='bx bx-time-five'></i>
+                        <span id="modalWaktu"></span>
+                        <span class="mx-1">•</span>
+                        <span id="modalCoords"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 @endsection
 
 @section('scripts')
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         function toggleAllDates(checkbox) {
             const form = checkbox.form;
@@ -328,6 +414,70 @@
             if (checkbox && dateInput && checkbox.checked) {
                 dateInput.disabled = true;
             }
+        });
+
+        let locationMap = null;
+
+        function openLocationModal(nama, waktu, jenis, status, mode, lat, lng, catatan) {
+            document.getElementById('modalNama').textContent = nama;
+            document.getElementById('modalJenis').textContent = jenis;
+            document.getElementById('modalStatus').textContent = status;
+            document.getElementById('modalMode').textContent = mode;
+            document.getElementById('modalWaktu').textContent = waktu;
+            document.getElementById('modalSubtitle').textContent = nama + ' — ' + jenis + ' ' + waktu;
+            document.getElementById('modalCoords').textContent = lat.toFixed(7) + ', ' + lng.toFixed(7);
+            document.getElementById('modalAddress').textContent = 'Memuat alamat...';
+
+            const catatanWrapper = document.getElementById('modalCatatanWrapper');
+            if (catatan && catatan.trim() !== '') {
+                document.getElementById('modalCatatan').textContent = catatan;
+                catatanWrapper.classList.remove('hidden');
+            } else {
+                catatanWrapper.classList.add('hidden');
+            }
+
+            const modal = document.getElementById('locationModal');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            setTimeout(() => {
+                if (locationMap) {
+                    locationMap.remove();
+                }
+                locationMap = L.map('mapContainer').setView([lat, lng], 16);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 19
+                }).addTo(locationMap);
+                L.marker([lat, lng]).addTo(locationMap)
+                    .bindPopup('<b>' + nama + '</b><br>' + jenis + ' — ' + waktu)
+                    .openPopup();
+
+                fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng + '&zoom=18&addressdetails=1', {
+                    headers: { 'Accept-Language': 'id-ID,id;q=0.9', 'User-Agent': 'SimpanData-Attendance-System' }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('modalAddress').textContent = data.display_name || 'Alamat tidak ditemukan';
+                })
+                .catch(() => {
+                    document.getElementById('modalAddress').textContent = 'Gagal memuat alamat';
+                });
+            }, 100);
+        }
+
+        function closeLocationModal() {
+            document.getElementById('locationModal').classList.add('hidden');
+            document.body.style.overflow = '';
+            if (locationMap) {
+                locationMap.remove();
+                locationMap = null;
+            }
+        }
+
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLocationModal(); });
+        document.getElementById('locationModal')?.addEventListener('click', e => {
+            if (e.target === e.currentTarget) closeLocationModal();
         });
     </script>
 @endsection

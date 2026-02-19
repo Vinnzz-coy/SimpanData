@@ -13,7 +13,9 @@ class Absensi extends Model
         'waktu_absen',
         'mode_kerja',
         'status',
-        'wa_pengirim'
+        'wa_pengirim',
+        'latitude',
+        'longitude'
     ];
     protected $casts = [
         'waktu_absen' => 'datetime',
