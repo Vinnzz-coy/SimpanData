@@ -151,10 +151,11 @@ class PesertaController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Peserta store failed', ['error' => $e->getMessage()]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+                'message' => 'Terjadi kesalahan saat menyimpan data peserta.',
                 'errors' => []
             ], 500);
         }
@@ -247,10 +248,11 @@ class PesertaController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Peserta update failed', ['error' => $e->getMessage()]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+                'message' => 'Terjadi kesalahan saat memperbarui data peserta.',
                 'errors' => []
             ], 500);
         }
@@ -263,10 +265,35 @@ class PesertaController extends Controller
         DB::beginTransaction();
 
         try {
+            // Delete Laporan files and records
+            foreach ($peserta->laporans as $laporan) {
+                if ($laporan->file_path && Storage::disk('public')->exists($laporan->file_path)) {
+                    Storage::disk('public')->delete($laporan->file_path);
+                }
+                $laporan->delete();
+            }
+
+            // Delete Absensi
+            $peserta->absensis()->delete();
+
+            // Delete Feedback
+            $peserta->feedbacks()->delete();
+            
+            // Delete Penilaian
+            if ($peserta->penilaian) {
+                $peserta->penilaian->delete();
+            }
+
+            // Delete Arsip
+            if ($peserta->arsip) {
+                $peserta->arsip->delete();
+            }
+
             if ($peserta->foto) {
                 Storage::disk('public')->delete($peserta->foto);
             }
 
+            $peserta->delete();
             $peserta->user->delete();
 
             DB::commit();

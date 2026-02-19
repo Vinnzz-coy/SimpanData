@@ -293,9 +293,12 @@ function handleFormSubmit(e) {
         status.value === "Hadir" &&
         !document.querySelector('input[name="mode_kerja"]:checked')
     ) {
-        e.preventDefault();
-        alert("Silakan pilih mode kerja (WFO atau WFA)");
-        return;
+        const workModeSection = document.getElementById("work-mode-section");
+        if (workModeSection && !workModeSection.classList.contains("hidden")) {
+            e.preventDefault();
+            alert("Silakan pilih mode kerja (WFO atau WFA)");
+            return;
+        }
     }
 
     if (!lat || !lng) {

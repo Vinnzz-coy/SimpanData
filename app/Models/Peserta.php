@@ -25,6 +25,8 @@ use Illuminate\Database\Eloquent\Model;
 class Peserta extends Model
 {
     use HasFactory;
+    
+    protected $appends = ['is_lengkap'];
 
     protected $table = 'peserta';
     protected $fillable = [
@@ -70,5 +72,52 @@ class Peserta extends Model
     public function penilaian()
     {
         return $this->hasOne(Penilaian::class);
+    }
+
+    /**
+     * Scope untuk peserta dengan profil terisi (tidak ada data '-')
+     */
+    public function scopeTerisi($query)
+    {
+        return $query->where('asal_sekolah_universitas', '!=', '-')
+                     ->where('jurusan', '!=', '-')
+                     ->where('alamat', '!=', '-')
+                     ->where('no_telepon', '!=', '-')
+                     ->whereNotNull('asal_sekolah_universitas')
+                     ->whereNotNull('jurusan')
+                     ->whereNotNull('alamat')
+                     ->whereNotNull('no_telepon');
+    }
+
+    /**
+     * Scope untuk peserta dengan profil belum lengkap (ada data '-')
+     */
+    public function scopeBelumTerisi($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('asal_sekolah_universitas', '-')
+              ->orWhere('jurusan', '-')
+              ->orWhere('alamat', '-')
+              ->orWhere('no_telepon', '-')
+              ->orWhereNull('asal_sekolah_universitas')
+              ->orWhereNull('jurusan')
+              ->orWhereNull('alamat')
+              ->orWhereNull('no_telepon');
+        });
+    }
+
+    /**
+     * Accessor untuk cek kelengkapan profil
+     */
+    public function getIsLengkapAttribute()
+    {
+        return $this->asal_sekolah_universitas !== '-' &&
+               $this->jurusan !== '-' &&
+               $this->alamat !== '-' &&
+               $this->no_telepon !== '-' &&
+               !is_null($this->asal_sekolah_universitas) &&
+               !is_null($this->jurusan) &&
+               !is_null($this->alamat) &&
+               !is_null($this->no_telepon);
     }
 }

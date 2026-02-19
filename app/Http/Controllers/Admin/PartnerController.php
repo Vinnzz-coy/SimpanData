@@ -61,10 +61,12 @@ class PartnerController extends Controller
 
             return redirect()->route('admin.partners.index')->with('success', 'Partner berhasil ditambahkan');
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Partner store failed', ['error' => $e->getMessage()]);
+
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Gagal menyimpan data: ' . $e->getMessage(),
+                    'message' => 'Gagal menyimpan data partner.',
                     'errors' => $e instanceof \Illuminate\Validation\ValidationException ? $e->errors() : []
                 ], 422);
             }

@@ -12,7 +12,7 @@
                             <img src="{{ asset('storage/'.$user->peserta->foto) }}"
                                 alt="{{ $user->username }}"
                                 class="object-cover border-white rounded-full shadow-md w-14 h-14 border-3">
-                            @if($user->peserta)
+                            @if($user->peserta && $user->peserta->is_lengkap)
                             <div class="absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full bg-emerald-500"></div>
                             @else
                             <div class="absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full bg-amber-500"></div>
@@ -21,7 +21,7 @@
                         @else
                         <div class="relative flex items-center justify-center flex-shrink-0 text-xl font-bold text-white rounded-full shadow-md w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-500">
                             {{ strtoupper(substr($user->username, 0, 1)) }}
-                            @if($user->peserta)
+                            @if($user->peserta && $user->peserta->is_lengkap)
                             <div class="absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full bg-emerald-500"></div>
                             @else
                             <div class="absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full bg-amber-500"></div>
@@ -58,7 +58,7 @@
 
             <div class="p-5">
                 <div class="space-y-4">
-                    @if($user->peserta)
+                    @if($user->peserta && $user->peserta->is_lengkap)
                     <div class="flex items-center gap-3 p-3 transition-colors duration-200 rounded-lg bg-emerald-50 hover:bg-emerald-100">
                         <div class="flex items-center justify-center w-10 h-10 bg-white rounded-lg shadow-sm">
                             <i class='text-lg text-emerald-600 bx bx-check-circle'></i>
@@ -70,6 +70,7 @@
                             </p>
                         </div>
                     </div>
+
 
                     <div class="flex items-center gap-3 p-3 transition-colors duration-200 rounded-lg bg-gray-50 hover:bg-gray-100">
                         <div class="flex items-center justify-center w-10 h-10 bg-white rounded-lg shadow-sm">

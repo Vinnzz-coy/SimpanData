@@ -64,18 +64,11 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
+        if (!$user || $user->role === 'admin') {
             return response()->json([
                 'status' => false,
-                'message' => 'Email belum terdaftar',
+                'message' => 'Email tidak dapat digunakan untuk reset password',
             ], 404);
-        }
-
-        if ($user->role === 'admin') {
-            return response()->json([
-                'status' => false,
-                'message' => 'Akun admin tidak dapat direset melalui halaman ini',
-            ], 403);
         }
 
         session(['reset_email' => $user->email]);
@@ -271,6 +264,10 @@ class AuthController extends Controller
             ], 422);
         }
 
+        $otp->delete();
+
+        session(['otp_verified_email' => $request->email]);
+
         return response()->json([
             'status' => true,
             'message' => 'OTP valid',
@@ -283,33 +280,51 @@ class AuthController extends Controller
             'username' => 'required|string|min:3|unique:user,username',
             'email'    => 'required|email|unique:user,email',
             'password' => 'required|min:6|confirmed',
-            'otp'      => 'required|digits:6',
         ]);
 
-        $otp = OtpCode::where('email', $request->email)
-            ->where('code', $request->otp)
-            ->first();
-
-        if (!$otp || $otp->isExpired()) {
+        if (session('otp_verified_email') !== $request->email) {
             return back()->withErrors([
-                'otp' => 'OTP tidak valid atau sudah kedaluwarsa',
+                'otp' => 'Verifikasi OTP diperlukan. Silakan ulangi proses.',
             ])->withInput();
         }
 
-        User::create([
-            'username' => $request->username,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'role'     => 'peserta',
-        ]);
+        DB::beginTransaction();
+        try {
+            $user = User::create([
+                'username' => $request->username,
+                'email'    => $request->email,
+                'password' => Hash::make($request->password),
+                'role'     => 'peserta',
+            ]);
 
-        $otp->delete();
+            \App\Models\Peserta::create([
+                'user_id' => $user->id,
+                'nama' => $request->username,
+                'asal_sekolah_universitas' => '-',
+                'jurusan' => '-',
+                'jenis_kegiatan' => 'Magang',
+                'tanggal_mulai' => now(),
+                'tanggal_selesai' => now()->addMonths(3),
+                'status' => 'Aktif',
+            ]);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Registration failed: ' . $e->getMessage());
+            return back()->withErrors([
+                'email' => 'Terjadi kesalahan saat registrasi. Silakan coba lagi.',
+            ])->withInput();
+        }
+
+        session()->forget('otp_verified_email');
+        OtpCode::where('email', $request->email)->delete();
 
         Log::info('New user registered: ' . $request->email);
 
         return redirect('/auth')->with(
             'success',
-            'Registrasi berhasil, silakan login'
+            'Registrasi berhasil, silakan login dan lengkapi profil Anda'
         );
     }
 

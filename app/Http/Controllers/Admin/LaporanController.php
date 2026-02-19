@@ -18,23 +18,20 @@ class LaporanController extends Controller
 
         $query = Laporan::with('peserta');
 
-        $statsQuery = Laporan::query();
+        $baseStatsQuery = Laporan::query();
         if ($tanggal) {
-            $statsQuery->whereDate('tanggal_laporan', $tanggal);
+            $baseStatsQuery->whereDate('tanggal_laporan', $tanggal);
         }
         if ($sekolah) {
-            $statsQuery->whereHas('peserta', function ($q) use ($sekolah) {
+            $baseStatsQuery->whereHas('peserta', function ($q) use ($sekolah) {
                 $q->where('asal_sekolah_universitas', $sekolah);
             });
         }
-        if ($status) {
-            $statsQuery->where('status', $status);
-        }
 
-        $totalReports = (clone $statsQuery)->count();
-        $pendingReports = (clone $statsQuery)->where('status', 'Dikirim')->count();
-        $approvedReports = (clone $statsQuery)->where('status', 'Disetujui')->count();
-        $revisedReports = (clone $statsQuery)->where('status', 'Revisi')->count();
+        $totalReports = (clone $baseStatsQuery)->count();
+        $pendingReports = (clone $baseStatsQuery)->where('status', 'Dikirim')->count();
+        $approvedReports = (clone $baseStatsQuery)->where('status', 'Disetujui')->count();
+        $revisedReports = (clone $baseStatsQuery)->where('status', 'Revisi')->count();
 
         if ($status) {
             $query->where('status', $status);
@@ -73,6 +70,13 @@ class LaporanController extends Controller
         ));
     }
 
+    public function show($id)
+    {
+        $laporan = Laporan::with('peserta')->findOrFail($id);
+
+        return view('admin.laporan.show', compact('laporan'));
+    }
+
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
@@ -80,6 +84,11 @@ class LaporanController extends Controller
         ]);
 
         $laporan = Laporan::findOrFail($id);
+
+        if ($laporan->status !== 'Dikirim') {
+            return redirect()->back()->with('error', 'Hanya laporan dengan status "Dikirim" yang dapat disetujui atau direvisi.');
+        }
+
         $laporan->update([
             'status' => $request->status
         ]);

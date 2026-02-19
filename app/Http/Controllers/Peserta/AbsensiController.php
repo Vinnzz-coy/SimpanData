@@ -44,7 +44,7 @@ class AbsensiController extends Controller
             'notes' => 'nullable|string|max:500',
         ]);
 
-        if ($request->status === 'Hadir' && !$request->mode_kerja) {
+        if ($request->type === 'checkin' && $request->status === 'Hadir' && !$request->mode_kerja) {
             return redirect()->back()
                 ->withErrors(['mode_kerja' => 'Mode kerja wajib diisi untuk status Hadir.'])
                 ->withInput();
@@ -65,6 +65,9 @@ class AbsensiController extends Controller
                 ->with('error', 'Anda sudah melakukan absensi ' . strtolower($jenisAbsen) . ' hari ini.');
         }
 
+        $modeKerja = $request->mode_kerja;
+        $status = $request->status;
+
         if ($jenisAbsen == 'Pulang') {
             $checkinToday = Absensi::where('peserta_id', $peserta->id)
                 ->where('jenis_absen', 'Masuk')
@@ -75,15 +78,20 @@ class AbsensiController extends Controller
                 return redirect()->route('peserta.absensi')
                     ->with('error', 'Anda harus melakukan absensi masuk terlebih dahulu sebelum absensi pulang.');
             }
+
+            $modeKerja = $checkinToday->mode_kerja;
+            $status = 'Hadir';
         }
 
         $absensi = new Absensi();
         $absensi->peserta_id = $peserta->id;
         $absensi->jenis_absen = $jenisAbsen;
         $absensi->waktu_absen = Carbon::now();
-        $absensi->mode_kerja = $request->mode_kerja;
-        $absensi->status = $request->status;
+        $absensi->mode_kerja = $modeKerja;
+        $absensi->status = $status;
         $absensi->wa_pengirim = $request->notes;
+        $absensi->latitude = $request->latitude;
+        $absensi->longitude = $request->longitude;
         $absensi->save();
 
         return redirect()->route('peserta.absensi')
