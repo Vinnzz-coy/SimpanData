@@ -31,7 +31,7 @@ class ResetPasswordOtpMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('🔐 Kode OTP Reset Password - ' . config('app.name'))
+        return $this->subject('🔐 Kode OTP Reset Password')
             ->view('emails.reset-password-otp')
             ->with([
                 'otp' => $this->otp,
