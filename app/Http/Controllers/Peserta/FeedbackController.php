@@ -49,7 +49,7 @@ class FeedbackController extends Controller
             'pengirim' => 'Peserta',
             'pesan' => $request->pesan,
             'rating' => $request->rating,
-            'tampilkan' => false,
+            'tampilkan' => true,
             'dibaca' => false,
         ]);
 

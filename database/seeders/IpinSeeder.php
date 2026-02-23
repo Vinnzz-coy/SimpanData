@@ -34,7 +34,7 @@ class IpinSeeder extends Seeder
                 'jurusan' => 'Teknik Goreng Ayam',
                 'alamat' => 'Kampung Durian Runtuh',
                 'no_telepon' => '081234567899',
-                'jenis_kegiatan' => 'Magang', // or PKL
+                'jenis_kegiatan' => 'Magang',
                 'tanggal_mulai' => Carbon::now()->subMonths(6)->toDateString(),
                 'tanggal_selesai' => Carbon::now()->addMonths(6)->toDateString(),
                 'status' => 'Aktif',

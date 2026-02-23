@@ -283,12 +283,12 @@
                                         <button type="button"
                                             onclick="openLocationModal('{{ $item->peserta->nama ?? '-' }}', '{{ $item->waktu_absen ? \Carbon\Carbon::parse($item->waktu_absen)->format('Y-m-d H:i') : '-' }}', '{{ $item->jenis_absen }}', '{{ $item->status }}', '{{ $item->mode_kerja ?? '-' }}', {{ $item->latitude }}, {{ $item->longitude }}, '{{ addslashes($item->wa_pengirim ?? '') }}')"
                                             class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 hover:border-blue-300 transition-all duration-200 group">
-                                            <i class='bx bx-map text-sm group-hover:animate-bounce'></i>
+                                            <i class='text-sm bx bx-map group-hover:animate-bounce'></i>
                                             <span>Lokasi</span>
                                         </button>
                                     @else
                                         <span class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-400 bg-gray-50 rounded-lg cursor-not-allowed">
-                                            <i class='bx bx-map text-sm'></i>
+                                            <i class='text-sm bx bx-map'></i>
                                             <span>N/A</span>
                                         </span>
                                     @endif
@@ -315,8 +315,7 @@
             @endif
         </div>
 
-        {{-- Location Modal --}}
-        <div id="locationModal" class="fixed inset-0 z-50 flex items-center justify-center hidden" style="background:rgba(0,0,0,0.5);">
+        <div id="locationModal" class="fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,0.5);">
             <div class="relative w-full max-w-2xl mx-4 bg-white shadow-2xl rounded-2xl animate-fade-in-up">
                 <div class="flex items-center justify-between p-5 border-b border-gray-100">
                     <div class="flex items-center gap-3">
@@ -329,7 +328,7 @@
                         </div>
                     </div>
                     <button onclick="closeLocationModal()" class="flex items-center justify-center w-8 h-8 text-gray-400 transition-colors rounded-lg hover:text-gray-600 hover:bg-gray-100">
-                        <i class='bx bx-x text-xl'></i>
+                        <i class='text-xl bx bx-x'></i>
                     </button>
                 </div>
 
