@@ -54,18 +54,18 @@
                 <span class="tooltip">Data Partner</span>
             </li>
             <li>
-                <a href="{{ route('admin.penilaian.index') }}" class="{{ request()->routeIs('admin.penilaian.*') ? 'active' : '' }}">
-                    <i class='bx bx-show-alt'></i>
-                    <span class="links_name">Penilaian</span>
-                </a>
-                <span class="tooltip">Penilaian</span>
-            </li>
-            <li>
                 <a href="{{ route('admin.laporan.index') }}" class="{{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
                     <i class='bx bx-file'></i>
                     <span class="links_name">Laporan</span>
                 </a>
                 <span class="tooltip">Laporan</span>
+            </li>
+            <li>
+                <a href="{{ route('admin.penilaian.index') }}" class="{{ request()->routeIs('admin.penilaian.*') ? 'active' : '' }}">
+                    <i class='bx bx-show-alt'></i>
+                    <span class="links_name">Penilaian</span>
+                </a>
+                <span class="tooltip">Penilaian</span>
             </li>
         @elseif($user->isPeserta())
             <li>
@@ -90,18 +90,18 @@
                 <span class="tooltip">Absensi</span>
             </li>
             <li>
-                <a href="{{ route('peserta.penilaian') }}" class="{{ request()->routeIs('peserta.penilaian') ? 'active' : '' }}">
-                    <i class='bx bx-show-alt'></i>
-                    <span class="links_name">Penilaian</span>
-                </a>
-                <span class="tooltip">Penilaian</span>
-            </li>
-            <li>
                 <a href="{{ route('peserta.laporan.index') }}" class="{{ request()->routeIs('peserta.laporan.index') ? 'active' : '' }}">
                     <i class='bx bx-file'></i>
                     <span class="links_name">Laporan</span>
                 </a>
                 <span class="tooltip">Laporan</span>
+            </li>
+            <li>
+                <a href="{{ route('peserta.penilaian') }}" class="{{ request()->routeIs('peserta.penilaian') ? 'active' : '' }}">
+                    <i class='bx bx-show-alt'></i>
+                    <span class="links_name">Penilaian</span>
+                </a>
+                <span class="tooltip">Penilaian</span>
             </li>
             <li>
                 <a href="{{ route('peserta.feedback') }}" class="{{ request()->routeIs('peserta.feedback') ? 'active' : '' }}">
