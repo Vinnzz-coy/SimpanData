@@ -53,12 +53,26 @@
                 </a>
                 <span class="tooltip">Data Partner</span>
             </li>
-            <li>
-                <a href="{{ route('admin.laporan.index') }}" class="{{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
+            <li class="relative group dropdown-item">
+                <a href="javascript:void(0)" class="{{ request()->routeIs('admin.laporan.*') ? 'active' : '' }} dropdown-toggle">
                     <i class='bx bx-file'></i>
                     <span class="links_name">Laporan</span>
+                    <i class='bx bx-chevron-down dropdown-icon'></i>
                 </a>
                 <span class="tooltip">Laporan</span>
+                <ul class="submenu">
+                    <li>
+                        <a href="{{ route('admin.laporan.index') }}" class="{{ request()->routeIs('admin.laporan.index') ? 'active' : '' }}">
+                            <span class="links_name">Laporan Harian</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.laporan.akhir.index') }}"
+                            class="{{ request()->routeIs('admin.laporan.akhir.*') ? 'active' : '' }}">
+                            <span class="links_name">Laporan Akhir</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
             <li>
                 <a href="{{ route('admin.penilaian.index') }}" class="{{ request()->routeIs('admin.penilaian.*') ? 'active' : '' }}">
@@ -89,12 +103,25 @@
                 </a>
                 <span class="tooltip">Absensi</span>
             </li>
-            <li>
-                <a href="{{ route('peserta.laporan.index') }}" class="{{ request()->routeIs('peserta.laporan.index') ? 'active' : '' }}">
+            <li class="relative group dropdown-item">
+                <a href="javascript:void(0)" class="{{ request()->routeIs('peserta.laporan.*') ? 'active' : '' }} dropdown-toggle">
                     <i class='bx bx-file'></i>
                     <span class="links_name">Laporan</span>
+                    <i class='bx bx-chevron-down dropdown-icon'></i>
                 </a>
                 <span class="tooltip">Laporan</span>
+                <ul class="submenu">
+                    <li>
+                        <a href="{{ route('peserta.laporan.index') }}" class="{{ request()->routeIs('peserta.laporan.index') ? 'active' : '' }}">
+                            <span class="links_name">Laporan Harian</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('peserta.laporan.akhir') }}" class="{{ request()->routeIs('peserta.laporan.akhir') ? 'active' : '' }}">
+                            <span class="links_name">Laporan Akhir</span>
+                        </a>
+                    </li>
+                </ul>
             </li>
             <li>
                 <a href="{{ route('peserta.penilaian') }}" class="{{ request()->routeIs('peserta.penilaian') ? 'active' : '' }}">
