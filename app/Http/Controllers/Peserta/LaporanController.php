@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Peserta;
 
 use App\Http\Controllers\Controller;
 use App\Models\Laporan;
+use App\Models\LaporanAkhir;
 use App\Models\Peserta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -241,5 +242,129 @@ class LaporanController extends Controller
 
         return redirect()->route('peserta.laporan.index')
             ->with('success', 'Laporan berhasil dihapus.');
+    }
+
+    public function laporanAkhir()
+    {
+        $user = Auth::user();
+        $peserta = Peserta::where('user_id', $user->id)->first();
+
+        if (!$peserta) {
+            return redirect()->route('peserta.dashboard')
+                ->with('error', 'Data peserta tidak ditemukan.');
+        }
+
+        $laporanAkhir = LaporanAkhir::where('peserta_id', $peserta->id)->first();
+
+        return view('peserta.laporan.laporan-akhir', compact('user', 'peserta', 'laporanAkhir'));
+    }
+
+    public function laporanAkhirStore(Request $request)
+    {
+        $user = Auth::user();
+        $peserta = Peserta::where('user_id', $user->id)->first();
+
+        if (!$peserta) {
+            return redirect()->back()->with('error', 'Data peserta tidak ditemukan.');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,zip|max:10240', // Final reports usually require a file
+            'status' => 'required|in:Draft,Dikirim',
+        ], [
+            'judul.required' => 'Judul laporan akhir harus diisi.',
+            'judul.max' => 'Judul laporan akhir maksimal 255 karakter.',
+            'deskripsi.required' => 'Deskripsi laporan akhir harus diisi.',
+            'file.required' => 'File laporan akhir wajib diunggah.',
+            'file.mimes' => 'File harus berformat: PDF, DOC, DOCX, XLS, XLSX, atau ZIP.',
+            'file.max' => 'Ukuran file maksimal 10MB.',
+            'status.required' => 'Status laporan harus dipilih.',
+            'status.in' => 'Status laporan tidak valid.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $existing = LaporanAkhir::where('peserta_id', $peserta->id)->first();
+        if ($existing) {
+            return redirect()->back()->with('error', 'Laporan akhir sudah ada.');
+        }
+
+        $filePath = null;
+        if ($request->hasFile('file')) {
+            $file = $request->file('file');
+            $fileName = 'Final_' . time() . '_' . $peserta->id . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('laporan_akhir', $fileName, 'public');
+        }
+
+        LaporanAkhir::create([
+            'peserta_id' => $peserta->id,
+            'judul' => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'file_path' => $filePath,
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('peserta.laporan.akhir')
+            ->with('success', 'Laporan akhir berhasil disimpan.');
+    }
+
+    public function laporanAkhirUpdate(Request $request, $id)
+    {
+        $user = Auth::user();
+        $peserta = Peserta::where('user_id', $user->id)->first();
+
+        if (!$peserta) {
+            return redirect()->back()->with('error', 'Data peserta tidak ditemukan.');
+        }
+
+        $laporanAkhir = LaporanAkhir::where('id', $id)
+            ->where('peserta_id', $peserta->id)
+            ->firstOrFail();
+
+        if ($laporanAkhir->status == 'Disetujui') {
+            return redirect()->back()->with('error', 'Laporan yang sudah disetujui tidak dapat diperbarui.');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'required|string',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,zip|max:10240',
+            'status' => 'required|in:Draft,Dikirim',
+        ], [
+            'judul.required' => 'Judul laporan akhir harus diisi.',
+            'deskripsi.required' => 'Deskripsi laporan akhir harus diisi.',
+            'file.mimes' => 'File harus berformat: PDF, DOC, DOCX, XLS, XLSX, atau ZIP.',
+            'file.max' => 'Ukuran file maksimal 10MB.',
+            'status.required' => 'Status laporan harus dipilih.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $filePath = $laporanAkhir->file_path;
+        if ($request->hasFile('file')) {
+            if ($laporanAkhir->file_path && Storage::disk('public')->exists($laporanAkhir->file_path)) {
+                Storage::disk('public')->delete($laporanAkhir->file_path);
+            }
+            $file = $request->file('file');
+            $fileName = 'Final_' . time() . '_' . $peserta->id . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('laporan_akhir', $fileName, 'public');
+        }
+
+        $laporanAkhir->update([
+            'judul' => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'file_path' => $filePath,
+            'status' => $request->status,
+            'catatan_admin' => ($request->status == 'Dikirim') ? $laporanAkhir->catatan_admin : null, // Reset notes if resent or draft? Actually better keep it until Approved.
+        ]);
+
+        return redirect()->route('peserta.laporan.akhir')
+            ->with('success', 'Laporan akhir berhasil diperbarui.');
     }
 }

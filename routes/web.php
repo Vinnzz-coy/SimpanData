@@ -108,6 +108,13 @@ Route::middleware(['auth', 'role:peserta'])->group(function () {
     Route::post('/peserta/laporan', [PesertaLaporanController::class, 'store'])
         ->name('peserta.laporan.store');
 
+    Route::get('/peserta/laporan/laporan-akhir', [PesertaLaporanController::class, 'laporanAkhir'])
+        ->name('peserta.laporan.akhir');
+    Route::post('/peserta/laporan/laporan-akhir', [PesertaLaporanController::class, 'laporanAkhirStore'])
+        ->name('peserta.laporan.akhir.store');
+    Route::put('/peserta/laporan/laporan-akhir/{id}', [PesertaLaporanController::class, 'laporanAkhirUpdate'])
+        ->name('peserta.laporan.akhir.update');
+
     Route::get('/peserta/laporan/{id}', [PesertaLaporanController::class, 'show'])
         ->name('peserta.laporan.show');
 
@@ -134,6 +141,13 @@ Route::middleware(['auth', 'role:peserta'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/laporan/laporan-akhir', [AdminLaporanController::class, 'laporanAkhirIndex'])
+        ->name('admin.laporan.akhir.index');
+    Route::get('/admin/laporan/laporan-akhir/{id}', [AdminLaporanController::class, 'laporanAkhirShow'])
+        ->name('admin.laporan.akhir.show');
+    Route::patch('/admin/laporan/laporan-akhir/{id}/status', [AdminLaporanController::class, 'laporanAkhirUpdateStatus'])
+        ->name('admin.laporan.akhir.update-status');
+
     Route::resource('admin/peserta', PesertaController::class)->names([
         'index' => 'admin.peserta.index',
         'create' => 'admin.peserta.create',
