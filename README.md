@@ -97,7 +97,7 @@ Ikuti langkah-langkah berikut untuk menjalankan project ini di komputer Anda:
 ### 1. Clone Repositori
 
 ```bash
-git clone https://github.com/username/SimpanData.git
+git clone https://github.com/Vinnzz-coy/SimpanData.git
 cd SimpanData
 ```
 
