@@ -1,296 +1,704 @@
-# SimpanData - Sistem Manajemen PKL & Magang
+# SimpanData — Sistem Manajemen Peserta PKL/Magang
 
-SimpanData adalah aplikasi berbasis web yang dirancang untuk mempermudah manajemen administrasi peserta PKL (Praktik Kerja Lapangan) dan Magang. Aplikasi ini menyediakan fitur lengkap mulai dari absensi, penilaian, hingga pelaporan kinerja peserta secara digital.
+## 1. System Overview
 
----
+**SimpanData** adalah aplikasi manajemen peserta PKL (Praktik Kerja Lapangan) dan Magang berbasis web yang dibangun menggunakan Laravel 12. Sistem ini dirancang untuk mengelola siklus hidup peserta secara penuh — mulai dari registrasi mandiri, absensi harian, pengumpulan laporan, hingga penilaian akhir oleh admin.
 
-## 🚀 Fitur Utama
+### Problem yang Diselesaikan
 
-### 👑 Panel Admin
+| Masalah | Solusi |
+|---|---|
+| Pencatatan absensi manual yang tidak terstruktur | Sistem absensi digital dengan mode WFO/WFA |
+| Laporan harian peserta tidak terdokumentasi | Pengumpulan laporan PDF dengan approval workflow |
+| Tidak ada mekanisme penilaian terstandar | Modul penilaian multi-kriteria oleh admin |
+| File laporan dapat diakses publik | Penyimpanan pada private disk dengan gate authorization |
+| Tidak ada jalur komunikasi peserta–admin | Modul feedback dua arah dengan rating |
 
-- **Dashboard Statistik**: Visualisasi data peserta (PKL, Magang, Aktif, Selesai) menggunakan Chart.js.
-- **Manajemen Peserta**: Kelola data lengkap peserta termasuk profil, asal instansi, dan status.
-- **Monitoring Absensi**: Pantau kehadiran peserta secara real-time dengan status (Hadir, Izin, Sakit, Alpa).
-- **Penilaian Digital**: Input dan rekap nilai peserta berdasarkan kinerja mereka.
-- **Laporan & Feedback**: Pantau laporan berkala dari peserta dan kelola feedback yang masuk.
+### High-Level Architecture Summary
 
-### 👤 Panel Peserta
-
-- **Dashboard Personal**: Ringkasan aktivitas dan status harian peserta.
-- **Absensi Mandiri**: Melakukan presensi masuk dan pulang melalui sistem.
-- **Manajemen Profil**: Lengkapi data diri dan foto profil.
-- **Laporan Harian**: Kirim laporan aktivitas harian langsung ke admin.
-- **Feedback & Penilaian**: Lihat hasil penilaian dari admin dan berikan masukan.
+Aplikasi ini adalah **monolith MVC** menggunakan Laravel 12 dengan server-side rendering via Blade. Frontend dibangun dengan Tailwind CSS + Alpine.js, dikompilasi menggunakan Vite. Session disimpan di database. Queue listener berjalan sebagai proses terpisah untuk menangani pengiriman email OTP secara asynchronous.
 
 ---
 
-## 🔄 Mekanisme Kinerja Magang
+## 2. Architecture Diagram (Textual)
 
-Sistem **SimpanData** mengadopsi alur kerja yang terintegrasi untuk memastikan siklus magang berjalan secara profesional, transparan, dan terukur. Berikut adalah urutan mekanisme kinerjanya:
-
-### 1. Fase Registrasi & Onboarding
-*   **🔑 Pembuatan Akun**: Admin mendaftarkan peserta ke dalam sistem. Akun default dibuat untuk akses awal.
-*   **📝 Aktivasi Profil**: Peserta login pertama kali untuk melengkapi data diri, mengunggah foto profil, dan memverifikasi alamat sekolah/universitas serta masa magang.
-*   **✅ Verifikasi Data**: Admin memverifikasi kelengkapan profil peserta untuk memastikan validitas administratif.
-
-### 2. Siklus Operasional Harian
-*   **📍 Presensi Geospasial**: Peserta melakukan absen **Masuk** dan **Pulang** secara mandiri. Sistem menggunakan **Reverse Geocoding (Nominatim API)** untuk mendeteksi alamat asli secara real-time berdasarkan koordinat GPS.
-*   **🏥 Manajemen Kondisi**: Peserta dapat memilih status *Hadir, Izin,* atau *Sakit*. Jika memilih Izin/Sakit, sistem secara otomatis menyesuaikan formulir untuk pengisian keterangan tanpa perlu input mode kerja (WFO/WFA).
-*   **📅 Monitoring Kehadiran**: Admin memantau status kehadiran seluruh peserta melalui dashboard pusat untuk mendeteksi ketidakhadiran tanpa keterangan secara dini.
-
-### 3. Monitoring & Evaluasi Berkelanjutan
-*   **💬 Dual-Feedback System**: Tersedia saluran komunikasi dua arah. Peserta dapat memberikan feedback atau bertanya, sementara Admin dapat memberikan instruksi atau evaluasi berkala langsung di portal masing-masing.
-*   **📊 Performance Tracking**: Sistem menghitung skor kinerja sementara berdasarkan persentase kehadiran dan ketepatan waktu absensi yang ditampilkan dalam grafik interaktif.
-
-### 4. Penilaian Akhir & Pengarsipan
-*   **🏅 Penilaian 5 Pilar**: Di akhir periode, Admin melakukan evaluasi berdasarkan 5 pilar kompetensi (Kedisiplinan, Keterampilan, Kerjasama, Inisiatif, Komunikasi).
-*   **📉 Penentuan Predikat**: Sistem secara otomatis menghitung *Mean Average* dan memberikan predikat (Grade A-E) secara instan.
-*   **📦 Pengarsipan**: Setelah magang selesai, data peserta dipindahkan ke modul **Arsip** untuk menjaga kebersihan database aktif sambil tetap menyimpan ringkasan kinerja untuk referensi masa depan.
-
----
-
-## 🔍 Analisis Pengembangan (Roadmap)
-
-Berdasarkan analisis struktur proyek saat ini, berikut adalah poin-poin pengembangan yang dapat ditingkatkan (Future Improvements):
-
-1.  **🚀 Modul Laporan Harian (On-Progress)**:
-    *   Mengganti placeholder Laporan dengan sistem pengisian log aktivitas harian yang memungkinkan peserta menceritakan detail tugas yang dikerjakan.
-    *   Fitur unggah bukti file/gambar aktivitas.
-2.  **📑 Export & Reporting**:
-    *   Integrasi penuh Phpspreadsheet untuk mencetak *Sertifikat Penilaian* dan *Rekap Absensi* dalam format PDF atau Excel secara otomatis.
-3.  **🔔 Sistem Notifikasi Otomatis**:
-    *   Pengiriman notifikasi (Email/WhatsApp) jika peserta lupa melakukan absen pulang atau jika performa menurun di bawah standar.
-4.  **📤 Bulk Import Peserta**:
-    *   Fitur untuk mendaftarkan banyak peserta sekaligus melalui file CSV/Excel guna efisiensi administrasi bagi instansi dengan banyak peserta.
-5.  **📜 Log Audit Aktivitas**:
-    *   Pencatatan riwayat perubahan data (audit log) untuk melacak siapa dan kapan perubahan nilai atau status peserta dilakukan demi aspek keamanan data.
+```
+Browser (User)
+    │
+    ▼
+[Web Server: php artisan serve / Nginx]
+    │
+    ├─► [Route: web.php]
+    │       │
+    │       ├─► [Middleware: auth]
+    │       ├─► [Middleware: role:admin | role:peserta]
+    │       └─► [Throttle: 5 req/min (OTP endpoints)]
+    │
+    ▼
+[Controller Layer]
+    ├── Admin/  (Dashboard, Peserta, Absensi, Laporan, Penilaian, Partner, ...)
+    ├── Peserta/ (Dashboard, Profil, Absensi, Laporan, Feedback, Settings, ...)
+    └── Auth/   (Login, Register, OTP, Forgot Password)
+    │
+    ▼
+[Service & Model Layer]
+    ├── Eloquent ORM → SQLite (dev) / MySQL (production)
+    ├── Storage::disk('secure') → storage/app/secure/ [PDF laporan]
+    ├── Storage::disk('public') → storage/app/public/ [foto profil]
+    └── Mail → SMTP (OTP emails via Queue)
+    │
+    ▼
+[Queue Worker: php artisan queue:listen]
+    └── Dispatch: OtpMail, ResetPasswordOtpMail
+```
 
 ---
 
-## 🛠️ Tech Stack
+## 3. Tech Stack
 
-- **Framework**: [Laravel 12](https://laravel.com)
-- **Database**: [PostgreSQL](https://www.postgresql.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Bundler**: [Vite](https://vitejs.dev/)
-- **Interactivity**: [Alpine.js](https://alpinejs.dev/) & Vanilla JavaScript
-- **Icons**: [Boxicons](https://boxicons.com/) & Font Awesome
-- **Other**: Phpspreadsheet (untuk export/rekap data), Nominatim API (Reverse Geocoding)
+| Layer          | Technology                          | Purpose                                                  |
+|----------------|-------------------------------------|----------------------------------------------------------|
+| Frontend       | Blade Templates + Tailwind CSS v3   | Server-side rendering, UI styling                        |
+| JS Framework   | Alpine.js v3                        | Reactive UI components (modal, toggle, form)             |
+| Charts         | Chart.js v4                         | Visualisasi data pada dashboard admin                    |
+| Build Tool     | Vite v7 + laravel-vite-plugin       | Asset bundling & HMR development                         |
+| Backend        | Laravel 12 (PHP 8.2)                | MVC framework, routing, middleware, ORM                  |
+| Auth           | Laravel built-in Auth + OTP via Mail| Session-based auth + OTP email verification              |
+| Database       | SQLite (dev) / MySQL (production)   | Penyimpanan data utama                                   |
+| Cache          | Database driver                     | Cache store menggunakan tabel `cache`                    |
+| Session        | Database driver                     | Session disimpan di tabel `sessions`                     |
+| Queue          | Database driver                     | Antrian email OTP (tabel `jobs`)                         |
+| File Storage   | Laravel Storage (local disk)        | `secure` disk untuk PDF laporan (private), `public` disk untuk foto |
+| Export         | PhpSpreadsheet v5                   | Export data ke format Excel/CSV                          |
+| HTTP Client    | Axios v1                            | Request AJAX dari frontend (cek username, OTP)           |
 
 ---
 
-## ⚙️ Persyaratan Sistem
+## 4. Application Flow
 
-Pastikan perangkat Anda sudah terinstall:
+### 4.1 Authentication Flow
+
+#### Registrasi (OTP-Verified)
+1. **User** mengisi form registrasi (username, email, password).
+2. Frontend memvalidasi ketersediaan username/email secara real-time via AJAX ke `/check-username` dan `/check-email-availability`.
+3. User klik **Kirim OTP** → `POST /send-otp` → throttle `5 req/menit`.
+4. `AuthController@sendOtp` mem-validasi email unik dan username unik, lalu generate OTP 6 digit, simpan ke tabel `otp_codes` (TTL 5 menit), dispatch `OtpMail` via Queue.
+5. User memasukkan OTP → `POST /verify-otp` → `AuthController@verifyOtp` mencocokkan kode dan TTL, set `session('otp_verified_email')`, hapus record OTP dari DB.
+6. `POST /register` → `AuthController@register` memvalidasi `session('otp_verified_email') === email`, buat `User` + `Peserta` dalam satu DB transaction, redirect ke halaman login.
+
+#### Login
+1. `POST /login` → `AuthController@login`.
+2. Deteksi input: jika berbentuk email → auth by `email`, selain itu auth by `username`.
+3. `Auth::attempt([..., 'password' => ...], $remember)` → on success: `session()->regenerate()`.
+4. Redirect berdasarkan `user->role`: `admin` → `/admin/dashboard`, `peserta` → `/peserta/dashboard`.
+5. Setiap request dilindungi `middleware('auth')` yang mengandalkan Laravel's default `Authenticate` middleware.
+
+#### Password Reset
+1. `GET /forgot-password` → input email.
+2. `POST /forgot-password` → `sendForgotPasswordOtp` → kirim OTP ke email jika terdaftar (respons selalu 200 untuk menghindari user enumeration).
+3. `POST /verify-reset-otp` → verifikasi OTP, set `session('reset_verified' => true)`.
+4. `POST /reset-password` → validasi sesi aktif + `reset_verified`, hash password baru, hapus OTP dari DB.
+5. Admin account **tidak dapat** mereset password melalui fitur ini (proteksi eksplisit di controller).
+
+#### Session & Middleware
+- **`RoleMiddleware`**: Middleware kustom yang membaca `Auth::user()->role` dan mengembalikan `403` jika role tidak sesuai.
+- Session lifetime default: **120 menit** (dapat dikonfigurasi via `SESSION_LIFETIME`).
+
+---
+
+### 4.2 Core Business Logic Flow
+
+Contoh: Peserta mengumpulkan laporan harian.
+
+```
+1. Peserta → Browser → GET /peserta/laporan
+2. Route → middleware(['auth', 'role:peserta'])
+3. Peserta\LaporanController@index
+4.   → Laporan::where('peserta_id', auth()->user()->peserta->id)
+        ->orderByDesc('tanggal_laporan')->paginate(10)
+5.   → return view('peserta.laporan.laporan', compact('laporans'))
+
+6. Peserta isi form → POST /peserta/laporan
+7. Request validation:
+        judul: required|string|max:255
+        deskripsi: required|string
+        tanggal_laporan: required|date
+        file: required|file|mimes:pdf|max:10240
+8. Controller@store:
+   a. Cek duplikasi tanggal (unique: peserta_id + tanggal_laporan)
+   b. Store file ke Storage::disk('secure') di path "harian/{filename}"
+   c. Laporan::create([...file_path, status='Dikirim'])
+   d. Redirect back dengan flash success
+
+9. Admin → GET /admin/laporan → AdminLaporanController@index
+10.   → Laporan::with('peserta.user')->latest()->paginate()
+11. Admin buka detail → GET /admin/laporan/{id}
+12. Admin approve → PATCH /admin/laporan/{id}/approve
+13.   → Laporan::find($id)->update(['status' => 'Disetujui'])
+14. Admin revisi → PATCH /admin/laporan/{id}/revisi
+15.   → Update: status='Revisi', catatan_admin='{pesan revisi}'
+16. Peserta reload halaman → status card diperbarui
+```
+
+---
+
+## 5. Feature Breakdown
+
+### Registrasi & Autentikasi
+- **Deskripsi**: Registrasi mandiri peserta dengan verifikasi email via OTP. Login menggunakan username atau email.
+- **User Role Access**: Public (registrasi), Peserta & Admin (login).
+- **Endpoints**: `POST /send-otp`, `POST /verify-otp`, `POST /register`, `POST /login`, `POST /logout`, `POST /forgot-password`, `POST /verify-reset-otp`, `POST /reset-password`.
+- **Validation Rules**: Email unik di tabel `user`, username unik min. 3 karakter, password minimal 6 karakter dengan konfirmasi, OTP 6 digit.
+- **Side Effects**: Dispatch `OtpMail` / `ResetPasswordOtpMail` via Queue. Log aktivitas dan error ke Laravel log.
+- **Database impact**: Insert ke `user`, `peserta` (dalam transaksi), `otp_codes` (upsert). Hapus `otp_codes` setelah verifikasi.
+
+---
+
+### Manajemen Profil Peserta
+- **Deskripsi**: Peserta melengkapi dan memperbarui data profil (nama, asal sekolah/universitas, jurusan, alamat, nomor telepon, foto, jenis kegiatan, tanggal mulai/selesai).
+- **User Role Access**: Peserta (self), Admin (read-only via user management).
+- **Endpoints**: `GET /peserta/profil`, `POST /peserta/profil`.
+- **Validation Rules**: `foto` menerima `image|max:2048`, field wajib minimal tidak kosong atau bernilai `-`.
+- **Side Effects**: Upload foto ke `storage/app/public/`. Accessor `is_lengkap` dihitung otomatis.
+- **Database impact**: Update tabel `peserta` berdasarkan `user_id`.
+
+---
+
+### Absensi Harian
+- **Deskripsi**: Peserta mencatat kehadiran harian dengan jenis absen (Masuk/Pulang), mode kerja (WFO/WFA), dan status (Hadir/Izin/Sakit). Admin dapat melihat rekap absensi seluruh peserta dengan filter tanggal.
+- **User Role Access**: Peserta (input), Admin (read-only).
+- **Endpoints**: `GET /peserta/absensi`, `POST /peserta/absensi` (peserta), `GET /admin/absensi` (admin).
+- **Validation Rules**: `jenis_absen` enum, `status` enum, `mode_kerja` enum. Unique constraint pada `(peserta_id, jenis_absen, waktu_absen)`.
+- **Side Effects**: Tidak ada event/queue. `waktu_absen` diisi otomatis oleh server.
+- **Database impact**: Insert ke tabel `absensi`. Index pada `peserta_id` dan `waktu_absen`.
+
+---
+
+### Laporan Harian
+- **Deskripsi**: Peserta mengumpulkan laporan harian dalam format PDF dengan judul, deskripsi, dan tanggal. Admin melakukan review dan dapat menyetujui atau mengembalikan untuk revisi.
+- **User Role Access**: Peserta (CRUD own), Admin (read, approve, revisi).
+- **Endpoints**:
+  - `GET /peserta/laporan` — daftar laporan peserta (paginated)
+  - `POST /peserta/laporan` — submit laporan baru
+  - `GET /peserta/laporan/{id}` — detail laporan
+  - `GET /peserta/laporan/{id}/edit` — form edit
+  - `PUT /peserta/laporan/{id}` — update laporan
+  - `DELETE /peserta/laporan/{id}` — hapus laporan
+  - `GET /admin/laporan` — daftar semua laporan
+  - `PATCH /admin/laporan/{id}/approve` — setujui
+  - `PATCH /admin/laporan/{id}/revisi` — kembalikan revisi
+- **Validation Rules**: `file` wajib ada, hanya `pdf`, maks 10 MB. `tanggal_laporan` unik per peserta.
+- **Side Effects**: File disimpan ke `Storage::disk('secure')` (private). Akses file via `FileController@showReport` dengan gate auth.
+- **Database impact**: Insert/update tabel `laporan`. Unique index `(peserta_id, tanggal_laporan)`.
+
+---
+
+### Laporan Akhir
+- **Deskripsi**: Setiap peserta hanya dapat mengumpulkan **satu** laporan akhir dalam format PDF. Admin melakukan approval atau request revisi.
+- **User Role Access**: Peserta (create & update own), Admin (read, approve, revisi).
+- **Endpoints**:
+  - `GET /peserta/laporan/laporan-akhir` — form & status
+  - `POST /peserta/laporan/laporan-akhir` — submit pertama
+  - `GET /peserta/laporan/laporan-akhir/{id}` — detail
+  - `PUT /peserta/laporan/laporan-akhir/{id}` — update (jika revisi)
+  - `GET /admin/laporan/laporan-akhir` — list semua
+  - `PATCH /admin/laporan/laporan-akhir/{id}/approve` — setujui
+  - `PATCH /admin/laporan/laporan-akhir/{id}/revisi` — revisi
+- **Validation Rules**: `file` wajib ada, hanya `pdf`, maks 10 MB. Unique `peserta_id` di tabel `laporan_akhir`.
+- **Side Effects**: File disimpan ke `Storage::disk('secure')`.
+- **Database impact**: Insert/update tabel `laporan_akhir`. Unique index pada `peserta_id`.
+
+---
+
+### Penilaian
+- **Deskripsi**: Admin menilai peserta berdasarkan 5 kriteria: kedisiplinan, keterampilan, kerjasama, inisiatif, dan komunikasi. `nilai_akhir` dihitung sebagai rata-rata. Peserta dapat melihat nilai mereka sendiri.
+- **User Role Access**: Admin (CRUD), Peserta (read own).
+- **Endpoints**:
+  - `GET /admin/penilaian` — list peserta (grid)
+  - `GET /admin/penilaian/{id}` — detail
+  - `POST /admin/penilaian` — buat penilaian
+  - `PUT /admin/penilaian/{id}` — update penilaian
+  - `GET /peserta/penilaian` — view nilai sendiri
+- **Validation Rules**: Setiap kriteria bernilai integer 1–100 (`unsignedTinyInteger`).
+- **Side Effects**: Tidak ada.
+- **Database impact**: Insert/update tabel `penilaian`. Relasi ke `peserta` dan `user` (admin yang menilai).
+
+---
+
+### Feedback
+- **Deskripsi**: Komunikasi dua arah antara peserta dan admin. Peserta dapat memberi feedback dan rating. Admin dapat membalas. Setiap feedback memiliki flag `tampilkan` (publish) dan `dibaca`.
+- **User Role Access**: Peserta (create & view own), Admin (read all, reply).
+- **Endpoints**: `GET /peserta/feedback`, `POST /peserta/feedback`.
+- **Validation Rules**: `pesan` required, `rating` optional integer 1–5.
+- **Side Effects**: Tidak ada queue/event.
+- **Database impact**: Insert ke tabel `feedback`. `dibaca` dan `tampilkan` di-update oleh admin.
+
+---
+
+### Manajemen Peserta (Admin)
+- **Deskripsi**: Admin dapat membuat, mengedit, melihat detail, dan menonaktifkan akun peserta. Termasuk filter berdasarkan status dan kelengkapan profil.
+- **User Role Access**: Admin only.
+- **Endpoints**: `GET|POST|PUT|DELETE /admin/peserta/{...}` (Laravel resource controller).
+- **Validation Rules**: Field wajib pada form create/edit.
+- **Side Effects**: Pembuatan peserta oleh admin juga membuat akun `user` secara bersamaan.
+- **Database impact**: Insert/update tabel `user` dan `peserta`.
+
+---
+
+### Manajemen Partner
+- **Deskripsi**: Admin mengelola daftar mitra/perusahaan yang ditampilkan di halaman landing page.
+- **User Role Access**: Admin only.
+- **Endpoints**: `GET|POST|PUT|DELETE /admin/partners/{...}` (Laravel resource controller).
+- **Database impact**: Insert/update/delete tabel `partners`.
+
+---
+
+### Akses File Laporan (Secure)
+- **Deskripsi**: File PDF laporan disimpan di luar `public/` pada disk `secure`. Akses hanya melalui `FileController` yang memverifikasi autentikasi dan otorisasi kepemilikan file.
+- **User Role Access**: Auth required (admin dan peserta dengan kepemilikan yang sesuai).
+- **Endpoint**: `GET /files/reports/{type}/{filename}`.
+- **Side Effects**: Tidak ada write. Return `file()` response dari path private.
+- **Database impact**: Tidak ada write ke DB, hanya query model untuk otorisasi.
+
+---
+
+## 6. Database Schema Overview
+
+### Tables
+
+| Tabel          | Deskripsi                                                                  |
+|----------------|----------------------------------------------------------------------------|
+| `user`         | Akun autentikasi (username, email, password, role: admin/peserta)          |
+| `peserta`      | Profil peserta (nama, sekolah, jurusan, status, jenis kegiatan, tanggal)   |
+| `absensi`      | Rekaman absensi harian (jenis, mode kerja, status, waktu)                  |
+| `laporan`      | Laporan harian peserta (judul, deskripsi, file PDF, status, catatan admin) |
+| `laporan_akhir`| Laporan akhir peserta — satu per peserta (judul, file PDF, status)         |
+| `penilaian`    | Nilai peserta 5 kriteria + nilai_akhir (oleh admin)                        |
+| `feedback`     | Pesan feedback dua arah peserta–admin (pesan, rating, dibaca, tampilkan)   |
+| `arsip`        | Arsip data peserta setelah selesai                                         |
+| `otp_codes`    | Kode OTP sementara untuk registrasi & reset password (TTL 5 menit)         |
+| `partners`     | Data mitra/perusahaan untuk landing page                                   |
+| `log_aktivitas`| Log aktivitas sistem                                                       |
+| `cache`        | Laravel cache store (database driver)                                      |
+| `sessions`     | Laravel session store (database driver)                                    |
+| `jobs`         | Laravel queue jobs (database driver)                                       |
+
+### Relasi Antar Tabel
+
+```
+user (1) ──────────── (1) peserta
+                            │
+                ┌───────────┼────────────────┐───────────────┐
+               (N)         (N)              (N)             (1)
+            absensi      laporan          feedback       penilaian
+                            │                             │
+                           (1)                          (1)
+                        laporan_akhir                  user (admin penilai)
+```
+
+| Relasi | Keterangan |
+|---|---|
+| `user` (1) → (1) `peserta` | `peserta.user_id` FK ke `user.id`, cascade delete |
+| `peserta` (1) → (N) `absensi` | `absensi.peserta_id` FK ke `peserta.id` |
+| `peserta` (1) → (N) `laporan` | `laporan.peserta_id` FK ke `peserta.id` |
+| `peserta` (1) → (1) `laporan_akhir` | Unique constraint pada `peserta_id` |
+| `peserta` (1) → (N) `feedback` | `feedback.peserta_id` FK ke `peserta.id` |
+| `peserta` (1) → (1) `penilaian` | Dinilai oleh admin (`user_id` → user admin) |
+| `peserta` (1) → (1) `arsip` | Data arsip setelah selesai |
+
+---
+
+## 7. Folder Structure
+
+```
+SimpanData/
+├── app/
+│   ├── Exports/               # PhpSpreadsheet export classes
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Admin/         # Controller untuk seluruh fitur admin
+│   │   │   │   ├── DashboardController.php
+│   │   │   │   ├── PesertaController.php
+│   │   │   │   ├── AbsensiController.php
+│   │   │   │   ├── LaporanController.php
+│   │   │   │   ├── PenilaianController.php
+│   │   │   │   ├── PartnerController.php
+│   │   │   │   ├── UserController.php
+│   │   │   │   ├── ProfileController.php
+│   │   │   │   └── SettingsController.php
+│   │   │   ├── Peserta/       # Controller untuk seluruh fitur peserta
+│   │   │   │   ├── DashboardController.php
+│   │   │   │   ├── ProfilController.php
+│   │   │   │   ├── AbsensiController.php
+│   │   │   │   ├── LaporanController.php
+│   │   │   │   ├── PenilaianController.php
+│   │   │   │   ├── FeedbackController.php
+│   │   │   │   └── SettingsController.php
+│   │   │   ├── Auth/
+│   │   │   │   └── AuthController.php  # Login, register, OTP, reset password
+│   │   │   ├── FileController.php      # Serve file PDF laporan (private)
+│   │   │   └── IndexController.php     # Landing page
+│   │   ├── Middleware/
+│   │   │   └── RoleMiddleware.php      # Cek role: admin | peserta
+│   │   └── Requests/                   # Form request validation classes
+│   ├── Mail/
+│   │   ├── OtpMail.php                 # Mailable untuk OTP registrasi
+│   │   └── ResetPasswordOtpMail.php    # Mailable untuk OTP reset password
+│   ├── Models/
+│   │   ├── User.php
+│   │   ├── Peserta.php
+│   │   ├── Absensi.php
+│   │   ├── Laporan.php
+│   │   ├── LaporanAkhir.php
+│   │   ├── Penilaian.php
+│   │   ├── Feedback.php
+│   │   ├── Arsip.php
+│   │   ├── OtpCode.php
+│   │   ├── Partner.php
+│   │   └── LogAktivitas.php
+│   ├── Providers/
+│   └── Services/                       # Business logic layer (jika diperlukan)
+├── database/
+│   ├── factories/                      # Model factories untuk seeding & testing
+│   ├── migrations/                     # 14 migration files
+│   └── seeders/                        # DatabaseSeeder, IpinSeeder, dst.
+├── public/                             # Web root (index.php, compiled assets)
+├── resources/
+│   ├── css/                            # CSS source (Tailwind directives)
+│   ├── js/                             # Alpine.js, Chart.js entry points
+│   └── views/
+│       ├── admin/                      # Blade views untuk panel admin
+│       ├── peserta/                    # Blade views untuk panel peserta
+│       ├── auth/                       # Login, register, OTP, reset password views
+│       ├── legal/                      # Privacy policy, ToS, Help
+│       └── layouts/                    # Layout utama (app.blade.php)
+├── routes/
+│   ├── web.php                         # Semua route aplikasi
+│   └── console.php                     # Artisan scheduled commands
+├── storage/
+│   ├── app/
+│   │   ├── public/                     # File foto profil (accessible via symlink)
+│   │   └── secure/                     # File PDF laporan (PRIVATE, tidak diakses langsung)
+│   └── logs/                           # Laravel log files
+├── tests/
+│   ├── Feature/                        # Feature tests (HTTP, flow, integration)
+│   └── Unit/                           # Unit tests (model, service logic)
+├── .env.example                        # Template environment variables
+├── composer.json                       # PHP dependencies
+├── package.json                        # Node.js dependencies
+├── tailwind.config.js                  # Tailwind CSS konfigurasi
+└── vite.config.js                      # Vite build konfigurasi
+```
+
+**Tanggung jawab folder:**
+
+| Folder | Tanggung Jawab |
+|---|---|
+| `app/Http/Controllers/Admin/` | Handle request HTTP untuk semua fitur yang hanya dapat diakses admin |
+| `app/Http/Controllers/Peserta/` | Handle request HTTP untuk semua fitur yang diakses peserta |
+| `app/Http/Controllers/Auth/` | Alur autentikasi lengkap (login/register/OTP/reset) |
+| `app/Http/Middleware/` | Guard tambahan berbasis role setelah auth middleware |
+| `app/Models/` | Eloquent models, relasi, scope query, dan accessor |
+| `app/Mail/` | Mailable classes untuk pengiriman email OTP via queue |
+| `app/Exports/` | Logic export data ke format Excel menggunakan PhpSpreadsheet |
+| `app/Services/` | Business logic yang tidak terikat ke layer HTTP |
+| `database/migrations/` | Definisi skema database setiap tabel |
+| `resources/views/` | Blade templates untuk rendering HTML |
+| `storage/app/secure/` | File PDF laporan yang harus diakses melalui controller (private) |
+
+---
+
+## 8. Environment Configuration
+
+### File `.env` Minimal
+
+```env
+# Aplikasi
+APP_NAME=SimpanData
+APP_ENV=local
+APP_KEY=                          # Generate dengan: php artisan key:generate
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+# Database
+DB_CONNECTION=sqlite              # Ganti ke mysql untuk production
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=simpandata
+# DB_USERNAME=root
+# DB_PASSWORD=secret
+
+# Session & Cache (database driver)
+SESSION_DRIVER=database
+SESSION_LIFETIME=120
+CACHE_STORE=database
+
+# Queue (database driver)
+QUEUE_CONNECTION=database
+
+# File Storage
+FILESYSTEM_DISK=local
+
+# Email (untuk OTP)
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io        # Ganti dengan SMTP provider produksi
+MAIL_PORT=2525
+MAIL_USERNAME=your_username
+MAIL_PASSWORD=your_password
+MAIL_FROM_ADDRESS="no-reply@simpandata.id"
+MAIL_FROM_NAME="SimpanData"
+
+# Logging
+LOG_CHANNEL=stack
+LOG_LEVEL=debug                   # Ganti ke 'error' di production
+```
+
+### Penjelasan Variable Penting
+
+| Variable | Fungsi |
+|---|---|
+| `APP_KEY` | Kunci enkripsi untuk session, cookie, dan kriptografi Laravel. Wajib di-generate sekali. |
+| `APP_ENV` | Menentukan mode aplikasi. `production` menonaktifkan stack trace dan error page detail. |
+| `APP_DEBUG` | Jika `true`, exception ditampilkan di browser. Wajib `false` di production. |
+| `DB_CONNECTION` | Driver database: `sqlite` (dev), `mysql` / `pgsql` (prod). |
+| `SESSION_DRIVER=database` | Session disimpan di tabel `sessions`. Mendukung multi-server. |
+| `QUEUE_CONNECTION=database` | Queue jobs (email OTP) disimpan di tabel `jobs`. Proses via queue listener. |
+| `MAIL_MAILER` | Driver email. Gunakan `log` untuk dev (tulis ke log), `smtp` untuk prod. |
+| `FILESYSTEM_DISK=local` | Default disk untuk file upload. Disk `secure` dikonfigurasi terpisah di `config/filesystems.php`. |
+| `BCRYPT_ROUNDS` | Jumlah round hashing bcrypt. Default `12`, naikkan ke `13`–`14` untuk prod jika perlu. |
+| `LOG_LEVEL` | Level minimal log yang dicatat. `debug` di dev, `warning`/`error` di prod. |
+
+---
+
+## 9. Installation & Setup
+
+### Prerequisites
 
 - PHP >= 8.2
-- Composer
-- Node.js & NPM
-- Database (PostgreSQL direkomendasikan, atau SQLite)
+- Composer >= 2.x
+- Node.js >= 20.x + npm
+- SQLite (dev) atau MySQL 8.x (prod)
+- Ekstensi PHP: `pdo_sqlite` / `pdo_mysql`, `mbstring`, `openssl`, `fileinfo`, `bcmath`
 
----
+### Step-by-Step Setup
 
-## 📥 Instalasi & Setup Lokal
-
-Ikuti langkah-langkah berikut untuk menjalankan project ini di komputer Anda:
-
-### 1. Clone Repositori
-
+**1. Clone repository**
 ```bash
-git clone https://github.com/Vinnzz-coy/SimpanData.git
+git clone https://github.com/your-org/SimpanData.git
 cd SimpanData
 ```
 
-### 2. Instalasi Dependensi (Backend)
-
+**2. Install PHP dependencies**
 ```bash
 composer install
 ```
 
-### 3. Instalasi Dependensi (Frontend)
-
+**3. Install Node.js dependencies**
 ```bash
 npm install
 ```
 
-### 4. Setup Environment File
-
-Salin file `.env.example` menjadi `.env` dan sesuaikan konfigurasi database Anda.
-
+**4. Setup environment**
 ```bash
-copy .env.example .env
-```
-
-_Edit file `.env` dan sesuaikan bagian `DB_CONNECTION` untuk database._
-
-#### 📧 Konfigurasi Email (SMTP)
-Sesuaikan bagian Mail untuk fitur pengiriman email (seperti OTP atau Notifikasi):
-
-```env
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME=your-email@gmail.com
-MAIL_PASSWORD="your-app-password"
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=your-email@gmail.com
-MAIL_FROM_NAME="${APP_NAME}"
-```
-> [!IMPORTANT]
-> Gunakan **App Password** Gmail jika Anda menggunakan SMTP Google, jangan gunakan password akun utama demi keamanan.
-
-### 5. Generate Application Key
-
-```bash
+cp .env.example .env
 php artisan key:generate
 ```
+Edit `.env` sesuai konfigurasi lokal Anda (database, mail, dst.).
 
-### 6. Migrasi & Seeding Database
+**5. Buat storage symlink (untuk foto profil public)**
+```bash
+php artisan storage:link
+```
 
-Jalankan migrasi untuk membuat tabel dan seeder untuk data awal.
+**6. Jalankan database migration**
+```bash
+# SQLite: pastikan file database ada terlebih dahulu
+touch database/database.sqlite
+
+php artisan migrate
+```
+
+**7. (Opsional) Jalankan seeder untuk data dummy**
+```bash
+php artisan db:seed
+```
+
+**8. Build frontend assets**
+```bash
+npm run build
+```
+
+**9. Jalankan server development (semua proses sekaligus)**
+```bash
+composer run dev
+```
+Perintah ini menjalankan secara bersamaan:
+- `php artisan serve` — web server
+- `php artisan queue:listen` — worker untuk email OTP
+- `php artisan pail` — log viewer
+- `npm run dev` — Vite HMR
+
+Server akan berjalan di `http://localhost:8000`.
+
+**10. Jalankan tests**
+```bash
+composer run test
+# atau
+php artisan test
+```
+
+---
+
+## 10. Security Considerations
+
+### Authentication
+- Autentikasi menggunakan **Laravel built-in Auth** (`Auth::attempt`) dengan password di-hash menggunakan **bcrypt** (default 12 rounds).
+- Login mendukung identifier ganda: email atau username.
+- Registrasi dilindungi **OTP email verification** — akun hanya dibuat jika OTP diverifikasi terlebih dahulu.
+
+### Authorization
+- **Role-Based Access Control (RBAC)** menggunakan `RoleMiddleware` kustom yang diterapkan per route group.
+- Dua role: `admin` dan `peserta`. Setiap endpoint secara eksplisit memproteksi dengan `middleware('role:admin')` atau `middleware('role:peserta')`.
+- File laporan PDF dilindungi via `FileController` — tidak ada path publik yang mengarah langsung ke file.
+
+### Input Validation
+- Semua form request divalidasi di sisi server menggunakan `$request->validate()` atau Form Request classes (`app/Http/Requests/`).
+- Upload file laporan dibatasi hanya tipe `pdf` dan maksimal **10 MB**.
+- Upload foto profil dibatasi tipe `image` dan maksimal **2 MB**.
+
+### CSRF & XSS
+- **CSRF**: Semua form POST/PUT/PATCH/DELETE dilindungi Laravel's built-in CSRF protection (`@csrf` directive di Blade).
+- **XSS**: Output di Blade menggunakan `{{ }}` (HTML escaped by default). Hindari penggunaan `{!! !!}` kecuali pada konten yang sudah disanitasi.
+
+### Rate Limiting
+- Endpoint sensitif (OTP, login check) dibatasi dengan `throttle:5,1` (5 request per menit per IP).
+- Proteksi terhadap **user enumeration** pada endpoint forgot password: respons selalu `200 OK` terlepas dari keberadaan email.
+
+### Penyimpanan File
+- File PDF laporan disimpan di luar web root (`storage/app/secure/`) — tidak dapat diakses langsung via URL.
+- Akses file melalui `FileController@showReport` yang memvalidasi autentikasi sebelum streaming file.
+
+---
+
+## 11. Scalability Notes
+
+### Bottleneck yang Mungkin Terjadi
+
+| Komponen | Potensi Bottleneck | Catatan |
+|---|---|---|
+| Queue Worker | Database queue tidak efisien untuk volume tinggi | Migrasi ke Redis queue untuk load besar |
+| Session | Database session bisa lambat jika concurrent users tinggi | Migrasi ke Redis session driver |
+| Cache | Database cache kurang efisien untuk hot data | Migrasi ke Redis atau Memcached |
+| File Serving | `FileController` stream file = I/O intensive | Gunakan CDN atau Nginx X-Accel-Redirect |
+| Export Excel | PhpSpreadsheet berjalan synchronous | Pindahkan ke queue job dengan notifikasi selesai |
+
+### Caching Strategy
+- Saat ini menggunakan **database cache driver** — cocok untuk deployment awal.
+- Untuk scale-up: konfigurasi `CACHE_STORE=redis` dan tambah koneksi Redis.
+- Data yang layak di-cache: list partner (landing page), statistik dashboard, data profil yang jarang berubah.
+
+### Horizontal Scaling
+- Aplikasi **stateless di level kode** jika `SESSION_DRIVER` dan `QUEUE_CONNECTION` dimigrasi ke Redis (shared state antar server).
+- File storage harus menggunakan **shared filesystem** (NFS) atau **object storage** (S3-compatible) jika deploy multi-server.
+- Database cache dan session wajib dipindah ke Redis sebelum deploy ke multiple app server.
+
+### Queue Usage
+- Queue saat ini digunakan untuk pengiriman email OTP (registrasi & reset password).
+- Worker berjalan via `php artisan queue:listen`. Di production, gunakan `Supervisor` untuk menjaga proses worker tetap berjalan.
+- Tambahkan queue untuk proses berat lainnya: export Excel, pengiriman notifikasi massal.
+
+---
+
+## 12. Testing Strategy
+
+### Struktur Test
+
+```
+tests/
+├── Feature/      # Test HTTP end-to-end (request → response)
+└── Unit/         # Test logika terisolasi (model, service, helper)
+```
+
+### Unit Tests
+
+Fokus pada:
+- Model accessor & scope (`Peserta@getIsLengkapAttribute`, `scopeTerisi`, `scopeBelumTerisi`)
+- `OtpCode@isExpired()` — validasi TTL OTP
+- Kalkulasi `nilai_akhir` di model `Penilaian`
+- `Laporan@getSecureUrlAttribute` — pembentukan URL aman
 
 ```bash
-php artisan migrate --seed
+php artisan test --testsuite=Unit
 ```
 
-_Gunakan `--seed` untuk menyertakan data dummy (Admin, Peserta, dll) agar aplikasi bisa langsung dicoba._
+### Feature Tests
 
-### 7. Build Assets & Jalankan Server
-
-Buka dua terminal berbeda:
-
-**Terminal 1 (Vite Dev Server):**
+Fokus pada:
+- Alur registrasi + OTP verification (happy path & edge case: OTP expired, OTP salah)
+- Alur login dengan username/email + redirect berdasarkan role
+- Submit laporan harian: validation error, duplicate date, file type enforcement
+- Admin approve/revisi laporan: perubahan status & catatan
+- Akses file via `FileController`: auth required, unauthorized access (403)
+- Rate limiting pada endpoint OTP
 
 ```bash
-npm run dev
+php artisan test --testsuite=Feature
 ```
 
-**Terminal 2 (Laravel Server):**
+### Integration Tests
+
+- Pastikan queue job `OtpMail` terkirim saat register (gunakan `Mail::fake()`)
+- Test database transaction pada `AuthController@register` — rollback jika `Peserta::create` gagal
+- End-to-end flow penilaian oleh admin dapat dibaca oleh peserta
 
 ```bash
-php artisan serve
+php artisan test
 ```
 
-Aplikasi dapat diakses melalui `http://127.0.0.1:8000`.
+### Coverage Target
 
----
+| Area | Target Coverage |
+|---|---|
+| Auth flow (register, login, OTP, reset) | ≥ 90% |
+| Laporan submit & approval workflow | ≥ 85% |
+| Model accessor & scope | ≥ 95% |
+| File access authorization | ≥ 90% |
+| Overall | ≥ 80% |
 
-## 📊 Sistem Penilaian Peserta
-
-SimpanData menggunakan sistem penilaian kinerja yang canggih untuk mengevaluasi peserta PKL dan Magang secara objektif dan transparan.
-
-### 📐 Aspek Penilaian Utama
-Terdapat **5 Pilar Utama** yang dinilai dengan rentang skor **1 - 100**:
-
-| Aspek | Deskripsi Kompetensi |
-| :--- | :--- |
-| 🕒 **Kedisiplinan** | Ketepatan waktu, tingkat kehadiran, dan kepatuhan terhadap SOP perusahaan. |
-| 🛠️ **Keterampilan** | Penguasaan teknis tools, kualitas hasil kerja, dan efisiensi penyelesaian tugas. |
-| 🤝 **Kerjasama** | Kemampuan berkoordinasi dalam tim, proaktif membantu rekan, dan etika kolaborasi. |
-| 💡 **Inisiatif** | Kemampuan mencari solusi mandiri, memberikan ide kreatif, dan sikap proaktif. |
-| 💬 **Komunikasi** | Kejelasan penyampaian informasi, etika berbicara, dan kemampuan mendengarkan. |
-
----
-
-### 🔄 Alur Kerja Penilaian (Sederhana)
-Proses penilaian dirancang agar cepat dan instan dengan langkah berikut:
-
-1.  **Pilih Peserta**: Admin memilih peserta dari daftar (otomatis terfilter berdasarkan status aktif/selesai).
-2.  **Input Nilai**: Masukkan skor (1-100) menggunakan slider atau tombol cepat kategori.
-3.  **Live Preview**: Sistem langsung menghitung **Nilai Akhir** dan menentukan **Grade** (A-E) secara otomatis di layar.
-4.  **Simpan**: Klik simpan, data dikirim via AJAX, dan seluruh halaman (tabel & statistik) akan diperbarui saat itu juga tanpa reload.
-
----
-
-### 🔢 Mekanisme Perhitungan
-
-Logika perhitungan menggunakan metode **Mean Average** untuk memastikan keadilan bagi seluruh peserta:
-
-> [!TIP]
-> **Rumus Nilai Akhir:**
-> $$\text{Nilai Akhir} = \frac{\sum(\text{Kedisiplinan, Keterampilan, Kerjasama, Inisiatif, Komunikasi})}{5}$$
-
-**Klasifikasi Predikat & Grade:**
-
-| Rentang Nilai | Grade | Status | Warna Indikator |
-| :--- | :---: | :--- | :--- |
-| **90 - 100** | <kbd>A</kbd> | 🌟 Sangat Memuaskan | **Hijau (Emerald)** |
-| **80 - 89** | <kbd>B</kbd> | ✅ Memuaskan | **Biru (Blue)** |
-| **70 - 79** | <kbd>C</kbd> | ⚠️ Cukup | **Kuning (Amber)** |
-| **60 - 69** | <kbd>D</kbd> | ❌ Kurang | **Oranye (Orange)** |
-| **0 - 59** | <kbd>E</kbd> | 🆘 Sangat Kurang | **Merah (Red)** |
-
----
-
-### 🚀 Fitur Canggih UI Penilaian
-Aplikasi ini dilengkapi dengan fitur UI/UX modern untuk mempermudah tugas Admin:
-
-*   **⚡ Intelligent Filtering**: Filter data secara instan berdasarkan *Nama, Sekolah/Universitas, Jenis Kegiatan (PKL/Magang),* dan *Status Penilaian*.
-*   **📊 Dynamic Stats Sync**: Kartu statistik (Total, Sudah Dinilai, Belum Dinilai, Rata-rata) akan **otomatis menyinkronkan angkanya** sesuai dengan filter yang aktif secara real-time tanpa reload halaman.
-*   **🎨 Color-Coded Indicators**: Slider penilaian berubah warna secara dinamis memberikan feedback psikologis yang cepat kepada penilai.
-*   **🔘 Quick Value Presets**: Tombol cepat untuk kategori (Kurang, Cukup, Baik, Sangat Baik) untuk pengisian nilai instan.
-*   **🛡️ Clean Code Architecture**: Logika penilaian dipisahkan ke dalam [penilaian.js](public/js/admin/penilaian.js) untuk menjaga performa dan kemudahan maintenance.
-
----
-
-## 📁 Struktur Folder Proyek
-
-Organisasi file dalam sistem **SipanData** dirancang untuk skalabilitas dan kemudahan pemeliharaan:
-
-```text
-SipanData/
-├── app/
-│   ├── Http/Controllers/        # Logika Navigasi & Request Handler
-│   │   ├── Admin/               # Pengelolaan Dashboard, Peserta, Absensi, Penilaian
-│   │   │   ├── AbsensiController.php
-│   │   │   ├── ArsipController.php
-│   │   │   ├── PenilaianController.php
-│   │   │   └── UserController.php
-│   │   └── Peserta/             # Fitur mandiri Peserta (Absensi, Laporan, Profile)
-│   │       ├── DashboardController.php
-│   │       └── PenilaianController.php
-│   ├── Models/                  # Definisi Entitas & Relasi Database (Eloquent)
-│   │   ├── User.php
-│   │   ├── Peserta.php
-│   │   ├── Penilaian.php
-│   │   └── Absensi.php
-│   └── Providers/               # Konfigurasi Service Providers sistem
-├── bootstrap/                   # Inisialisasi framework Laravel
-├── config/                      # Kumpulan file konfigurasi (App, DB, Auth, Mail)
-├── database/
-│   ├── migrations/              # Definisi struktur tabel (Blueprint)
-│   ├── seeders/                 # Pengisian data awal otomatis
-│   └── factories/               # Generator data dummy untuk testing
-├── public/                      # Direktori Akses Publik
-│   ├── build/                   # Hasil kompilasi aset oleh Vite
-│   ├── css/                     # File styling eksternal (termasuk penilaian peserta)
-│   └── js/                      # Script interaktif sistem
-├── resources/
-│   ├── css/                     # Sumber asli Tailwind & Global CSS
-│   ├── js/                      # Sumber asli JavaScript (Vite entry points)
-│   └── views/                   # Template Antarmuka (Blade Engine)
-│       ├── admin/               # Halaman khusus pengelolaan Admin
-│       ├── peserta/             # Halaman portal mandiri Peserta
-│       ├── layouts/             # Master template (App structure)
-│       ├── partials/            # Komponen kecil yang dapat digunakan ulang (Reusable)
-│       └── auth/                # Halaman Login & Registrasi
-├── routes/                      # Definisi URL & Middleware Security
-│   ├── web.php                  # Rute navigasi browser
-│   └── console.php              # Perintah CLI kustom
-├── storage/                     # Penyimpanan log, cache, dan file upload peserta
-└── vite.config.js               # Konfigurasi Asset Bundler (Vite)
+Jalankan report coverage (membutuhkan Xdebug):
+```bash
+php artisan test --coverage --min=80
 ```
 
 ---
 
-## 🔑 Akun Default (Seeder)
+## Appendix
 
-Jika Anda menggunakan `--seed`, Anda bisa masuk dengan akun berikut:
+### Artisan Commands Berguna
 
-- **Admin**: `admin@simpandata.com` / Password: `admin123`
+```bash
+# Development server (all-in-one)
+composer run dev
 
----
+# Jalankan queue worker manual
+php artisan queue:listen --tries=3
 
-## 📄 Lisensi
+# Clear semua cache
+php artisan optimize:clear
 
-Project ini dilisensikan di bawah [MIT License](LICENSE).
+# Lihat semua route terdaftar
+php artisan route:list
+
+# Fresh migration + seed
+php artisan migrate:fresh --seed
+
+# Jalankan test suite
+php artisan test --parallel
+```
+
+### Konvensi Kode
+
+- **Controller naming**: `{NamespaceArea}{Feature}Controller` — e.g., `Admin\LaporanController`, `Peserta\LaporanController`.
+- **Route naming**: `{area}.{resource}.{action}` — e.g., `admin.laporan.harian.approve`, `peserta.laporan.store`.
+- **Status enum laporan**: `Draft` → `Dikirim` → `Disetujui` / `Revisi` (peserta dapat upload ulang).
+- **Status enum peserta**: `Aktif` → `Selesai` → `Arsip`.
