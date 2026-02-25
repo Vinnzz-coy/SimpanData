@@ -235,7 +235,25 @@
                             <tr class="transition-colors hover:bg-gray-50/50">
                                 <td class="px-4 py-3 text-gray-500">{{ $index + $absensis->firstItem() }}</td>
                                 <td class="px-4 py-3 font-medium text-gray-900">
-                                    {{ $item->peserta->nama ?? '-' }}
+                                    <div class="flex items-center gap-3">
+                                        @if($item->peserta->foto && Storage::disk('public')->exists($item->peserta->foto))
+                                            <img src="{{ asset('storage/' . $item->peserta->foto) }}"
+                                                alt="{{ $item->peserta->nama }}"
+                                                class="flex-shrink-0 w-8 h-8 object-cover rounded-lg shadow-soft">
+                                        @else
+                                            <div class="flex items-center justify-center flex-shrink-0 w-8 h-8 font-bold text-white rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 shadow-soft text-[10px]">
+                                                {{ strtoupper(substr($item->peserta->nama ?? 'P', 0, 1)) }}
+                                            </div>
+                                        @endif
+                                        <div>
+                                            <div class="text-sm font-bold leading-tight text-gray-900">
+                                                {{ $item->peserta->nama ?? '-' }}
+                                            </div>
+                                            <div class="text-[10px] text-gray-500 mt-0.5 italic line-clamp-1">
+                                                {{ $item->peserta->asal_sekolah_universitas ?? '-' }}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="px-4 py-3">
                                     <span
@@ -315,7 +333,7 @@
             @endif
         </div>
 
-        <div id="locationModal" class="fixed inset-0 z-50 flex items-center justify-center" style="background:rgba(0,0,0,0.5);">
+        <div id="locationModal" class="hidden fixed inset-0 z-50 items-center justify-center" style="background:rgba(0,0,0,0.5);">
             <div class="relative w-full max-w-2xl mx-4 bg-white shadow-2xl rounded-2xl animate-fade-in-up">
                 <div class="flex items-center justify-between p-5 border-b border-gray-100">
                     <div class="flex items-center gap-3">

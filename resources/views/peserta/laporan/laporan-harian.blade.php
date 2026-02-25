@@ -110,6 +110,7 @@
             @if (isset($todayReport))
                 @method('PUT')
             @endif
+            <input type="hidden" name="status" id="status-field" value="Dikirim">
             <input type="hidden" name="tanggal_laporan" value="{{ date('Y-m-d') }}">
 
             <div class="p-6 card shadow-soft md:p-8 animate-fade-in-up" style="animation-delay: 100ms">
@@ -154,7 +155,7 @@
                         </label>
                         <div class="relative">
                             <input type="file" id="file" name="file"
-                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.zip"
+                                accept="application/pdf"
                                 class="w-full px-4 py-3 transition-colors border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 {{ $errors->has('file') ? 'border-red-500' : 'border-gray-300' }}">
                             @error('file')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -169,40 +170,7 @@
                                 </a>
                             </div>
                         @endif
-                        <p class="mt-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">Format: PDF, DOC,
-                            DOCX, JPG, PNG, ZIP (Maks. 5MB)</p>
-                    </div>
-
-                    <div>
-                        <label class="block mb-3 text-xs font-bold tracking-widest uppercase text-slate-500">Status
-                            Laporan</label>
-                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <label
-                                class="relative flex items-center p-4 transition-all duration-200 border-2 border-gray-200 cursor-pointer rounded-2xl hover:border-purple-300 hover:bg-purple-50/30 group">
-                                <input type="radio" name="status" value="Draft"
-                                    class="w-5 h-5 text-purple-600 focus:ring-purple-500"
-                                    {{ old('status', $todayReport->status ?? 'Draft') == 'Draft' ? 'checked' : '' }}>
-                                <div class="ml-4">
-                                    <span class="text-base font-bold text-slate-800">Draft</span>
-                                    <p class="text-xs font-medium text-slate-500">Simpan sebagai draft</p>
-                                </div>
-                                <i
-                                    class='absolute text-xl transition-opacity opacity-0 bx bx-check-circle text-purple-600 right-4 group-has-[:checked]:opacity-100'></i>
-                            </label>
-
-                            <label
-                                class="relative flex items-center p-4 transition-all duration-200 border-2 border-green-200 cursor-pointer rounded-2xl hover:border-green-400 hover:bg-green-50/50 group">
-                                <input type="radio" name="status" value="Dikirim"
-                                    class="w-5 h-5 text-green-600 focus:ring-green-500"
-                                    {{ in_array(old('status', $todayReport->status ?? ''), ['Dikirim', 'Revisi']) ? 'checked' : '' }}>
-                                <div class="ml-4">
-                                    <span class="text-base font-bold text-slate-800">Kirim</span>
-                                    <p class="text-xs font-medium text-slate-500">Kirim untuk review</p>
-                                </div>
-                                <i
-                                    class='absolute text-xl transition-opacity opacity-0 bx bx-check-circle text-green-600 right-4 group-has-[:checked]:opacity-100'></i>
-                            </label>
-                        </div>
+                        <p class="mt-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">Format: PDF | Maksimal 5MB</p>
                     </div>
 
                     <div class="flex justify-end gap-3 pt-6 border-t border-slate-100">
@@ -215,11 +183,11 @@
                                 </div>
                             </a>
                         @endif
-                        <button type="submit"
+                        <button type="submit" name="status" value="Dikirim"
                             class="px-8 py-3 text-sm font-extrabold text-white transition-all duration-200 bg-purple-600 rounded-xl hover:bg-purple-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
                             <div class="flex items-center gap-2">
-                                <i class='text-lg bx bx-save'></i>
-                                <span>{{ isset($todayReport) ? 'Update Laporan' : 'Simpan Laporan' }}</span>
+                                <i class='text-lg bx bx-send'></i>
+                                <span>{{ isset($todayReport) ? 'Update & Kirim' : 'Kirim Laporan' }}</span>
                             </div>
                         </button>
                     </div>
@@ -269,17 +237,19 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="flex gap-2 ml-4">
+                                <div class="flex flex-col gap-2 ml-4 sm:flex-row">
                                     <a href="{{ route('peserta.laporan.show', $report->id) }}"
-                                        class="flex items-center justify-center text-blue-600 transition-colors rounded-lg w-9 h-9 bg-blue-50 hover:bg-blue-100"
+                                        class="flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold text-blue-600 transition-all rounded-lg bg-blue-50 hover:bg-blue-100"
                                         title="Lihat Detail">
-                                        <i class='text-xl bx bx-show'></i>
+                                        <i class='text-lg bx bx-show'></i>
+                                        <span>Detail</span>
                                     </a>
                                     @if ($report->status == 'Draft' || $report->status == 'Revisi')
                                         <a href="{{ route('peserta.laporan.edit', $report->id) }}"
-                                            class="flex items-center justify-center text-purple-600 transition-colors rounded-lg w-9 h-9 bg-purple-50 hover:bg-purple-100"
+                                            class="flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold text-purple-600 transition-all rounded-lg bg-purple-50 hover:bg-purple-100"
                                             title="Edit">
-                                            <i class='text-xl bx bx-edit'></i>
+                                            <i class='text-lg bx bx-edit'></i>
+                                            <span>Edit</span>
                                         </a>
                                     @endif
                                 </div>
@@ -288,15 +258,9 @@
                     @endforeach
                 </div>
 
-                @if (isset($hasMoreReports) && $hasMoreReports)
-                    <div class="mt-8 text-center">
-                        <a href="{{ route('peserta.laporan.index') }}"
-                            class="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-purple-700 transition-all duration-200 border-2 border-purple-300 rounded-xl hover:bg-purple-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
-                            <i class='text-lg bx bx-list-ul'></i>
-                            <span>Lihat Semua Laporan</span>
-                        </a>
-                    </div>
-                @endif
+                <div class="mt-8">
+                    {{ $recentReports->links() }}
+                </div>
             </div>
         @endif
     </div>

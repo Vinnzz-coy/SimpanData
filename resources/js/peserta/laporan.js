@@ -1,6 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
     const reportForm = document.getElementById('report-form');
     if (reportForm) {
+        // Global variable to store clicked button value
+        let clickedButtonValue = null;
+
+        const submitButtons = reportForm.querySelectorAll('button[type="submit"]');
+        submitButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                clickedButtonValue = this.value;
+            });
+        });
+
         reportForm.addEventListener('submit', function(e) {
             const judul = document.getElementById('judul').value.trim();
             const deskripsi = document.getElementById('deskripsi').value.trim();
@@ -16,7 +26,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
 
-            const submitBtn = reportForm.querySelector('button[type="submit"]');
+            // Sync clicked button value to hidden input if it exists
+            const statusInput = document.getElementById('status-field');
+            if (statusInput && clickedButtonValue) {
+                statusInput.value = clickedButtonValue;
+            }
+
+            // Target the specific button that was clicked for the loading state
+            const submitBtn = Array.from(submitButtons).find(btn => btn.value === clickedButtonValue) || submitButtons[0];
+            
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<div class="flex items-center gap-2"><i class="bx bx-loader-alt animate-spin"></i><span>Menyimpan...</span></div>';
         });
@@ -26,12 +44,15 @@ document.addEventListener('DOMContentLoaded', function() {
             fileInput.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
-                    const maxSize = 5 * 1024 * 1024;
+                    const isLaporanAkhir = window.location.pathname.includes('laporan-akhir');
+                    const maxSize = (isLaporanAkhir ? 10 : 5) * 1024 * 1024;
+                    const maxSizeText = isLaporanAkhir ? '10MB' : '5MB';
+
                     if (file.size > maxSize) {
                         Swal.fire({
                             icon: 'error',
                             title: 'File Terlalu Besar!',
-                            text: 'Ukuran file maksimal adalah 5MB.',
+                            text: `Ukuran file maksimal adalah ${maxSizeText}.`,
                             confirmButtonColor: '#7C3AED'
                         });
                         e.target.value = '';

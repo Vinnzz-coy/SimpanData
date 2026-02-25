@@ -1,18 +1,18 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Laporan Akhir')
+@section('title', 'Detail Laporan Harian')
 
 @section('content')
 <div class="space-y-6">
     <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <a href="{{ route('admin.laporan.akhir.index') }}"
-               class="flex items-center justify-center w-10 h-10 transition-all bg-white border border-gray-200 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-indigo-600 shadow-soft">
+            <a href="{{ route('admin.laporan.index') }}"
+                class="flex items-center justify-center w-10 h-10 transition-all bg-white border border-gray-200 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-indigo-600 shadow-soft">
                 <i class='text-xl bx bx-arrow-back'></i>
             </a>
             <div>
-                <h2 class="text-xl font-bold text-slate-800">Detail Laporan Akhir</h2>
-                <p class="text-sm text-slate-500">Verifikasi laporan akhir peserta secara detail.</p>
+                <h2 class="text-xl font-bold text-slate-800">Detail Laporan</h2>
+                <p class="text-sm text-slate-500">Verifikasi laporan harian peserta secara detail.</p>
             </div>
         </div>
 
@@ -33,7 +33,7 @@
 
     {{-- Layout Split: Utama (2/3) vs Sidebar (1/3) --}}
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-stretch">
-        {{-- Left: Ringkasan Kegiatan (2/3) --}}
+        {{-- Left: Deskripsi Kegiatan (2/3) --}}
         <div class="lg:col-span-2">
             <div class="p-8 bg-white border border-gray-100 shadow-soft rounded-2xl h-full flex flex-col">
                 <div class="mb-6">
@@ -41,7 +41,7 @@
                 </div>
 
                 <div class="flex-1 flex flex-col min-h-0">
-                    <h4 class="text-xs font-bold tracking-widest uppercase text-slate-400 mb-3">Ringkasan Kegiatan</h4>
+                    <h4 class="text-xs font-bold tracking-widest uppercase text-slate-400 mb-3">Deskripsi Kegiatan</h4>
                     {{-- Fixed height container to match sidebar and allow scroll --}}
                     <div class="flex-1 p-6 text-sm leading-relaxed whitespace-pre-wrap rounded-xl bg-slate-50 border border-slate-100 text-slate-700 overflow-y-auto custom-scrollbar h-[500px] lg:h-auto lg:max-h-[500px]">
 {{ $laporan->deskripsi }}</div>
@@ -75,7 +75,7 @@
 
                 @if($laporan->status !== 'Disetujui')
                     <div class="space-y-4">
-                        <form id="approveForm" action="{{ route('admin.laporan.akhir.approve', $laporan->id) }}" method="POST">
+                        <form id="approveForm" action="{{ route('admin.laporan.harian.approve', $laporan->id) }}" method="POST">
                             @csrf
                             @method('PATCH')
                             <button type="submit"
@@ -98,7 +98,7 @@
                             </button>
 
                             <div x-show="showRevisi" x-transition class="mt-4 space-y-3">
-                                <form id="revisiForm" action="{{ route('admin.laporan.akhir.revisi', $laporan->id) }}" method="POST" onsubmit="return validateRevisi()">
+                                <form id="revisiForm" action="{{ route('admin.laporan.harian.revisi', $laporan->id) }}" method="POST" onsubmit="return validateRevisi()">
                                     @csrf
                                     @method('PATCH')
                                     <label class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1 block">Catatan Revisi</label>
@@ -125,7 +125,7 @@
                             <i class='text-3xl bx bx-check-double'></i>
                         </div>
                         <p class="text-sm font-bold text-slate-800">Laporan Telah Disetujui</p>
-                        <p class="text-xs text-slate-500">Laporan akhir ini telah disetujui dan bersifat final.</p>
+                        <p class="text-xs text-slate-500">Laporan ini bersifat final dan tidak memerlukan tindakan lebih lanjut.</p>
                     </div>
                 @endif
             </div>
@@ -134,13 +134,13 @@
                 <h3 class="mb-4 text-xs font-bold tracking-widest uppercase text-slate-400">Rincian Laporan</h3>
                 <div class="space-y-4">
                     <div>
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Terakhir Update</p>
-                        <p class="text-sm font-bold text-slate-800">{{ $laporan->updated_at->translatedFormat('d F Y') }}</p>
-                        <p class="text-xs text-slate-500">{{ $laporan->updated_at->diffForHumans() }}</p>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Tanggal Posting</p>
+                        <p class="text-sm font-bold text-slate-800">{{ \Carbon\Carbon::parse($laporan->tanggal_laporan)->translatedFormat('d F Y') }}</p>
+                        <p class="text-xs text-slate-500">{{ \Carbon\Carbon::parse($laporan->tanggal_laporan)->diffForHumans() }}</p>
                     </div>
                     <div>
                         <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">ID Laporan</p>
-                        <code class="px-2 py-0.5 mt-1 text-[10px] font-bold text-indigo-600 bg-indigo-50 rounded">#FA-{{ str_pad($laporan->id, 5, '0', STR_PAD_LEFT) }}</code>
+                        <code class="px-2 py-0.5 mt-1 text-[10px] font-bold text-indigo-600 bg-indigo-50 rounded">#{{ str_pad($laporan->id, 5, '0', STR_PAD_LEFT) }}</code>
                     </div>
                 </div>
             </div>
@@ -150,7 +150,7 @@
     {{-- Foot: Full Width PDF Preview (Tetap Full Width) --}}
     <div class="p-8 bg-white border border-gray-100 shadow-soft rounded-2xl">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-            <h3 class="text-xs font-bold tracking-widest uppercase text-slate-400">Dokumen Laporan Akhir (PDF)</h3>
+            <h3 class="text-xs font-bold tracking-widest uppercase text-slate-400">Lampiran Dokumen (PDF)</h3>
             
             @if($laporan->file_path && Storage::disk('public')->exists($laporan->file_path))
                 <div class="flex items-center gap-3">
@@ -174,6 +174,7 @@
             <div class="overflow-hidden border-2 border-slate-100 rounded-2xl aspect-[4/5] sm:aspect-video lg:aspect-[21/9] bg-slate-900">
                 <embed src="{{ asset('storage/' . $laporan->file_path) }}#toolbar=0&navpanes=0&scrollbar=0"
                         type="application/pdf"
+                        id="pdfEmbed"
                         class="w-full h-full border-none">
             </div>
             <p class="mt-4 text-xs text-slate-500"><i class='bx bx-info-circle mr-1'></i>Gunakan fitur browser untuk melihat dokumen dalam ukuran penuh jika diperlukan.</p>

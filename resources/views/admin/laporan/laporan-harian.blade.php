@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Laporan Peserta')
+@section('title', 'Laporan Harian Peserta')
 
 @section('content')
     <div class="space-y-6">
@@ -8,7 +8,7 @@
             <div
                 class="flex flex-col gap-4 p-4 border-b border-gray-200 md:p-5 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <h2 class="text-base font-semibold text-gray-800 md:text-lg">Statistik Laporan</h2>
+                    <h2 class="text-base font-semibold text-gray-800 md:text-lg">Statistik Laporan Harian</h2>
                     <p class="text-sm text-gray-600">Pantau progres verifikasi laporan harian peserta.</p>
                 </div>
                 <div class="flex gap-2">
@@ -174,11 +174,11 @@
                     <thead>
                         <tr class="text-gray-600 border-b bg-gray-50/50">
                             <th class="px-6 py-4 font-semibold uppercase tracking-wider text-[11px]">No</th>
-                            <th class="px-6 py-4 font-semibold uppercase tracking-wider text-[11px]">Peserta</th>
+                            <th class="px-6 py-4 font-semibold uppercase tracking-wider text-[11px]"> Nama Peserta</th>
                             <th class="px-6 py-4 font-semibold uppercase tracking-wider text-[11px]">Tanggal</th>
                             <th class="px-6 py-4 font-semibold uppercase tracking-wider text-[11px]">Laporan</th>
                             <th class="px-6 py-4 font-semibold uppercase tracking-wider text-[11px] text-center">Status</th>
-                            <th class="px-6 py-4 font-semibold uppercase tracking-wider text-[11px] text-right">Aksi</th>
+                            <th class="px-4 py-3 font-semibold uppercase tracking-wider text-[11px] text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
@@ -189,10 +189,16 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div
-                                            class="flex items-center justify-center flex-shrink-0 w-10 h-10 font-bold text-white rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-soft">
-                                            {{ strtoupper(substr($laporan->peserta->nama, 0, 1)) }}
-                                        </div>
+                                        @if($laporan->peserta->foto && Storage::disk('public')->exists($laporan->peserta->foto))
+                                            <img src="{{ asset('storage/' . $laporan->peserta->foto) }}"
+                                                alt="{{ $laporan->peserta->nama }}"
+                                                class="flex-shrink-0 w-10 h-10 object-cover rounded-xl shadow-soft">
+                                        @else
+                                            <div
+                                                class="flex items-center justify-center flex-shrink-0 w-10 h-10 font-bold text-white rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-soft">
+                                                {{ strtoupper(substr($laporan->peserta->nama, 0, 1)) }}
+                                            </div>
+                                        @endif
                                         <div>
                                             <div class="text-sm font-bold leading-tight text-gray-900">
                                                 {{ $laporan->peserta->nama }}</div>
@@ -230,28 +236,12 @@
                                         {{ $laporan->status }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div class="flex items-center justify-end gap-1">
-                                        <button onclick="openDetailModal({{ json_encode($laporan->load('peserta')) }})"
-                                            class="p-2 text-indigo-600 transition-all duration-200 hover:bg-indigo-50 rounded-xl"
-                                            title="Lihat Detail">
-                                            <i class='text-xl bx bx-show-alt'></i>
-                                        </button>
-                                        @if (in_array($laporan->status, ['Dikirim', 'Revisi']))
-                                            <button type="button"
-                                                onclick="confirmApprove('{{ route('admin.laporan.update-status', $laporan->id) }}')"
-                                                class="p-2 transition-all duration-200 text-emerald-600 hover:bg-emerald-50 rounded-xl"
-                                                title="Setujui">
-                                                <i class='text-xl bx bx-check-circle'></i>
-                                            </button>
-                                            <button type="button"
-                                                onclick="confirmRevise('{{ route('admin.laporan.update-status', $laporan->id) }}')"
-                                                class="p-2 transition-all duration-200 text-amber-600 hover:bg-amber-50 rounded-xl"
-                                                title="Revisi">
-                                                <i class='text-xl bx bx-error-circle'></i>
-                                            </button>
-                                        @endif
-                                    </div>
+                                <td class="px-6 py-4 text-center">
+                                    <a href="{{ route('admin.laporan.harian.show', $laporan->id) }}"
+                                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-indigo-600 transition-all duration-200 bg-indigo-50 rounded-xl hover:bg-indigo-100 shadow-sm">
+                                        <i class='text-lg bx bx-right-arrow-alt'></i>
+                                        <span>Detail</span>
+                                    </a>
                                 </td>
                             </tr>
                         @empty

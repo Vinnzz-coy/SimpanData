@@ -31,7 +31,7 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-2xl font-bold tracking-tight text-slate-900">Edit Laporan</h1>
-            <p class="mt-1 text-sm text-slate-600">Perbarui informasi laporan harian Anda</p>
+            <p class="mt-1 text-sm text-slate-600">Perbaiki laporan harian Anda sesuai catatan admin</p>
         </div>
         <a href="{{ route('peserta.laporan.index') }}"
             class="px-4 py-2 text-sm font-bold transition-all duration-200 border-2 rounded-lg text-slate-700 border-slate-300 hover:bg-slate-50 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
@@ -42,9 +42,10 @@
         </a>
     </div>
 
-    <form action="{{ route('peserta.laporan.update', $laporan->id) }}" method="POST" enctype="multipart/form-data" id="report-form">
+        <form action="{{ route('peserta.laporan.update', $laporan->id) }}" method="POST" enctype="multipart/form-data" id="report-form">
         @csrf
         @method('PUT')
+        <input type="hidden" name="status" id="status-field" value="Dikirim">
 
         <div class="p-6 card shadow-soft md:p-8">
             <h2 class="mb-6 text-xl font-bold tracking-tight uppercase text-slate-800">Form Edit Laporan</h2>
@@ -91,7 +92,7 @@
                         <input type="file"
                                 id="file"
                                 name="file"
-                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.zip"
+                                accept="application/pdf"
                                 class="w-full px-4 py-3 transition-colors border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 {{ $errors->has('file') ? 'border-red-500' : 'border-gray-300' }}">
                         @error('file')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -107,39 +108,10 @@
                             </a>
                         </div>
                     @endif
-                    <p class="mt-2 text-xs font-medium text-slate-500">Format yang didukung: PDF, DOC, DOCX, JPG, PNG, ZIP (Maks. 5MB). Upload file baru untuk mengganti file lama.</p>
+                    <p class="mt-2 text-xs font-medium text-slate-500">Format: PDF | Maksimal 5MB. Upload file baru untuk mengganti file lama.</p>
                 </div>
 
-                <div>
-                    <label class="block mb-3 text-sm font-bold tracking-widest uppercase text-slate-700">Status Laporan</label>
-                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <label class="relative flex items-center p-5 transition-all duration-200 border-2 border-gray-200 cursor-pointer rounded-xl hover:border-purple-300 hover:bg-purple-50/30 group">
-                            <input type="radio"
-                                    name="status"
-                                    value="Draft"
-                                    class="w-5 h-5 text-purple-600 focus:ring-purple-500"
-                                    {{ old('status', $laporan->status) == 'Draft' ? 'checked' : '' }}>
-                            <div class="ml-4">
-                                <span class="text-base font-bold text-slate-800">Draft</span>
-                                <p class="text-sm text-slate-500">Simpan sebagai draft</p>
-                            </div>
-                            <i class='absolute text-2xl transition-opacity opacity-0 bx bx-check-circle text-purple-600 right-4 group-has-[:checked]:opacity-100'></i>
-                        </label>
 
-                        <label class="relative flex items-center p-5 transition-all duration-200 border-2 border-green-200 cursor-pointer rounded-xl hover:border-green-400 hover:bg-green-50/50 group">
-                            <input type="radio"
-                                    name="status"
-                                    value="Dikirim"
-                                    class="w-5 h-5 text-green-600 focus:ring-green-500"
-                                    {{ old('status', $laporan->status) == 'Dikirim' ? 'checked' : '' }}>
-                            <div class="ml-4">
-                                <span class="text-base font-bold text-slate-800">Kirim</span>
-                                <p class="text-sm text-slate-500">Kirim untuk review</p>
-                            </div>
-                            <i class='absolute text-2xl transition-opacity opacity-0 bx bx-check-circle text-green-600 right-4 group-has-[:checked]:opacity-100'></i>
-                        </label>
-                    </div>
-                </div>
 
                 <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
                     <a href="{{ route('peserta.laporan.show', $laporan->id) }}"
@@ -149,11 +121,11 @@
                             <span>Batal</span>
                         </div>
                     </a>
-                    <button type="submit"
-                            class="px-6 py-3 text-sm font-bold text-white transition-all duration-200 bg-purple-600 rounded-lg hover:bg-purple-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
+                    <button type="submit" name="status" value="Dikirim"
+                        class="px-8 py-3 text-sm font-extrabold text-white transition-all duration-200 bg-purple-600 rounded-xl hover:bg-purple-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
                         <div class="flex items-center gap-2">
-                            <i class='text-base bx bx-save'></i>
-                            <span>Update Laporan</span>
+                            <i class='text-lg bx bx-send'></i>
+                            <span>Update & Kirim</span>
                         </div>
                     </button>
                 </div>
