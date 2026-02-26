@@ -192,7 +192,7 @@
                             <div class="relative">
                                 <select name="status" onchange="this.form.submit()"
                                     class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 appearance-none bg-white pr-10">
-                                    <option value="">Status</option>
+                                    <option value="">Semua Status</option>
                                     <option value="Hadir" {{ $status == 'Hadir' ? 'selected' : '' }}>Hadir</option>
                                     <option value="Izin" {{ $status == 'Izin' ? 'selected' : '' }}>Izin</option>
                                     <option value="Sakit" {{ $status == 'Sakit' ? 'selected' : '' }}>Sakit</option>
@@ -239,7 +239,7 @@
                                         @if($item->peserta->foto && Storage::disk('public')->exists($item->peserta->foto))
                                             <img src="{{ asset('storage/' . $item->peserta->foto) }}"
                                                 alt="{{ $item->peserta->nama }}"
-                                                class="flex-shrink-0 w-8 h-8 object-cover rounded-lg shadow-soft">
+                                                class="flex-shrink-0 object-cover w-8 h-8 rounded-lg shadow-soft">
                                         @else
                                             <div class="flex items-center justify-center flex-shrink-0 w-8 h-8 font-bold text-white rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 shadow-soft text-[10px]">
                                                 {{ strtoupper(substr($item->peserta->nama ?? 'P', 0, 1)) }}
@@ -301,8 +301,9 @@
                                         <button type="button"
                                             onclick="openLocationModal('{{ $item->peserta->nama ?? '-' }}', '{{ $item->waktu_absen ? \Carbon\Carbon::parse($item->waktu_absen)->format('Y-m-d H:i') : '-' }}', '{{ $item->jenis_absen }}', '{{ $item->status }}', '{{ $item->mode_kerja ?? '-' }}', {{ $item->latitude }}, {{ $item->longitude }}, '{{ addslashes($item->wa_pengirim ?? '') }}')"
                                             class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 hover:border-blue-300 transition-all duration-200 group">
-                                            <i class='text-sm bx bx-map group-hover:animate-bounce'></i>
-                                            <span>Lokasi</span>
+                                            <i class='text-sm bx bx-show'></i>
+                                            <span>Detail</span>
+                                            <i class='text-sm bx bx-chevron-right transition-transform duration-200 group-hover:translate-x-0.5'></i>
                                         </button>
                                     @else
                                         <span class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-400 bg-gray-50 rounded-lg cursor-not-allowed">
@@ -333,168 +334,88 @@
             @endif
         </div>
 
-        <div id="locationModal" class="hidden fixed inset-0 z-50 items-center justify-center" style="background:rgba(0,0,0,0.5);">
-            <div class="relative w-full max-w-2xl mx-4 bg-white shadow-2xl rounded-2xl animate-fade-in-up">
-                <div class="flex items-center justify-between p-5 border-b border-gray-100">
-                    <div class="flex items-center gap-3">
-                        <div class="flex items-center justify-center w-10 h-10 text-xl text-blue-600 bg-blue-50 rounded-xl">
-                            <i class='bx bx-map'></i>
-                        </div>
-                        <div>
-                            <h3 class="text-base font-bold text-gray-800">Detail Lokasi Absensi</h3>
-                            <p class="text-xs text-gray-500" id="modalSubtitle"></p>
-                        </div>
+    </div>
+@endsection
+
+@push('modals')
+    <div id="locationModalOverlay" class="fixed inset-0 z-30 hidden bg-black/50"></div>
+
+    <div id="locationModal" class="fixed top-16 inset-x-0 bottom-0 z-[35] items-center justify-center hidden pointer-events-none">
+        <div class="relative w-full max-w-2xl mx-4 my-8 bg-white shadow-2xl rounded-2xl animate-fade-in-up max-h-[90vh] overflow-y-auto pointer-events-auto">
+            <div class="sticky top-0 z-10 flex items-center justify-between p-5 bg-white border-b border-gray-100 rounded-t-2xl">
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center justify-center w-10 h-10 text-xl text-blue-600 bg-blue-50 rounded-xl">
+                        <i class='bx bx-map'></i>
                     </div>
-                    <button onclick="closeLocationModal()" class="flex items-center justify-center w-8 h-8 text-gray-400 transition-colors rounded-lg hover:text-gray-600 hover:bg-gray-100">
-                        <i class='text-xl bx bx-x'></i>
-                    </button>
+                    <div>
+                        <h3 class="text-base font-bold text-gray-800">Detail Absensi</h3>
+                        <p class="text-xs text-gray-500" id="modalSubtitle"></p>
+                    </div>
+                </div>
+                <button onclick="closeLocationModal()" class="flex items-center justify-center w-8 h-8 text-gray-400 transition-colors rounded-lg hover:text-gray-600 hover:bg-gray-100">
+                    <i class='text-xl bx bx-x'></i>
+                </button>
+            </div>
+
+            <div class="p-5 space-y-4">
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    <div class="p-3 rounded-xl bg-gray-50">
+                        <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Nama</p>
+                        <p class="text-sm font-bold text-gray-800 truncate" id="modalNama"></p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-gray-50">
+                        <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Jenis</p>
+                        <p class="text-sm font-bold text-gray-800" id="modalJenis"></p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-gray-50">
+                        <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Status</p>
+                        <p class="text-sm font-bold text-gray-800" id="modalStatus"></p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-gray-50">
+                        <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Mode</p>
+                        <p class="text-sm font-bold text-gray-800" id="modalMode"></p>
+                    </div>
                 </div>
 
-                <div class="p-5 space-y-4">
-                    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                        <div class="p-3 rounded-xl bg-gray-50">
-                            <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Nama</p>
-                            <p class="text-sm font-bold text-gray-800 truncate" id="modalNama"></p>
-                        </div>
-                        <div class="p-3 rounded-xl bg-gray-50">
-                            <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Jenis</p>
-                            <p class="text-sm font-bold text-gray-800" id="modalJenis"></p>
-                        </div>
-                        <div class="p-3 rounded-xl bg-gray-50">
-                            <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Status</p>
-                            <p class="text-sm font-bold text-gray-800" id="modalStatus"></p>
-                        </div>
-                        <div class="p-3 rounded-xl bg-gray-50">
-                            <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Mode</p>
-                            <p class="text-sm font-bold text-gray-800" id="modalMode"></p>
-                        </div>
-                    </div>
-
-                    <div id="modalCatatanWrapper" class="hidden">
-                        <div class="flex items-start gap-2 p-3 border border-amber-100 rounded-xl bg-amber-50/50">
-                            <i class='mt-0.5 text-amber-500 bx bx-note'></i>
-                            <div>
-                                <p class="text-[10px] font-semibold uppercase tracking-wider text-amber-400 mb-0.5">Catatan</p>
-                                <p class="text-xs font-medium leading-relaxed text-gray-700" id="modalCatatan"></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="mapContainer" class="w-full overflow-hidden border border-gray-200 rounded-xl" style="height:320px;"></div>
-
-                    <div class="flex items-start gap-2 p-3 border border-blue-100 rounded-xl bg-blue-50/50">
-                        <i class='mt-0.5 text-blue-500 bx bx-current-location'></i>
+                <div id="modalCatatanWrapper" class="hidden">
+                    <div class="flex items-start gap-2 p-3 border border-amber-100 rounded-xl bg-amber-50/50">
+                        <i class='mt-0.5 text-amber-500 bx bx-note'></i>
                         <div>
-                            <p class="text-[10px] font-semibold uppercase tracking-wider text-blue-400 mb-0.5">Alamat</p>
-                            <p class="text-xs font-medium leading-relaxed text-gray-700" id="modalAddress">Memuat alamat...</p>
+                            <p class="text-[10px] font-semibold uppercase tracking-wider text-amber-400 mb-0.5">Catatan</p>
+                            <p class="text-xs font-medium leading-relaxed text-gray-700" id="modalCatatan"></p>
                         </div>
                     </div>
+                </div>
 
-                    <div class="flex items-center gap-2 text-xs text-gray-400">
-                        <i class='bx bx-time-five'></i>
-                        <span id="modalWaktu"></span>
-                        <span class="mx-1">•</span>
-                        <span id="modalCoords"></span>
+                <div id="mapContainer" class="w-full overflow-hidden border border-gray-200 rounded-xl" style="height:320px;"></div>
+
+                <div class="flex items-start gap-2 p-3 border border-blue-100 rounded-xl bg-blue-50/50">
+                    <i class='mt-0.5 text-blue-500 bx bx-current-location'></i>
+                    <div>
+                        <p class="text-[10px] font-semibold uppercase tracking-wider text-blue-400 mb-0.5">Alamat</p>
+                        <p class="text-xs font-medium leading-relaxed text-gray-700" id="modalAddress">Memuat alamat...</p>
                     </div>
+                </div>
+
+                <div class="flex items-center gap-2 text-xs text-gray-400">
+                    <i class='bx bx-time-five'></i>
+                    <span id="modalWaktu"></span>
+                    <span class="mx-1">&bull;</span>
+                    <span id="modalCoords"></span>
                 </div>
             </div>
         </div>
-
     </div>
-@endsection
+@endpush
 
 @section('scripts')
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        function toggleAllDates(checkbox) {
-            const form = checkbox.form;
-            const dateInput = form.querySelector('#tanggalFilter');
-            if (!dateInput) return;
-
-            if (checkbox.checked) {
-                dateInput.value = '';
-                dateInput.disabled = true;
-            } else {
-                dateInput.disabled = false;
-                if (!dateInput.value) {
-                    dateInput.value = '{{ \Carbon\Carbon::today()->toDateString() }}';
-                }
-            }
-
-            form.submit();
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
-            const checkbox = document.getElementById('allDatesFilter');
             const dateInput = document.getElementById('tanggalFilter');
-            if (checkbox && dateInput && checkbox.checked) {
-                dateInput.disabled = true;
-            }
-        });
-
-        let locationMap = null;
-
-        function openLocationModal(nama, waktu, jenis, status, mode, lat, lng, catatan) {
-            document.getElementById('modalNama').textContent = nama;
-            document.getElementById('modalJenis').textContent = jenis;
-            document.getElementById('modalStatus').textContent = status;
-            document.getElementById('modalMode').textContent = mode;
-            document.getElementById('modalWaktu').textContent = waktu;
-            document.getElementById('modalSubtitle').textContent = nama + ' — ' + jenis + ' ' + waktu;
-            document.getElementById('modalCoords').textContent = lat.toFixed(7) + ', ' + lng.toFixed(7);
-            document.getElementById('modalAddress').textContent = 'Memuat alamat...';
-
-            const catatanWrapper = document.getElementById('modalCatatanWrapper');
-            if (catatan && catatan.trim() !== '') {
-                document.getElementById('modalCatatan').textContent = catatan;
-                catatanWrapper.classList.remove('hidden');
-            } else {
-                catatanWrapper.classList.add('hidden');
-            }
-
-            const modal = document.getElementById('locationModal');
-            modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-
-            setTimeout(() => {
-                if (locationMap) {
-                    locationMap.remove();
-                }
-                locationMap = L.map('mapContainer').setView([lat, lng], 16);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors',
-                    maxZoom: 19
-                }).addTo(locationMap);
-                L.marker([lat, lng]).addTo(locationMap)
-                    .bindPopup('<b>' + nama + '</b><br>' + jenis + ' — ' + waktu)
-                    .openPopup();
-
-                fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat=' + lat + '&lon=' + lng + '&zoom=18&addressdetails=1', {
-                    headers: { 'Accept-Language': 'id-ID,id;q=0.9', 'User-Agent': 'SimpanData-Attendance-System' }
-                })
-                .then(r => r.json())
-                .then(data => {
-                    document.getElementById('modalAddress').textContent = data.display_name || 'Alamat tidak ditemukan';
-                })
-                .catch(() => {
-                    document.getElementById('modalAddress').textContent = 'Gagal memuat alamat';
-                });
-            }, 100);
-        }
-
-        function closeLocationModal() {
-            document.getElementById('locationModal').classList.add('hidden');
-            document.body.style.overflow = '';
-            if (locationMap) {
-                locationMap.remove();
-                locationMap = null;
-            }
-        }
-
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLocationModal(); });
-        document.getElementById('locationModal')?.addEventListener('click', e => {
-            if (e.target === e.currentTarget) closeLocationModal();
+            if (dateInput) dateInput.dataset.today = '{{ \Carbon\Carbon::today()->toDateString() }}';
         });
     </script>
+    @vite('resources/js/admin/absensi.js')
 @endsection
