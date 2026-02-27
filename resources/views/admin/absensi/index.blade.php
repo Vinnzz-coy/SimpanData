@@ -340,7 +340,7 @@
 @push('modals')
     <div id="locationModalOverlay" class="fixed inset-0 z-30 hidden bg-black/50"></div>
 
-    <div id="locationModal" class="fixed top-16 inset-x-0 bottom-0 z-[35] items-center justify-center hidden pointer-events-none">
+    <div id="locationModal"class="fixed inset-0 z-50 flex items-center justify-center hidden">
         <div class="relative w-full max-w-2xl mx-4 my-8 bg-white shadow-2xl rounded-2xl animate-fade-in-up max-h-[90vh] overflow-y-auto pointer-events-auto">
             <div class="sticky top-0 z-10 flex items-center justify-between p-5 bg-white border-b border-gray-100 rounded-t-2xl">
                 <div class="flex items-center gap-3">

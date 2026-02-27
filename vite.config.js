@@ -25,7 +25,9 @@ export default defineConfig({
                 'resources/css/admin/penilaian.css',
                 'resources/css/admin/grid-cards.css',
                 'resources/js/index.js',
-                'resources/js/landing.js'
+                'resources/js/landing.js',
+                'resources/css/landing.css',
+                'resources/css/peserta/penilaian.css',
             ],
             refresh: true,
         }),
